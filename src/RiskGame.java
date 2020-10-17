@@ -30,6 +30,6 @@ public class RiskGame {
 
     public static void main (String[] args) {
         RiskGame game = new RiskGame();
-        game.playGame();
+        //game.playGame();
     }
 }

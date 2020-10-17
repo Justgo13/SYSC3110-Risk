@@ -1,4 +1,5 @@
 import java.util.*;
+import java.io.*;
 
 public class Board {
     private ArrayList<Player> players;
@@ -90,6 +91,37 @@ public class Board {
     }
 
     public void setAdjacentCountries(){
+
+        try {
+            // buffered reader to read the file
+            BufferedReader br = new BufferedReader(new FileReader("adjacentCountries.txt"));
+
+            String line;
+            // iterate through every line of the file
+            while ((line = br.readLine()) != null) {
+                ArrayList<String>  countryLine = new ArrayList<>();// for each line, creat an empty arraylist
+
+                for (String country: line.split(", ")){ // add every country in line to arraylist
+                    countryLine.add(country);
+
+                }
+                //get country on which we will be setting the adjacents, the first one in line
+                Country intialCountry = countries.get(countryLine.get(0));
+
+                for (int i =1; i<countryLine.size(); i++){ // iterate through every country in line other than first
+
+                    Country adjacentCountry = countries.get(countryLine.get(i)); // initialize the adjacent country
+                    intialCountry.addAdjacentCountry(adjacentCountry);  // add that adjacent country to initial country's adjacent
+                }
+
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
     }
 
