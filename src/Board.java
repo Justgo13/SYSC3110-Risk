@@ -89,6 +89,12 @@ public class Board {
         }
     }
 
+    public void setAdjacentCountries(){
+
+    }
+
+
+
     public void attack(Country attackingCountry, Country defendingCountry, int numOfAttacker) {
 
     }
