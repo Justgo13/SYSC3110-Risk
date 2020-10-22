@@ -38,4 +38,13 @@ public class Player {
     public int getArmiesToPlace() {
         return armiesToPlace;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
 }

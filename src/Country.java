@@ -13,6 +13,7 @@ public class Country {
         adjacentCountries = new ArrayList<>();
     }
 
+    public String getName () {return name;}
     public void setArmySize(int armySize) {
         this.armySize = armySize;
     }
@@ -28,4 +29,7 @@ public class Country {
     public void addAdjacentCountry(Country country) {
         adjacentCountries.add(country);
     }
+
+    public ArrayList<Country> getAdjacentCountries(){return adjacentCountries;}
+
 }

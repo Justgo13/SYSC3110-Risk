@@ -14,4 +14,16 @@ public class Continent {
     public void addCountry(Country country) {
         countries.add(country);
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getBonusArmy() {
+        return bonusArmy;
+    }
+
+    public ArrayList<Country> getCountries() {
+        return countries;
+    }
 }

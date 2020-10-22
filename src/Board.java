@@ -1,3 +1,5 @@
+import com.sun.media.jfxmediaimpl.HostUtils;
+
 import java.util.*;
 import java.io.*;
 
@@ -163,6 +165,35 @@ public class Board {
             e.printStackTrace();
         }
 
+
+    }
+
+    /**
+     * Prints the countries and their adjacents. Also prints continents and their contained countries
+     */
+    public void testConfiguration(){
+        // print every country and its adjacent countries
+        System.out.println();
+        for (Country country: countries.values()) {
+
+            System.out.print(country.getName() + " Adjacent: ");
+            for (Country adjacentCountry: country.getAdjacentCountries()){
+                System.out.print(adjacentCountry.getName() + " ");
+            }
+            System.out.println();
+        }
+
+        //print every continent and its contained countries
+        for (Continent continent: continents.values()){
+            System.out.println(continent.getName());
+
+            for (Country innerCountry: continent.getCountries()){
+                System.out.println(innerCountry.getName());
+            }
+            System.out.println();
+            System.out.println();
+
+        }
 
     }
 

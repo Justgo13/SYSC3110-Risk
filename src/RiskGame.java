@@ -28,8 +28,9 @@ public class RiskGame {
         board.randomizePlayers(); // randomizes player order
         board.buildMap(); // adds all countries to map
         board.placePlayers(numPlayers); // place players randomly on the map
-        //board.setAdjacentCountries();
+        board.setAdjacentCountries();
         command.showCommads();
+        board.testConfiguration();
     }
 
     public static void main (String[] args) {

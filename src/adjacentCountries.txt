@@ -16,13 +16,13 @@ Iceland, Greenland, Scandinavia, Great Britain
 Northern Europe, Scandinavia, Great Britain, Western Europe, Southern Europe, Ukraine
 Scandinavia, Iceland, Great Britain, Northern Europe, Ukraine
 Southern Europe, Northern Europe, Western Europe, Ukraine, North Africa, Egypt, Middle East
-Ukraine, Scandinavia, Northern Europe, Southern Europe, Middle East, Afghanistan,  Ural
+Ukraine, Scandinavia, Northern Europe, Southern Europe, Middle East, Afghanistan, Ural
 Western Europe, Great Britain, Northern Europe, Southern Europe, North Africa
 Congo, South Africa, Madagascar, East Africa, North Africa
 East Africa, Congo, South Africa, Madagascar, North Africa, Egypt, Middle East
 Egypt, North Africa, East Africa, Middle East, Southern Europe
 Madagascar, East Africa, South Africa
-North Africa, Brazil, Western Europe, Souther Europe, Egypt, East Africa, Congo
+North Africa, Brazil, Western Europe, Southern Europe, Egypt, East Africa, Congo
 South Africa, Congo, East Africa, Madagascar
 Afghanistan, Ukraine, Ural, China, India, Middle East
 China, Ural, Afghanistan, India, Siam, Mongolia, Siberia
