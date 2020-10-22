@@ -7,12 +7,17 @@ public class Board {
     private HashMap<String, Continent> continents;
     private static final int COUNTRY_COUNT = 42;
     private ArrayList<String> countryNames;
-    private ArrayList<String> continentName;
+    private ArrayList<String> continentNames;
+
+    private  ArrayList<List> continentCountries;
+    private  ArrayList<Integer> continentBonusArmies;
+
 
     public Board() {
         players = new ArrayList<>();
         countries = new HashMap<>();
         continents = new HashMap<>();
+        continentCountries = new ArrayList<>();
         countryNames = new ArrayList<>(Arrays.asList(
                 "Alaska", "Alberta", "Central America", "Eastern United States", "Greenland", "Northwest Territory", "Ontario",
                 "Quebec", "Western United States", "Argentina", "Brazil", "Peru", "Venezuela", "Great Britain", "Iceland",
@@ -21,9 +26,37 @@ public class Board {
                 "Middle East", "Mongolia", "Siam", "Siberia", "Ural", "Yakutsk", "Eastern Australia", "Indonesia", "New Guinea",
                 "Western Australia"
         ));
-        continentName = new ArrayList<>(Arrays.asList(
-                "North America", "South America", "Europe", "Africa", "Asia"
+
+        continentBonusArmies = new ArrayList<>(Arrays.asList(5,2,5,3,7,2));
+
+        continentNames = new ArrayList<>(Arrays.asList(
+                "North America", "South America", "Europe", "Africa", "Asia", "Australia"
         ));
+
+
+        //Adding North America
+        continentCountries.add(Arrays.asList(
+                "Alaska", "Alberta", "Central America", "Eastern United States", "Greenland",
+                "Northwest Territory", "Ontario", "Quebec", "Western United States"));
+        //Adding South America
+        continentCountries.add(Arrays.asList(
+                "Argentina", "Brazil", "Peru", "Venezuela"));
+        //Adding Europe
+        continentCountries.add(Arrays.asList(
+                "Great Britain", "Iceland", "Northern Europe", "Scandinavia",
+                "Southern Europe", "Ukraine", "Western Europe"));
+        //Adding Africa
+        continentCountries.add(Arrays.asList(
+                "Congo", "East Africa", "Egypt", "Madagascar",
+                "North Africa", "South Africa"));
+        //Adding Asia
+        continentCountries.add(Arrays.asList(
+                "Afghanistan", "China", "India", "Irkutsk", "Japan", "Kamchatka",
+                "Middle East", "Mongolia", "Siam", "Siberia", "Ural", "Yakutsk"));
+        //Adding Australia
+        continentCountries.add(Arrays.asList(
+                "Eastern Australia", "Indonesia", "New Guinea", "Western Australia"));
+
     }
 
     public void addPlayer(Player player) {
@@ -34,12 +67,20 @@ public class Board {
         Collections.shuffle(players);
     }
 
+    /**
+     * builds the maps by populating the Countries and continents
+     */
     public void buildMap() {
         for (String countryName : countryNames) {
             countries.put(countryName, new Country(countryName));
         }
-        for (String continentName : continentName) {
-            continents.put(continentName, new Continent(continentName, 0));
+        for (int i = 0; i<continentNames.size(); i++) {
+            continents.put(continentNames.get(i), new Continent(continentNames.get(i), continentBonusArmies.get(i))); // creates continents objects
+
+            for(int j = 0; j<continentCountries.get(i).size(); j++){
+                Continent continent = continents.get(continentNames.get(i));
+                continent.addCountry(countries.get(continentCountries.get(i).get(j))); // populates continents with their specific countries
+            }
         }
     }
 
