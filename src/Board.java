@@ -4,6 +4,7 @@ import java.util.*;
 import java.io.*;
 
 public class Board {
+    private int numOfPlayers;
     private ArrayList<Player> players;
     private HashMap<String, Country> countries;
     private HashMap<String, Continent> continents;
@@ -16,6 +17,7 @@ public class Board {
 
 
     public Board() {
+        numOfPlayers = 0; // will be changed at runtime
         players = new ArrayList<>();
         countries = new HashMap<>();
         continents = new HashMap<>();
@@ -63,6 +65,16 @@ public class Board {
 
     public void addPlayer(Player player) {
         players.add(player);
+    }
+
+    public ArrayList<Player> getPlayers(){return players;}
+
+    public int getNumOfPlayers() {
+        return numOfPlayers;
+    }
+
+    public void setNumOfPlayers(int numOfPlayers) {
+        this.numOfPlayers = numOfPlayers;
     }
 
     public void randomizePlayers () {
@@ -192,6 +204,20 @@ public class Board {
             }
             System.out.println();
             System.out.println();
+
+        }
+
+        //print every Player's countries
+        int count = 0;
+        for (Player player: players){
+
+            System.out.println(player.getId());
+            for (Country country: player.getCountriesOwned()){
+                System.out.println(country.getName() + " "+ country.getArmySize());
+                count += country.getArmySize();
+            }
+            System.out.println();
+
 
         }
 

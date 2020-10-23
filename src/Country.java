@@ -22,6 +22,8 @@ public class Country {
         this.player = player;
     }
 
+    public Player getPlayer(){ return player;}
+
     public int getArmySize() {
         return armySize;
     }
@@ -31,5 +33,22 @@ public class Country {
     }
 
     public ArrayList<Country> getAdjacentCountries(){return adjacentCountries;}
+
+
+    /** Returns the adjacent countries that can be attacked
+     *
+     * @return Arraylist of Country objects that are adjacent and have a different owner
+     */
+
+    public ArrayList<Country> getPossibleAttacks(){
+        ArrayList<Country> countries = new ArrayList<Country>();
+
+        for (Country country:adjacentCountries){
+            if (!(country.getPlayer().equals(this.player))){
+                countries.add(country);
+            }
+        }
+        return countries;
+    }
 
 }
