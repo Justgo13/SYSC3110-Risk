@@ -199,7 +199,7 @@ public class Board {
 
     /**
      * Prints the countries and their adjacents. Also prints continents and their contained countries
-     */
+
     public void testConfiguration(){
         // print every country and its adjacent countries
         System.out.println();
@@ -238,7 +238,7 @@ public class Board {
 
         }
 
-    }
+    }*/
 
     public boolean checkWinner(){
         if(players.size()==1){
