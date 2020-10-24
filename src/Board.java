@@ -79,6 +79,17 @@ public class Board {
         Collections.shuffle(players);
     }
 
+    public boolean checkEliminated(){
+        for (Player player: players){
+            if (player.getCountriesOwned().isEmpty()){
+                System.out.println("Player" + player.getId() + "was eliminated, sorry to see you go :(" );
+                return players.remove(player);
+                //only 1 player can be removed for every call of attack()
+            }
+        }
+        return false;
+    }
+
     /**
      * builds the maps by populating the Countries and continents
      */
