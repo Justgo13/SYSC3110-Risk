@@ -22,7 +22,72 @@ public class RiskGame {
         turnIndex = (1 + turnIndex) % board.getNumOfPlayers();
     }
 
-    public void attack(Country A, Country B, int numOfAttackers) {
+    public void attack(Country attackingCountry, Country defendingCountry, int numOfAttackers) {
+        /*
+        defending 2+ = 2 die
+        defending 1 = 1 die
+        attacking n = n die
+        highest attacker dice roll competes with highest defender dice
+        second highest attacker fights second highest defender
+        attacker : 5,5,1 defender : 6,5
+           - 6 fight 5 remove attacker
+           - 5 fight 5 remove attacker on tie
+         */
+        Random random = new Random();
+        ArrayList<Integer> attackerDice = new ArrayList<>();
+        ArrayList<Integer> defenderDice = new ArrayList<>();
+
+        // initialize defender dice values
+        if (defendingCountry.getArmySize() >= 2) {
+            defenderDice.add(random.nextInt(6)+1);
+            defenderDice.add(random.nextInt(6)+1);
+        } else if (defendingCountry.getArmySize() == 1) {
+            defenderDice.add(random.nextInt(6)+1);
+        }
+
+        // initialize attacker dice values
+        for (int i = 0; i < numOfAttackers; i++) {
+            attackerDice.add(random.nextInt(6)+1);
+        }
+
+        // attack phase
+        for (int i = defenderDice.size(); i > 0; i--) {
+            if (attackerDice.size() == 0) {
+                break;
+            }
+            Integer attackerMax = Collections.max(attackerDice);
+            Integer defenderMax = Collections.max(defenderDice);
+            System.out.println("Attacker rolled: " + attackerMax);
+            System.out.println("Defender rolled: " + defenderMax);
+            if (attackerMax > defenderMax) { // attackers win
+                defendingCountry.removeArmy();
+            } else { // defenders win
+                attackingCountry.removeArmy();
+                numOfAttackers--;
+            }
+
+            // remove the dice from the current attacking phase
+            attackerDice.remove(attackerMax);
+            defenderDice.remove(defenderMax);
+        }
+
+        // defender lost the country
+        if (defendingCountry.getArmySize() == 0) {
+            System.out.println("Player " + board.getPlayers().get(turnIndex).getId() + ", you have taken " + defendingCountry.getName()
+                    + " from Player " + defendingCountry.getPlayer().getId());
+            defendingCountry.getPlayer().removeCountry(defendingCountry); // removes the lost country from the defending player
+            defendingCountry.setPlayer(attackingCountry.getPlayer()); // assigns country to the dominating player
+            board.getPlayers().get(turnIndex).addCountry(defendingCountry);// add new country to the dominating player
+            int attackersStayed = attackingCountry.getArmySize() - numOfAttackers;
+            defendingCountry.setArmySize(numOfAttackers); // moves remaining attackers to conquered country
+            attackingCountry.setArmySize(attackersStayed); // removes attackers from original country
+        } else {
+            System.out.println("You failed to take " + defendingCountry.getName());
+        }
+
+        System.out.println("Here is the results of the battle: ");
+        System.out.println("Your country troops remaining: " + attackingCountry.getArmySize());
+        System.out.println("Defending country troops remaining: " + defendingCountry.getArmySize());
 
     }
 
@@ -43,7 +108,10 @@ public class RiskGame {
 
         boolean gameOver = false;
         while (! gameOver) {
-            System.out.println("Please input a command");
+            System.out.printf("Player %d it is your turn, here is a list of commands: ", board.getPlayers().get(turnIndex).getId());
+            parser.outputCommands();
+            System.out.println();
+            System.out.println("Please input a command: ");
             Command command = parser.returnCommand();
             gameOver = processCommand(command);
         }
@@ -67,13 +135,13 @@ public class RiskGame {
         if (commandWord.equals("attack")) {
             Scanner sc = new Scanner(System.in);
 
-            System.out.println("Here are your countries: ");
+            System.out.println("Please type the number corresponding to the country you want to use to attack: ");
 
             Player player = board.getPlayers().get(turnIndex);
             ArrayList<Country> playerCountries = player.getCountriesOwned();
 
             for (int i =0; i< playerCountries.size(); i++) {
-                System.out.println(i + ": " + playerCountries.get(i).getName());
+                System.out.println(i + ": " + playerCountries.get(i).getName() + ", Troops: " + playerCountries.get(i).getArmySize());
             }
             System.out.println();
 
@@ -86,10 +154,10 @@ public class RiskGame {
                 attackCountry = playerCountries.get(countryAttackIndex);
 
             } catch(InputMismatchException e){ // catch for string input instead of int
-                System.out.println("Please enter a number " + e);
+                System.out.println("Please enter a number ");
                 return false;
             } catch(IndexOutOfBoundsException e){ // catch for invalid int
-                System.out.println("That value is not in the correct range" + e);
+                System.out.println("That value is not in the correct range");
                 return false;
             }
 
@@ -106,10 +174,10 @@ public class RiskGame {
             }
 
             System.out.println();
-            System.out.println("Who would you like to attack? ");
+            System.out.println("Please type the number corresponding to the country you want attack: ");
 
             for(int i = 0; i < countriesToAttack.size(); i++){
-                System.out.println(i + ": " + countriesToAttack.get(i).getName());
+                System.out.println(i + ": " + countriesToAttack.get(i).getName() + ", Troops: " + countriesToAttack.get(i).getArmySize());
             }
 
             // Get Country to be Attacked
@@ -121,16 +189,16 @@ public class RiskGame {
 
             try{
                 countryDefendIndex = sc.nextInt();
-                defendCountry = playerCountries.get(countryDefendIndex);
+                defendCountry = countriesToAttack.get(countryDefendIndex);
                 System.out.println("How many troops to attack with?(1 - " + attackArmySize + ")");
                 numOfAttackers = sc.nextInt();
 
 
             } catch(InputMismatchException e){ // catch for string input instead of int
-                System.out.println("Please enter a number " + e);
+                System.out.println("Please enter a number ");
                 return false;
             } catch(IndexOutOfBoundsException e){ // catch for invalid int
-                System.out.println("That value is not in the correct range" + e);
+                System.out.println("That value is not in the correct range");
                 return false;
             }
 
@@ -140,19 +208,24 @@ public class RiskGame {
             }
 
             attack(attackCountry,defendCountry,numOfAttackers);
+            return false;
 
         }
-        else if (commandWord.equals("go")) {
-
+        else if (commandWord.equals("map")) {
+            board.showMap();
         }
-        else if (commandWord.equals("back")) {
-
+        else if (commandWord.equals("help")) {
+            System.out.println("Here are your commands: ");
+            parser.outputCommands();
+            return false;
         }
-        else if (commandWord.equals("quit")) {
-
+        else if (commandWord.equalsIgnoreCase("endTurn")) {
+            System.out.println("Player " + board.getPlayers().get(turnIndex) + "has ended their turn");
+            turnIndex = (1+turnIndex) % board.getNumOfPlayers();
+            return false;
         }
 
-        return wantToQuit;
+        return true;
     }
 
     public static void main (String[] args) {
