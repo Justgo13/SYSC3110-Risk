@@ -81,6 +81,7 @@ public class RiskGame {
             int attackersStayed = attackingCountry.getArmySize() - numOfAttackers;
             defendingCountry.setArmySize(numOfAttackers); // moves remaining attackers to conquered country
             attackingCountry.setArmySize(attackersStayed); // removes attackers from original country
+            board.checkEliminated();
         } else {
             System.out.println("You failed to take " + defendingCountry.getName());
         }
