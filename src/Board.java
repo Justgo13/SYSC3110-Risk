@@ -240,6 +240,14 @@ public class Board {
 
     }
 
+    public boolean checkWinner(){
+        if(players.size()==1){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
 
 
     public void attack(Country attackingCountry, Country defendingCountry, int numOfAttacker) {

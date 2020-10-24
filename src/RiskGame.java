@@ -89,6 +89,10 @@ public class RiskGame {
         System.out.println("Here is the results of the battle: ");
         System.out.println("Your country troops remaining: " + attackingCountry.getArmySize());
         System.out.println("Defending country troops remaining: " + defendingCountry.getArmySize());
+        if(board.checkWinner()){
+            System.out.println("Congratulations, "+board.getPlayers().get(0).getName()+". You won!");
+            System.exit(0);
+        }
 
     }
 
