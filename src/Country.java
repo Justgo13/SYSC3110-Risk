@@ -22,6 +22,10 @@ public class Country {
         this.player = player;
     }
 
+    public void removeArmy() {
+        this.armySize--;
+    }
+
     public Player getPlayer(){ return player;}
 
     public int getArmySize() {

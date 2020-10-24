@@ -1,5 +1,3 @@
-import com.sun.media.jfxmediaimpl.HostUtils;
-
 import java.util.*;
 import java.io.*;
 
@@ -149,7 +147,7 @@ public class Board {
 
         try {
             // buffered reader to read the file
-            BufferedReader br = new BufferedReader(new FileReader("adjacentCountries.txt"));
+            BufferedReader br = new BufferedReader(new FileReader("src/adjacentCountries.txt"));
 
             String line;
             // iterate through every line of the file
@@ -178,6 +176,14 @@ public class Board {
         }
 
 
+    }
+
+    public void showMap() {
+        for (Player player : players) {
+            for (Country country : player.getCountriesOwned()) {
+                System.out.println("Player " + player.getId() + ", " + country.getName() + ", Troops: " + country.getArmySize());
+            }
+        }
     }
 
     /**
