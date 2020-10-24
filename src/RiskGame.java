@@ -108,13 +108,12 @@ public class RiskGame {
         board.buildMap(); // adds all countries to map
         board.placePlayers(numPlayers); // place players randomly on the map
         board.setAdjacentCountries();
-        parser.outputCommands();
-        board.testConfiguration();
+        //parser.outputCommands();
+        //board.testConfiguration();
 
         boolean gameOver = false;
         while (! gameOver) {
-            System.out.printf("Player %d it is your turn, here is a list of commands: ", board.getPlayers().get(turnIndex).getId());
-            parser.outputCommands();
+            System.out.printf("Player %d it is your turn", board.getPlayers().get(turnIndex).getId());
             System.out.println();
             System.out.println("Please input a command: ");
             Command command = parser.returnCommand();
@@ -129,7 +128,6 @@ public class RiskGame {
      */
     private boolean processCommand(Command command)
     {
-        boolean wantToQuit = false;
 
         if(command.commandEmpty()) {
             System.out.println("I don't know what you mean...");
@@ -223,10 +221,11 @@ public class RiskGame {
         else if (commandWord.equals("help")) {
             System.out.println("Here are your commands: ");
             parser.outputCommands();
+            System.out.println();
             return false;
         }
-        else if (commandWord.equalsIgnoreCase("endTurn")) {
-            System.out.println("Player " + board.getPlayers().get(turnIndex) + "has ended their turn");
+        else if (commandWord.equals("endTurn")) {
+            System.out.println("Player " + board.getPlayers().get(turnIndex).getId() + "has ended their turn");
             turnIndex = (1+turnIndex) % board.getNumOfPlayers();
             return false;
         }
