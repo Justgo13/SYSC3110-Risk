@@ -218,6 +218,7 @@ public class RiskGame {
         }
         else if (commandWord.equals("map")) {
             board.showMap();
+            return false;
         }
         else if (commandWord.equals("help")) {
             System.out.println("Here are your commands: ");
