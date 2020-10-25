@@ -42,6 +42,7 @@ public class Country {
     /** Returns the adjacent countries that can be attacked
      *
      * @return Arraylist of Country objects that are adjacent and have a different owner
+     * @author Harjap Gill
      */
 
     public ArrayList<Country> getPossibleAttacks(){

@@ -10,6 +10,7 @@ public class Command {
     /**
      * gets you the command word inputted by the user
      * @return the command word
+     * @author Albaraa
      */
     public String getCommand(){
         if(command != null){
@@ -23,6 +24,7 @@ public class Command {
     /**
      * gets you the second word inputted by the user
      * @return the second word inputted by the user
+     * @author Albaraa
      */
     public String getSecondWord(){
         if(secondWord != null){
@@ -35,6 +37,7 @@ public class Command {
     /**
      * checks if the user has used two words or one
      * @return true if second word was inputted, false otherwise
+     * @author Albaraa
      */
     public boolean hasSecondWord(){
         if(secondWord != null){
@@ -48,6 +51,7 @@ public class Command {
     /**
      * checks to see if the command word inputted is empty
      * or not
+     * @author Albaraa
      * @return true if the command word is null, false otherwise
      */
     public boolean commandEmpty(){

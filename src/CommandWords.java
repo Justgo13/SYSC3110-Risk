@@ -14,6 +14,7 @@ public class CommandWords {
     /**
      * Verifies if the user has used a word that is inside the validCommands
      * arrayList
+     * @author Albaraa
      * @param word is the input String by the user
      * @return true if valid command, false otherwise
      */
@@ -31,6 +32,7 @@ public class CommandWords {
     /**
      * Outputs all command words in the validCommands
      * arrayList
+     * @author Albaraa
      */
     public void showCommads(){
         for(String command: validCommands){

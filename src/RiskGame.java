@@ -15,6 +15,17 @@ public class RiskGame {
         turnIndex = 0;
     }
 
+    /**
+     * The attack method simulates the risk battle between one attacking country and one defending country and will
+     * update the board based on the outcome of the battle
+     *
+     * @author Jason Gao
+     *
+     * @param attackingCountry Country that is initializing the battle
+     * @param defendingCountry Country that is defending against an attack
+     * @param numOfAttackers The number of attackers the attacking country is attacking with
+     */
+
     public void attack(Country attackingCountry, Country defendingCountry, int numOfAttackers) {
         /*
         defending 2+ = 2 die
@@ -89,6 +100,10 @@ public class RiskGame {
 
     }
 
+    /**
+     * Initial method that is called to start the risk game
+     * @author Jason Gao, Harjap Gill, Shashaank Srivastava, Albaraa Salem
+     */
     public void playGame() {
         Scanner sc = new Scanner(System.in);
         System.out.println("Welcome to Risk! Please enter how many players are playing: ");
@@ -109,7 +124,10 @@ public class RiskGame {
     }
 
     /**
-     * Given a command, process (that is: execute) the command.
+     * Check user input to see if it matches a certain command. If so, execute that command.
+     *
+     * @author Harjap Gill, Jason Gao, Albaraa Salem, Shashaank Srivastava
+     *
      * @param command The command to be processed.
      * @return true If the command ends the game, false otherwise.
      */
