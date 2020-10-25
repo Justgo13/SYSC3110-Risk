@@ -1,5 +1,5 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 public class Board {
     private int numOfPlayers;
@@ -157,8 +157,9 @@ public class Board {
     public void setAdjacentCountries(){
 
         try {
+            InputStream inputStream = this.getClass().getResourceAsStream("adjacentCountries.txt");
             // buffered reader to read the file
-            BufferedReader br = new BufferedReader(new FileReader("src/adjacentCountries.txt"));
+            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
 
             String line;
             // iterate through every line of the file
@@ -194,6 +195,15 @@ public class Board {
             for (Country country : player.getCountriesOwned()) {
                 System.out.println("Player " + player.getId() + ", " + country.getName() + ", Troops: " + country.getArmySize());
             }
+        }
+    }
+
+
+    public boolean checkWinner(){
+        if(players.size()==1){
+            return true;
+        }else{
+            return false;
         }
     }
 
@@ -239,18 +249,4 @@ public class Board {
         }
 
     }*/
-
-    public boolean checkWinner(){
-        if(players.size()==1){
-            return true;
-        }else{
-            return false;
-        }
-    }
-
-
-
-    public void attack(Country attackingCountry, Country defendingCountry, int numOfAttacker) {
-
-    }
 }
