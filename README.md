@@ -4,3 +4,7 @@ The RISK board game has been an exciting game to play with family and friends th
 the game using Java's Graphical User Interface by implementing Object Oriented style programming. 
 The objective of the game is to conquer as many countries and other player's occupied countries by eliminating them. The last player remaining is the victor. 
 
+# Authors
+Harjap Gill, Jason Gao, Shashaank Srivastava, Albara'a Salem
+
+
