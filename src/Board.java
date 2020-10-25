@@ -3,12 +3,14 @@ import java.util.*;
 
 public class Board {
     private int numOfPlayers;
+    private static final int[] armySize = {50,35,30,25,20};
     private ArrayList<Player> players;
     private HashMap<String, Country> countries;
     private HashMap<String, Continent> continents;
     private static final int COUNTRY_COUNT = 42;
     private ArrayList<String> countryNames;
     private ArrayList<String> continentNames;
+
 
     private  ArrayList<List> continentCountries;
     private  ArrayList<Integer> continentBonusArmies;
@@ -95,6 +97,17 @@ public class Board {
             }
         }
         return false;
+    }
+
+    public void setupBoard(int numPlayers){
+        setNumOfPlayers(numPlayers);
+        for (int i = 0; i < numPlayers; i++) {
+            addPlayer(new Player("", armySize[numPlayers-2], i+1)); // creates players for the game
+        }
+        randomizePlayers(); // randomizes player order
+        buildMap(); // adds all countries to map
+        placePlayers(numPlayers); // place players randomly on the map
+        setAdjacentCountries();
     }
 
     /**
