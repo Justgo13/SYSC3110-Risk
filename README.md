@@ -4,11 +4,27 @@ The RISK board game has been an exciting game to play with family and friends th
 the game using Java's Graphical User Interface by implementing Object Oriented style programming. 
 The objective of the game is to conquer as many countries and other player's occupied countries by eliminating them. The last player remaining is the victor. 
 
+# Current Deliverables
+- Model for the MVC pattern of Risk game
+- Code for the Risk game 
+- UML diagrams, sequence diagrams
+
+# Road map
+- GUI based version of the game
+- View and Controller of the MVC pattern
+- JUnit test
+- Additional features of Risk game such as bonus army, troup placement, AI, and reinforcements
+- Save / Load features
+- Custom maps
+
 # How to run
 1. Download the .JAR file
 2. Navigate to where the .JAR file was downloaded
 3. Open up command prompt where the .JAR file is
 4. Run the command **java -jar SYSC3110-Risk.jar**
+
+# Known issues
+- Attack method in RiskGame class should do more delegation to the Board class to reduce coupling in RiskGame.
 
 # How to play
 **Commands:**
