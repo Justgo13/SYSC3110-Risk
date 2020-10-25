@@ -17,6 +17,7 @@ public class Parser {
      * and second being the second word) and passes them as parameters in command
      * constructor
      * @return command object
+     * @author Albaraa
      */
     public Command returnCommand(){
         String line = scanner.nextLine();
@@ -43,6 +44,7 @@ public class Parser {
 
     /**
      * prints out all command words
+     * @author Albaraa
      */
     public void outputCommands(){
         command.showCommads();
