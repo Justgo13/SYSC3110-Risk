@@ -13,7 +13,10 @@ public class Board {
     private  ArrayList<List> continentCountries;
     private  ArrayList<Integer> continentBonusArmies;
 
-
+    /**
+    * Authors: Jason, Harjap, Shashaank
+    * Initializing fields
+    */
     public Board() {
         numOfPlayers = 0; // will be changed at runtime
         players = new ArrayList<>();
@@ -60,7 +63,7 @@ public class Board {
                 "Eastern Australia", "Indonesia", "New Guinea", "Western Australia"));
 
     }
-
+    
     public void addPlayer(Player player) {
         players.add(player);
     }
@@ -78,7 +81,11 @@ public class Board {
     public void randomizePlayers () {
         Collections.shuffle(players);
     }
-
+    
+    /**
+    * Author: Shashaank
+    * Checks to see if any players have been eliminated and removes them from the player pool
+    */
     public boolean checkEliminated(){
         for (Player player: players){
             if (player.getCountriesOwned().isEmpty()){
@@ -91,7 +98,9 @@ public class Board {
     }
 
     /**
+     * Author: Shashaank
      * builds the maps by populating the Countries and continents
+     *
      */
     public void buildMap() {
         for (String countryName : countryNames) {
@@ -198,7 +207,9 @@ public class Board {
         }
     }
 
-
+    /**
+    * Author: Albara
+    */
     public boolean checkWinner(){
         if(players.size()==1){
             return true;
