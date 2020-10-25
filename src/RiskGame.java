@@ -12,14 +12,8 @@ public class RiskGame {
     public RiskGame()
     {
         board = new Board();
-
         parser = new Parser();
         turnIndex = 0;
-    }
-
-    public void endTurn(){
-        // cycles through the turns
-        turnIndex = (1 + turnIndex) % board.getNumOfPlayers();
     }
 
     public void attack(Country attackingCountry, Country defendingCountry, int numOfAttackers) {
@@ -108,7 +102,6 @@ public class RiskGame {
         board.buildMap(); // adds all countries to map
         board.placePlayers(numPlayers); // place players randomly on the map
         board.setAdjacentCountries();
-        //parser.outputCommands();
         //board.testConfiguration();
 
         boolean gameOver = false;
@@ -225,7 +218,7 @@ public class RiskGame {
             return false;
         }
         else if (commandWord.equals("endTurn")) {
-            System.out.println("Player " + board.getPlayers().get(turnIndex).getId() + "has ended their turn");
+            System.out.println("Player " + board.getPlayers().get(turnIndex).getId() + " has ended their turn");
             turnIndex = (1+turnIndex) % board.getNumOfPlayers();
             return false;
         }
