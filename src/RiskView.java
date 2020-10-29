@@ -474,5 +474,41 @@ public class RiskView extends JPanel {
         madagascar.setEnabled(false);
         add(madagascar, mapConstraints);
         mapConstraints.insets = new Insets(0,0,0,0);
+
     }
+
+    public void handleAttackEvent(AttackEvent ae){
+        Country attackingCountry = ae.getAttackingCountry();
+        Country defendingCountry = ae.getDefendingCountry();
+
+        /*
+        for (JButton j : jhash.values()){
+            if (j.getName().equals(attackingCountry.getName())){
+                j.setText(j.getName() + " \n + troops: " + attackingCountry.getArmySize());
+            }
+        }
+        */
+
+
+        // based on these 2 countries, update their colors:owner, troopCount
+
+    }
+
+
+    public void handleUpdateTroops(TroopUpdateEvent te){
+        /*
+        ArrayList<Country> countries = te.getCountries();
+
+        for (Country country: countries){
+            JButton j = jhash.get(country.getName());
+            j
+
+
+        }
+        */
+
+
+    }
+
+
 }

@@ -5,6 +5,8 @@ public class RiskGame {
     private Parser parser;
     private int turnIndex;
 
+    private List<RiskView> views;
+
     /**
      * Creates an instance of the Risk game
      */
@@ -13,6 +15,7 @@ public class RiskGame {
         board = new Board();
         parser = new Parser();
         turnIndex = 0;
+        views = new ArrayList<>();
     }
 
     /**
@@ -236,6 +239,34 @@ public class RiskGame {
         }
 
         return true;
+    }
+
+    public void addRiskView(RiskView view){
+        views.add(view);
+    }
+
+    /**
+     * After an attack has taken place, update the view to reflect the results
+     *
+     * @param attackingCountry
+     * @param defendingCountry
+     */
+    public void updateAttackView(Country attackingCountry, Country defendingCountry){
+        for (RiskView v : views){
+            v.handleAttackEvent(new AttackEvent(this,attackingCountry,defendingCountry));
+        }
+    }
+
+    /**
+     * Update the view to reflect the new number of troops in all countries
+     *
+     * @param countries
+     */
+
+    public void updateTroopCount(ArrayList<Country> countries){
+        for (RiskView v : views){
+            v.handleUpdateTroops(new TroopUpdateEvent(this,countries));
+        }
     }
 
     public static void main (String[] args) {
