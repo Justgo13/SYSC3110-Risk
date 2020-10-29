@@ -19,6 +19,14 @@ public class RiskGame {
     }
 
     /**
+     * Author: Shashaank
+     * @return the hashmap that contains all of the country objects
+     */
+    public HashMap<String,Country> getCountries(){
+        return board.getCountries();
+    }
+
+    /**
      * The attack method simulates the risk battle between one attacking country and one defending country and will
      * update the board based on the outcome of the battle
      *

@@ -4,6 +4,9 @@ import java.awt.*;
 public class RiskFrame extends JFrame {
     public RiskFrame() {
         super("Risk!");
+        //Instantiating the model
+        RiskGame model = new RiskGame();
+
         // Creates the control panel at the bottom of the GUI
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints controlPanelConstraints = new GridBagConstraints();
@@ -50,7 +53,8 @@ public class RiskFrame extends JFrame {
         panel.add(endturn, controlPanelConstraints);
 
         // Creates the VIEW
-        RiskView riskView = new RiskView();
+        RiskView riskView = new RiskView(model);
+
 
         add(riskView, BorderLayout.CENTER);
         add(panel, BorderLayout.PAGE_END);
@@ -59,6 +63,8 @@ public class RiskFrame extends JFrame {
         setVisible(true);
         setSize(1920, 960);
         setLocationRelativeTo(null);
+
+
     }
 
     public static void main(String[] args) {
