@@ -5,7 +5,7 @@ import java.util.HashMap;
 public class RiskView extends JPanel {
     private HashMap<String, JButton> countryButtons;
     public RiskView() {
-        countryButtons = new HashMap<>(); // Hashmap of country name associated with its button
+        countryButtons = new HashMap<>(); // Hashmap of country buttons
         setLayout(new GridBagLayout());
         GridBagConstraints mapConstraints = new GridBagConstraints();
         mapConstraints.weighty = 1.0;
