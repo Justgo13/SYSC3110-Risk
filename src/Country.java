@@ -5,6 +5,7 @@ public class Country {
     private Player player;
     private int armySize;
     private ArrayList<Country> adjacentCountries;
+    private String continent;
 
     public Country(String name) {
         this.name = name;
@@ -12,8 +13,13 @@ public class Country {
         player = null;
         adjacentCountries = new ArrayList<>();
     }
+    public void setContinent(String continent){
+        this.continent = continent;
+    }
 
     public String getName () {return name;}
+    public String getContinent() {return continent;}
+
     public void setArmySize(int armySize) {
         this.armySize = armySize;
     }

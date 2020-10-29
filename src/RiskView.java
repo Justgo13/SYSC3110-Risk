@@ -4,8 +4,13 @@ import java.util.HashMap;
 
 public class RiskView extends JPanel {
     private HashMap<String, JButton> countryButtons;
-    public RiskView() {
-        countryButtons = new HashMap<>(); // Hashmap of country buttons
+    private RiskGame model;
+    private HashMap<String, Country> countries;
+    public RiskView(RiskGame model) {
+        this.model = model;
+        this.countries = model.getCountries();
+
+        countryButtons = new HashMap<>();
         setLayout(new GridBagLayout());
         GridBagConstraints mapConstraints = new GridBagConstraints();
         mapConstraints.weighty = 1.0;
@@ -21,8 +26,8 @@ public class RiskView extends JPanel {
         mapConstraints.insets = new Insets(0,50,0,0);
         mapConstraints.gridx = 0;
         mapConstraints.gridy = 0;
-        JButton alaska = new JButton("Alaska");
-        alaska.setName("Alaska");
+        System.out.println(countries.get("Alaska"));
+        CountryButton alaska = new CountryButton(countries.get("Alaska"));
         countryButtons.put(alaska.getName(), alaska);
         alaska.setEnabled(false);
         add(alaska, mapConstraints);
@@ -32,8 +37,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridx = 1;
         mapConstraints.gridy = 0;
         mapConstraints.gridwidth = 2;
-        JButton nwCanada = new JButton("Northwest Territory");
-        nwCanada.setName("Northwest Territory");
+        CountryButton nwCanada = new CountryButton(countries.get("Northwest Territory"));
         countryButtons.put(nwCanada.getName(), nwCanada);
         nwCanada.setEnabled(false);
         add(nwCanada, mapConstraints);
@@ -42,8 +46,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridx = 1;
         mapConstraints.gridy = 1;
         mapConstraints.gridwidth = 1;
-        JButton alberta = new JButton("Alberta");
-        alberta.setName("Alberta");
+        CountryButton alberta = new CountryButton(countries.get("Alberta"));
         countryButtons.put(alberta.getName(), alberta);
         alberta.setEnabled(false);
         add(alberta, mapConstraints);
@@ -51,8 +54,7 @@ public class RiskView extends JPanel {
         // Ontario
         mapConstraints.gridx = 2;
         mapConstraints.gridy = 1;
-        JButton ontario = new JButton("Ontario");
-        ontario.setName("Ontario");
+        CountryButton ontario = new CountryButton(countries.get("Ontario"));
         countryButtons.put(ontario.getName(), ontario);
         ontario.setEnabled(false);
         add(ontario, mapConstraints);
@@ -61,8 +63,7 @@ public class RiskView extends JPanel {
         mapConstraints.insets = new Insets(0,0,0,50);
         mapConstraints.gridx = 3;
         mapConstraints.gridy = 1;
-        JButton quebec = new JButton("Quebec");
-        quebec.setName("Quebec");
+        CountryButton quebec = new CountryButton(countries.get("Quebec"));
         countryButtons.put(quebec.getName(), quebec);
         quebec.setEnabled(false);
         add(quebec, mapConstraints);
@@ -72,8 +73,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridx = 1;
         mapConstraints.gridy = 2;
         mapConstraints.gridheight = 2;
-        JButton wUS = new JButton("Western United States");
-        wUS.setName("Western United States");
+        CountryButton wUS = new CountryButton(countries.get("Western United States"));
         countryButtons.put(wUS.getName(), wUS);
         wUS.setEnabled(false);
         add(wUS, mapConstraints);
@@ -81,8 +81,7 @@ public class RiskView extends JPanel {
         // East US
         mapConstraints.gridx = 2;
         mapConstraints.gridy = 2;
-        JButton eUS = new JButton("Eastern United States");
-        eUS.setName("Eastern United States");
+        CountryButton eUS = new CountryButton(countries.get("Eastern United States"));
         countryButtons.put(eUS.getName(), eUS);
         eUS.setEnabled(false);
         add(eUS, mapConstraints);
@@ -91,8 +90,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridx = 1;
         mapConstraints.gridy = 4;
         mapConstraints.gridheight = 1;
-        JButton cAm = new JButton("Central America");
-        cAm.setName("Central America");
+        CountryButton cAm = new CountryButton(countries.get("Central America"));
         countryButtons.put(cAm.getName(), cAm);
         cAm.setEnabled(false);
         add(cAm, mapConstraints);
@@ -102,8 +100,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridheight = 2;
         mapConstraints.gridx = 4;
         mapConstraints.gridy = 0;
-        JButton greenland = new JButton("Greenland");
-        greenland.setName("Greenland");
+        CountryButton greenland = new CountryButton(countries.get("Greenland"));
         countryButtons.put(greenland.getName(), greenland);
         greenland.setEnabled(false);
         add(greenland, mapConstraints);
@@ -118,8 +115,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridheight = 1;
         mapConstraints.gridx = 2;
         mapConstraints.gridy = 5;
-        JButton venezuela = new JButton("Venezuela");
-        venezuela.setName("Venezuela");
+        CountryButton venezuela = new CountryButton(countries.get("Venezuela"));
         countryButtons.put(venezuela.getName(), venezuela);
         venezuela.setEnabled(false);
         add(venezuela, mapConstraints);
@@ -127,8 +123,7 @@ public class RiskView extends JPanel {
         // Peru
         mapConstraints.gridx = 2;
         mapConstraints.gridy = 6;
-        JButton peru = new JButton("Peru");
-        peru.setName("Peru");
+        CountryButton peru = new CountryButton(countries.get("Peru"));
         countryButtons.put(peru.getName(), peru);
         peru.setEnabled(false);
         add(peru, mapConstraints);
@@ -137,8 +132,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridheight = 2;
         mapConstraints.gridx = 2;
         mapConstraints.gridy = 7;
-        JButton argentina = new JButton("Argentina");
-        argentina.setName("Argentina");
+        CountryButton argentina = new CountryButton(countries.get("Argentina"));
         countryButtons.put(argentina.getName(), argentina);
         argentina.setEnabled(false);
         add(argentina, mapConstraints);
@@ -146,8 +140,7 @@ public class RiskView extends JPanel {
         // Brazil
         mapConstraints.gridx = 3;
         mapConstraints.gridy = 5;
-        JButton brazil = new JButton("Brazil");
-        brazil.setName("Brazil");
+        CountryButton brazil = new CountryButton(countries.get("Brazil"));
         countryButtons.put(brazil.getName(), brazil);
         brazil.setEnabled(false);
         add(brazil, mapConstraints);
@@ -161,8 +154,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridwidth = 1;
         mapConstraints.gridx = 5;
         mapConstraints.gridy = 0;
-        JButton iceland = new JButton("Iceland");
-        iceland.setName("Iceland");
+        CountryButton iceland = new CountryButton(countries.get("Iceland"));
         countryButtons.put(iceland.getName(), iceland);
         iceland.setEnabled(false);
         add(iceland, mapConstraints);
@@ -171,8 +163,7 @@ public class RiskView extends JPanel {
         mapConstraints.insets = new Insets(0,50,50,50);
         mapConstraints.gridx = 6;
         mapConstraints.gridy = 1;
-        JButton gBrit = new JButton("Great Britain");
-        gBrit.setName("Great Britain");
+        CountryButton gBrit = new CountryButton(countries.get("Great Britain"));
         countryButtons.put(gBrit.getName(), gBrit);
         gBrit.setEnabled(false);
         add(gBrit, mapConstraints);
@@ -181,8 +172,7 @@ public class RiskView extends JPanel {
         mapConstraints.insets = new Insets(0,0,50,0);
         mapConstraints.gridx = 6;
         mapConstraints.gridy = 2;
-        JButton wEur = new JButton("Western Europe");
-        wEur.setName("Western Europe");
+        CountryButton wEur = new CountryButton(countries.get("Western Europe"));
         countryButtons.put(wEur.getName(), wEur);
         wEur.setEnabled(false);
         add(wEur, mapConstraints);
@@ -190,8 +180,7 @@ public class RiskView extends JPanel {
         // South Europe
         mapConstraints.gridx = 7;
         mapConstraints.gridy = 2;
-        JButton sEur = new JButton("Southern Europe");
-        sEur.setName("Southern Europe");
+        CountryButton sEur = new CountryButton(countries.get("Southern Europe"));
         countryButtons.put(sEur.getName(), sEur);
         sEur.setEnabled(false);
         add(sEur, mapConstraints);
@@ -200,8 +189,7 @@ public class RiskView extends JPanel {
         mapConstraints.insets = new Insets(0,0,0,0);
         mapConstraints.gridx = 7;
         mapConstraints.gridy = 1;
-        JButton nEur = new JButton("Northern Europe");
-        nEur.setName("Northern Europe");
+        CountryButton nEur = new CountryButton(countries.get("Northern Europe"));
         countryButtons.put(nEur.getName(), nEur);
         nEur.setEnabled(false);
         add(nEur, mapConstraints);
@@ -209,8 +197,7 @@ public class RiskView extends JPanel {
         // Scandinavia
         mapConstraints.gridx = 7;
         mapConstraints.gridy = 0;
-        JButton scandinavia = new JButton("Scandinavia");
-        scandinavia.setName("Scandinavia");
+        CountryButton scandinavia = new CountryButton(countries.get("Scandinavia"));
         countryButtons.put(scandinavia.getName(), scandinavia);
         scandinavia.setEnabled(false);
         add(scandinavia, mapConstraints);
@@ -220,8 +207,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridheight = 3;
         mapConstraints.gridx = 8;
         mapConstraints.gridy = 0;
-        JButton ukraine = new JButton("Ukraine");
-        ukraine.setName("Ukraine");
+        CountryButton ukraine = new CountryButton(countries.get("Ukraine"));
         countryButtons.put(ukraine.getName(), ukraine);
         ukraine.setEnabled(false);
         add(ukraine, mapConstraints);
@@ -236,8 +222,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridheight = 3;
         mapConstraints.gridx = 8;
         mapConstraints.gridy = 3;
-        JButton middleEast = new JButton("Middle East");
-        middleEast.setName("Middle East");
+        CountryButton middleEast = new CountryButton(countries.get("Middle East"));
         countryButtons.put(middleEast.getName(), middleEast);
         middleEast.setEnabled(false);
         add(middleEast, mapConstraints);
@@ -248,8 +233,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridheight = 2;
         mapConstraints.gridx = 10;
         mapConstraints.gridy = 0;
-        JButton ural = new JButton("Ural");
-        ural.setName("Ural");
+        CountryButton ural = new CountryButton(countries.get("Ural"));
         countryButtons.put(ural.getName(), ural);
         ural.setEnabled(false);
         add(ural, mapConstraints);
@@ -258,8 +242,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridheight = 1;
         mapConstraints.gridx = 10;
         mapConstraints.gridy = 2;
-        JButton afghan = new JButton("Afghanistan");
-        afghan.setName("Afghanistan");
+        CountryButton afghan = new CountryButton(countries.get("Afghanistan"));
         countryButtons.put(afghan.getName(), afghan);
         afghan.setEnabled(false);
         add(afghan, mapConstraints);
@@ -269,8 +252,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridwidth = 1;
         mapConstraints.gridx = 10;
         mapConstraints.gridy = 3;
-        JButton india = new JButton("India");
-        india.setName("India");
+        CountryButton india = new CountryButton(countries.get("India"));
         countryButtons.put(india.getName(), india);
         india.setEnabled(false);
         add(india, mapConstraints);
@@ -280,8 +262,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridheight = 2;
         mapConstraints.gridx = 11;
         mapConstraints.gridy = 0;
-        JButton siberia = new JButton("Siberia");
-        siberia.setName("Siberia");
+        CountryButton siberia = new CountryButton(countries.get("Siberia"));
         countryButtons.put(siberia.getName(), siberia);
         siberia.setEnabled(false);
         add(siberia, mapConstraints);
@@ -291,8 +272,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridwidth = 2;
         mapConstraints.gridx = 11;
         mapConstraints.gridy = 3;
-        JButton china = new JButton("China");
-        china.setName("China");
+        CountryButton china = new CountryButton(countries.get("China"));
         countryButtons.put(china.getName(), china);
         china.setEnabled(false);
         add(china, mapConstraints);
@@ -302,8 +282,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridheight = 1;
         mapConstraints.gridx = 12;
         mapConstraints.gridy = 0;
-        JButton yakutsk = new JButton("Yakutsk");
-        yakutsk.setName("Yakutsk");
+        CountryButton yakutsk = new CountryButton(countries.get("Yakutsk"));
         countryButtons.put(yakutsk.getName(), yakutsk);
         yakutsk.setEnabled(false);
         add(yakutsk, mapConstraints);
@@ -311,8 +290,7 @@ public class RiskView extends JPanel {
         // Irkutsk
         mapConstraints.gridx = 12;
         mapConstraints.gridy = 1;
-        JButton irkutsk = new JButton("Irkutsk");
-        irkutsk.setName("Irkutsk");
+        CountryButton irkutsk = new CountryButton(countries.get("Irkutsk"));
         countryButtons.put(irkutsk.getName(), irkutsk);
         irkutsk.setEnabled(false);
         add(irkutsk, mapConstraints);
@@ -320,8 +298,7 @@ public class RiskView extends JPanel {
         // Mongolia
         mapConstraints.gridx = 12;
         mapConstraints.gridy = 2;
-        JButton mongolia = new JButton("Mongolia");
-        mongolia.setName("Mongolia");
+        CountryButton mongolia = new CountryButton(countries.get("Mongolia"));
         countryButtons.put(mongolia.getName(), mongolia);
         mongolia.setEnabled(false);
         add(mongolia, mapConstraints);
@@ -330,8 +307,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridheight = 3;
         mapConstraints.gridx = 13;
         mapConstraints.gridy = 0;
-        JButton kamchatka = new JButton("Kamchatka");
-        kamchatka.setName("Kamchatka");
+        CountryButton kamchatka = new CountryButton(countries.get("Kamchatka"));
         countryButtons.put(kamchatka.getName(), kamchatka);
         kamchatka.setEnabled(false);
         add(kamchatka, mapConstraints);
@@ -342,8 +318,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridheight = 1;
         mapConstraints.gridx = 14;
         mapConstraints.gridy = 3;
-        JButton japan = new JButton("Japan");
-        japan.setName("Japan");
+        CountryButton japan = new CountryButton(countries.get("Japan"));
         countryButtons.put(japan.getName(), japan);
         japan.setEnabled(false);
         add(japan, mapConstraints);
@@ -352,8 +327,7 @@ public class RiskView extends JPanel {
         // Siam
         mapConstraints.gridx = 11;
         mapConstraints.gridy = 5;
-        JButton siam = new JButton("Siam");
-        siam.setName("Siam");
+        CountryButton siam = new CountryButton(countries.get("Siam"));
         countryButtons.put(siam.getName(), siam);
         siam.setEnabled(false);
         add(siam, mapConstraints);
@@ -365,8 +339,7 @@ public class RiskView extends JPanel {
         // Indonesia
         mapConstraints.gridx = 12;
         mapConstraints.gridy = 6;
-        JButton indonesia = new JButton("Indonesia");
-        indonesia.setName("Indonesia");
+        CountryButton indonesia = new CountryButton(countries.get("Indonesia"));
         countryButtons.put(indonesia.getName(), indonesia);
         indonesia.setEnabled(false);
         add(indonesia, mapConstraints);
@@ -375,8 +348,7 @@ public class RiskView extends JPanel {
         mapConstraints.insets = new Insets(0,50,0,0);
         mapConstraints.gridx = 13;
         mapConstraints.gridy = 6;
-        JButton newGuinea = new JButton("New Guinea");
-        newGuinea.setName("New Guinea");
+        CountryButton newGuinea = new CountryButton(countries.get("New Guinea"));
         countryButtons.put(newGuinea.getName(), newGuinea);
         newGuinea.setEnabled(false);
         add(newGuinea, mapConstraints);
@@ -386,8 +358,7 @@ public class RiskView extends JPanel {
         mapConstraints.insets = new Insets(50,0,0,0);
         mapConstraints.gridx = 12;
         mapConstraints.gridy = 7;
-        JButton wAus = new JButton("Western Australia");
-        wAus.setName("Western Australia");
+        CountryButton wAus = new CountryButton(countries.get("Western Australia"));
         countryButtons.put(wAus.getName(), wAus);
         wAus.setEnabled(false);
         add(wAus, mapConstraints);
@@ -396,8 +367,7 @@ public class RiskView extends JPanel {
         mapConstraints.insets = new Insets(50,0,0,0);
         mapConstraints.gridx = 13;
         mapConstraints.gridy = 7;
-        JButton eAus = new JButton("Eastern Australia");
-        eAus.setName("Eastern Australia");
+        CountryButton eAus = new CountryButton(countries.get("Eastern Australia"));
         countryButtons.put(eAus.getName(), eAus);
         eAus.setEnabled(false);
         add(eAus, mapConstraints);
@@ -412,8 +382,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridwidth = 2;
         mapConstraints.gridx = 5;
         mapConstraints.gridy = 3;
-        JButton nAfr = new JButton("North Africa");
-        nAfr.setName("North Africa");
+        CountryButton nAfr = new CountryButton(countries.get("North Africa"));
         countryButtons.put(nAfr.getName(), nAfr);
         nAfr.setEnabled(false);
         add(nAfr, mapConstraints);
@@ -423,8 +392,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridwidth = 1;
         mapConstraints.gridx = 6;
         mapConstraints.gridy = 5;
-        JButton congo = new JButton("Congo");
-        congo.setName("Congo");
+        CountryButton congo = new CountryButton(countries.get("Congo"));
         countryButtons.put(congo.getName(), congo);
         congo.setEnabled(false);
         add(congo, mapConstraints);
@@ -434,8 +402,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridwidth = 2;
         mapConstraints.gridx = 6;
         mapConstraints.gridy = 6;
-        JButton sAfr = new JButton("South Africa");
-        sAfr.setName("South Africa");
+        CountryButton sAfr = new CountryButton(countries.get("South Africa"));
         countryButtons.put(sAfr.getName(), sAfr);
         sAfr.setEnabled(false);
         add(sAfr, mapConstraints);
@@ -445,8 +412,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridwidth = 1;
         mapConstraints.gridx = 7;
         mapConstraints.gridy = 3;
-        JButton egypt = new JButton("Egypt");
-        egypt.setName("Egypt");
+        CountryButton egypt = new CountryButton(countries.get("Egypt"));
         countryButtons.put(egypt.getName(), egypt);
         egypt.setEnabled(false);
         add(egypt, mapConstraints);
@@ -456,8 +422,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridwidth = 1;
         mapConstraints.gridx = 7;
         mapConstraints.gridy = 4;
-        JButton eAfr = new JButton("East Africa");
-        eAfr.setName("East Africa");
+        CountryButton eAfr = new CountryButton(countries.get("East Africa"));
         countryButtons.put(eAfr.getName(), eAfr);
         eAfr.setEnabled(false);
         add(eAfr, mapConstraints);
@@ -468,8 +433,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridwidth = 1;
         mapConstraints.gridx = 8;
         mapConstraints.gridy = 7;
-        JButton madagascar = new JButton("Madagascar");
-        madagascar.setName("Madagascar");
+        CountryButton madagascar = new CountryButton(countries.get("Madagascar"));
         countryButtons.put(madagascar.getName(), madagascar);
         madagascar.setEnabled(false);
         add(madagascar, mapConstraints);
