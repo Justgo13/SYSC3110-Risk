@@ -32,8 +32,8 @@ public class RiskView extends JPanel {
         mapConstraints.gridx = 1;
         mapConstraints.gridy = 0;
         mapConstraints.gridwidth = 2;
-        JButton nwCanada = new JButton("North West Territories");
-        nwCanada.setName("Northwest Canada");
+        JButton nwCanada = new JButton("Northwest Territory");
+        nwCanada.setName("Northwest Territory");
         countryButtons.put(nwCanada.getName(), nwCanada);
         nwCanada.setEnabled(false);
         add(nwCanada, mapConstraints);
@@ -73,7 +73,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridy = 2;
         mapConstraints.gridheight = 2;
         JButton wUS = new JButton("Western United States");
-        wUS.setName("West US");
+        wUS.setName("Western United States");
         countryButtons.put(wUS.getName(), wUS);
         wUS.setEnabled(false);
         add(wUS, mapConstraints);
@@ -82,7 +82,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridx = 2;
         mapConstraints.gridy = 2;
         JButton eUS = new JButton("Eastern United States");
-        eUS.setName("East US");
+        eUS.setName("Eastern United States");
         countryButtons.put(eUS.getName(), eUS);
         eUS.setEnabled(false);
         add(eUS, mapConstraints);
@@ -181,7 +181,7 @@ public class RiskView extends JPanel {
         mapConstraints.insets = new Insets(0,0,50,0);
         mapConstraints.gridx = 6;
         mapConstraints.gridy = 2;
-        JButton wEur = new JButton("West Europe");
+        JButton wEur = new JButton("Western Europe");
         wEur.setName("Western Europe");
         countryButtons.put(wEur.getName(), wEur);
         wEur.setEnabled(false);
@@ -190,8 +190,8 @@ public class RiskView extends JPanel {
         // South Europe
         mapConstraints.gridx = 7;
         mapConstraints.gridy = 2;
-        JButton sEur = new JButton("South Europe");
-        sEur.setName("South Europe");
+        JButton sEur = new JButton("Southern Europe");
+        sEur.setName("Southern Europe");
         countryButtons.put(sEur.getName(), sEur);
         sEur.setEnabled(false);
         add(sEur, mapConstraints);
@@ -200,8 +200,8 @@ public class RiskView extends JPanel {
         mapConstraints.insets = new Insets(0,0,0,0);
         mapConstraints.gridx = 7;
         mapConstraints.gridy = 1;
-        JButton nEur = new JButton("North Europe");
-        nEur.setName("North Europe");
+        JButton nEur = new JButton("Northern Europe");
+        nEur.setName("Northern Europe");
         countryButtons.put(nEur.getName(), nEur);
         nEur.setEnabled(false);
         add(nEur, mapConstraints);
@@ -387,7 +387,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridx = 12;
         mapConstraints.gridy = 7;
         JButton wAus = new JButton("Western Australia");
-        wAus.setName("West Australia");
+        wAus.setName("Western Australia");
         countryButtons.put(wAus.getName(), wAus);
         wAus.setEnabled(false);
         add(wAus, mapConstraints);
@@ -397,7 +397,7 @@ public class RiskView extends JPanel {
         mapConstraints.gridx = 13;
         mapConstraints.gridy = 7;
         JButton eAus = new JButton("Eastern Australia");
-        eAus.setName("East Australia");
+        eAus.setName("Eastern Australia");
         countryButtons.put(eAus.getName(), eAus);
         eAus.setEnabled(false);
         add(eAus, mapConstraints);
@@ -474,5 +474,41 @@ public class RiskView extends JPanel {
         madagascar.setEnabled(false);
         add(madagascar, mapConstraints);
         mapConstraints.insets = new Insets(0,0,0,0);
+
     }
+
+    public void handleAttackEvent(AttackEvent ae){
+        Country attackingCountry = ae.getAttackingCountry();
+        Country defendingCountry = ae.getDefendingCountry();
+
+        /*
+        for (JButton j : jhash.values()){
+            if (j.getName().equals(attackingCountry.getName())){
+                j.setText(j.getName() + " \n + troops: " + attackingCountry.getArmySize());
+            }
+        }
+        */
+
+
+        // based on these 2 countries, update their colors:owner, troopCount
+
+    }
+
+
+    public void handleUpdateTroops(TroopUpdateEvent te){
+        /*
+        ArrayList<Country> countries = te.getCountries();
+
+        for (Country country: countries){
+            JButton j = jhash.get(country.getName());
+            j
+
+
+        }
+        */
+
+
+    }
+
+
 }
