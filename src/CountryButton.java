@@ -1,18 +1,14 @@
 import javax.swing.*;
 import java.awt.*;
-import java.util.EnumMap;
 
 public class CountryButton extends JButton {
     private int troopCount;
     private int playerIndex; // Will work once initialization is complete for the GUI
     private Country country;
     private String continent;
+    private static final Color[] colors = {Color.red, Color.blue, Color.green, Color.magenta, Color.BLACK};
 
-    /*
-    public enum Color {
-        C, YELLOW, BLUE; //each is an instance of Color
-    }
-     */
+
 
 
     /**
@@ -26,10 +22,8 @@ public class CountryButton extends JButton {
         this.country = country;
         this.troopCount=country.getArmySize();
         this.continent = country.getContinent();
-        //this.playerIndex = country.getPlayer().getId();
+        this.playerIndex = country.getPlayer().getId();
         this.update();
-
-
     }
 
     /**
@@ -40,9 +34,11 @@ public class CountryButton extends JButton {
      */
     public void update(){
         updateFields();
-        String text = country.getName() +  " (" + troopCount + ", " + continent + ")"; // + country.getContinentName()
+        String text ="<html>  \n " + country.getName() + "<br> P" + playerIndex +  "(" + troopCount + ", " + continent + ")" + "</html>";
+
         super.setText(text);
-        //super.setBackground(Color.cyan);
+        super.setForeground(Color.black);
+        super.setBackground(colors[playerIndex-1]);
     }
 
     /**
@@ -51,6 +47,10 @@ public class CountryButton extends JButton {
      */
     private void updateFields(){
         this.troopCount = country.getArmySize();
-        //this.playerIndex = country.getPlayer().getId(); //creates errors
+        this.playerIndex = country.getPlayer().getId();
+    }
+
+    public String getName(){
+        return country.getName();
     }
 }

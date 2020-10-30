@@ -125,13 +125,14 @@ public class RiskGame {
         //board.testConfiguration();
 
         boolean gameOver = false;
-        while (! gameOver) {
+        /*while (! gameOver) {
             System.out.printf("Player %d it is your turn", board.getPlayers().get(turnIndex).getId());
             System.out.println();
             System.out.println("Please input a command: ");
             Command command = parser.returnCommand();
             gameOver = processCommand(command);
         }
+         */
     }
 
     /**

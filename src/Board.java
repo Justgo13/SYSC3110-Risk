@@ -64,8 +64,8 @@ public class Board {
         continentCountries.add(Arrays.asList(
                 "Eastern Australia", "Indonesia", "New Guinea", "Western Australia"));
         //added buildMap so that countries map will be populated when used (testing for countrybutton)
-        buildMap();
-        // not sure if this interferes with playGame() from riskGame
+
+
     }
 
     public HashMap<String, Country> getCountries(){
