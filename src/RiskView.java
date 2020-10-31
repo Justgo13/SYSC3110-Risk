@@ -3,7 +3,7 @@ import java.awt.*;
 import java.util.HashMap;
 
 public class RiskView extends JPanel {
-    private HashMap<String, JButton> countryButtons;
+    private HashMap<String, CountryButton> countryButtons;
     private RiskGame model;
     private HashMap<String, Country> countries;
     public RiskView(RiskGame model) {
