@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 public class RiskView extends JPanel {
     private HashMap<String, CountryButton> countryButtons;
@@ -445,32 +446,27 @@ public class RiskView extends JPanel {
         Country attackingCountry = ae.getAttackingCountry();
         Country defendingCountry = ae.getDefendingCountry();
 
-        /*
-        for (JButton j : jhash.values()){
+
+        for (JButton j : countryButtons.values()){
             if (j.getName().equals(attackingCountry.getName())){
-                j.setText(j.getName() + " \n + troops: " + attackingCountry.getArmySize());
+                countryButtons.get(attackingCountry.getName()).update();
+            }
+            else if(j.getName().equals(defendingCountry.getName())){
+                countryButtons.get(defendingCountry.getName()).update();
             }
         }
-        */
-
-
-        // based on these 2 countries, update their colors:owner, troopCount
 
     }
 
 
     public void handleUpdateTroops(TroopUpdateEvent te){
-        /*
+
         ArrayList<Country> countries = te.getCountries();
 
         for (Country country: countries){
-            JButton j = jhash.get(country.getName());
-            j
-
+            countryButtons.get(country.getName()).update();
 
         }
-        */
-
 
     }
 
