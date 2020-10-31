@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.ArrayList;
 
@@ -27,7 +28,6 @@ public class RiskView extends JPanel {
         mapConstraints.insets = new Insets(0,50,0,0);
         mapConstraints.gridx = 0;
         mapConstraints.gridy = 0;
-        System.out.println(countries.get("Alaska"));
         CountryButton alaska = new CountryButton(countries.get("Alaska"));
         countryButtons.put(alaska.getName(), alaska);
         alaska.setEnabled(false);
@@ -441,6 +441,12 @@ public class RiskView extends JPanel {
         mapConstraints.insets = new Insets(0,0,0,0);
 
     }
+
+    public HashMap<String, CountryButton> getCountryButtons(){
+        return countryButtons;
+    }
+
+
 
     public void handleAttackEvent(AttackEvent ae){
         Country attackingCountry = ae.getAttackingCountry();

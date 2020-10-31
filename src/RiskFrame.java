@@ -62,6 +62,24 @@ public class RiskFrame extends JFrame {
         // Creates the VIEW
         RiskView riskView = new RiskView(model);
 
+        // Creates the Controller
+        RiskController riskController = new RiskController(model,riskView);
+
+        // Add bottom Game Buttons to the controller
+        riskController.addActionListener(attack);
+        attack.setActionCommand("attack");
+
+        riskController.addActionListener(endturn);
+        endturn.setActionCommand("endturn");
+        //riskController.addActionListener(reinforce);
+
+
+        // Add all country J Buttons to the controller
+        for (CountryButton cb : riskView.getCountryButtons().values()){
+            riskController.addActionListener(cb);
+            cb.setActionCommand("country");
+        }
+
 
         add(riskView, BorderLayout.CENTER);
         add(panel, BorderLayout.PAGE_END);

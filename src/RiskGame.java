@@ -266,6 +266,22 @@ public class RiskGame {
         }
     }
 
+    public Board getBoard() {
+        return board;
+    }
+
+    public Parser getParser() {
+        return parser;
+    }
+
+    public int getTurnIndex() {
+        return turnIndex;
+    }
+
+    public List<RiskView> getViews() {
+        return views;
+    }
+
     /**
      * Update the view to reflect the new number of troops in all countries
      *
