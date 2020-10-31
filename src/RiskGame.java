@@ -19,6 +19,14 @@ public class RiskGame {
     }
 
     /**
+     * Author: Shashaank
+     * @return the hashmap that contains all of the country objects
+     */
+    public HashMap<String,Country> getCountries(){
+        return board.getCountries();
+    }
+
+    /**
      * The attack method simulates the risk battle between one attacking country and one defending country and will
      * update the board based on the outcome of the battle
      *
@@ -117,13 +125,14 @@ public class RiskGame {
         //board.testConfiguration();
 
         boolean gameOver = false;
-        while (! gameOver) {
+        /*while (! gameOver) {
             System.out.printf("Player %d it is your turn", board.getPlayers().get(turnIndex).getId());
             System.out.println();
             System.out.println("Please input a command: ");
             Command command = parser.returnCommand();
             gameOver = processCommand(command);
         }
+         */
     }
 
     /**

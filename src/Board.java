@@ -63,7 +63,13 @@ public class Board {
         //Adding Australia
         continentCountries.add(Arrays.asList(
                 "Eastern Australia", "Indonesia", "New Guinea", "Western Australia"));
+        //added buildMap so that countries map will be populated when used (testing for countrybutton)
 
+
+    }
+
+    public HashMap<String, Country> getCountries(){
+        return countries;
     }
     
     public void addPlayer(Player player) {
@@ -134,6 +140,7 @@ public class Board {
             for(int j = 0; j<continentCountries.get(i).size(); j++){
                 Continent continent = continents.get(continentNames.get(i));
                 continent.addCountry(countries.get(continentCountries.get(i).get(j))); // populates continents with their specific countries
+                countries.get(continentCountries.get(i).get(j)).setContinent(continent.getName()); // sets the continent name of each country
             }
         }
     }
