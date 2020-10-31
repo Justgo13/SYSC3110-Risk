@@ -6,7 +6,7 @@ public class CountryButton extends JButton {
     private int playerIndex; // Will work once initialization is complete for the GUI
     private Country country;
     private String continent;
-    private static final Color[] colors = {Color.red, Color.blue, Color.green, Color.magenta, Color.BLACK};
+    private static final Color[] colors = {Color.red, Color.blue, Color.pink, Color.gray, Color.orange, Color.green};
 
 
 
@@ -34,7 +34,7 @@ public class CountryButton extends JButton {
      */
     public void update(){
         updateFields();
-        String text ="<html>  \n " + country.getName() + "<br> P" + playerIndex +  "(" + troopCount + ", " + continent + ")" + "</html>";
+        String text ="<html>" + country.getName() + "<br> Player " + playerIndex +  "<br> Troops: " + troopCount + "<br>" + continent + "</html>";
 
         super.setText(text);
         super.setForeground(Color.black);
