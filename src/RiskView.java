@@ -447,7 +447,6 @@ public class RiskView extends JPanel {
     }
 
 
-
     public void handleAttackEvent(AttackEvent ae){
         Country attackingCountry = ae.getAttackingCountry();
         Country defendingCountry = ae.getDefendingCountry();
@@ -460,18 +459,6 @@ public class RiskView extends JPanel {
             else if(j.getName().equals(defendingCountry.getName())){
                 countryButtons.get(defendingCountry.getName()).update();
             }
-        }
-
-    }
-
-
-    public void handleUpdateTroops(TroopUpdateEvent te){
-
-        ArrayList<Country> countries = te.getCountries();
-
-        for (Country country: countries){
-            countryButtons.get(country.getName()).update();
-
         }
 
     }

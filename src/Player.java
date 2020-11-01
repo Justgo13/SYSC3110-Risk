@@ -19,16 +19,9 @@ public class Player {
         countriesOwned.add(country);
     }
 
-    public void setArmiesToPlace(int armyCount) {
-
-    }
 
     public void removeCountry(Country country) {
         countriesOwned.remove(country);
-    }
-
-    public void reduceArmyToPlace() {
-
     }
 
     public int getInitArmySize() {

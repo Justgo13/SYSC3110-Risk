@@ -26,15 +26,6 @@ public class RiskFrame extends JFrame {
         controlPanelConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
         controlPanelConstraints.fill = GridBagConstraints.BOTH;
 
-//        controlPanelConstraints.gridx = 0;
-//        controlPanelConstraints.gridy = 0;
-//        controlPanelConstraints.gridwidth = 3;
-//        controlPanelConstraints.gridheight = 1;
-//        controlPanelConstraints.anchor = GridBagConstraints.FIRST_LINE_END;
-//        JTextArea console = new JTextArea();
-//        console.setEditable(false);
-//        panel.add(console, controlPanelConstraints);
-
         controlPanelConstraints.gridx = 0;
         controlPanelConstraints.gridy = 1;
         controlPanelConstraints.gridwidth = 1;
