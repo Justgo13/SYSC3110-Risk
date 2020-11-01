@@ -11,22 +11,11 @@ public class RiskFrame extends JFrame {
         // Creates the control panel at the bottom of the GUI
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints controlPanelConstraints = new GridBagConstraints();
-        // TODO Do we need the dice roll button?
-//        controlPanelConstraints.gridx = 0;
-//        controlPanelConstraints.gridy = 0;
-//        controlPanelConstraints.gridheight = 2;
-//        controlPanelConstraints.weighty = 1.0;
-//        controlPanelConstraints.weightx = 1.0;
-//        controlPanelConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
-//        controlPanelConstraints.fill = GridBagConstraints.BOTH;
-//        JButton diceButton = new JButton("Roll die");
-//        diceButton.setEnabled(false);
-//        panel.add(diceButton, controlPanelConstraints);
-
         controlPanelConstraints.weighty = 1.0;
         controlPanelConstraints.weightx = 1.0;
         controlPanelConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
         controlPanelConstraints.fill = GridBagConstraints.BOTH;
+
         controlPanelConstraints.gridx = 0;
         controlPanelConstraints.gridy = 0;
         controlPanelConstraints.gridwidth = 3;
@@ -61,6 +50,7 @@ public class RiskFrame extends JFrame {
 
         // Creates the VIEW
         RiskView riskView = new RiskView(model);
+        model.addRiskView(riskView);
 
         // Creates the Controller
         RiskController riskController = new RiskController(model,riskView);

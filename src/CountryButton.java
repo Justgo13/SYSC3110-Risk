@@ -59,7 +59,7 @@ public class CountryButton extends JButton {
         super.setText(text);
         super.setForeground(Color.black);
         super.setBackground(colors[playerIndex-1]);
-    }
+}
 
     /**
      * Author: Shashaank

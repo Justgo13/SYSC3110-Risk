@@ -1,88 +1,130 @@
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class RiskController implements ActionListener{
     private RiskGame riskModel;
     private RiskView riskView;
-    private int attackState;
+    private Country attackingCountry;
+    private Country defendingCountry;
+    private int troopCount;
+    private enum attackState {
+        SHOW_PLAYER_COUNTRIES, SHOW_DEFENDING_COUNTRIES, COMMENCE_ATTACK
+    }
+    private attackState currentState;
 
     public RiskController(RiskGame riskModel, RiskView riskView){
         this.riskModel = riskModel;
         this.riskView = riskView;
-
+        this.currentState = null;
     }
 
+    /**
+     * Takes in countries and returns a list of their corresponding country button instances from RiskView
+     * @param countries A list of all countries the player can use to attack
+     * @return A list of all the CountryButton instances
+     */
     public ArrayList<CountryButton> convertCountryToCountryButtons(ArrayList<Country> countries){
-
-        int turnIndex = riskModel.getTurnIndex();
-        ArrayList<Player> players = riskModel.getBoard().getPlayers();
-
-        // player who is attacking
-        Player currentPlayer = players.get(turnIndex);
-
-        // build an arraylist of country names
-        ArrayList<String> countryNames = new ArrayList<String>();
-        for (Country c : currentPlayer.getCountriesOwned()){
-            countryNames.add(c.getName());
-        }
-
         // get hashmap from view that holds relationship between country name and country Button
         HashMap<String, CountryButton> countryButtonHashMap = riskView.getCountryButtons();
 
         // create empty arraylist for return
         ArrayList<CountryButton> countryButtons = new ArrayList<CountryButton>();
 
-        for (String s: countryNames){
-            countryButtons.add(countryButtonHashMap.get(s));
+        for (Country c: countries){
+            countryButtons.add(countryButtonHashMap.get(c.getName()));
         }
 
         return countryButtons;
+    }
 
+    private Player getAttackingPlayer() {
+        int turnIndex = riskModel.getTurnIndex();
+        ArrayList<Player> players = riskModel.getBoard().getPlayers();
+        return players.get(turnIndex);
+    }
 
+    private void showAttackingCountries() {
+        // get all the Country Buttons that the current player owns
+        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(getAttackingPlayer().getCountriesOwned());
+
+        for (CountryButton cb : countryButtons){
+            if (cb.getCountry().getPossibleAttacks().size() != 0 && cb.getCountry().getArmySize() >= 2) {
+                cb.setEnabled(true);
+            }
+        }
+        currentState = attackState.SHOW_DEFENDING_COUNTRIES;
+    }
+
+    private int showDefendingCountries(ActionEvent e) {
+        CountryButton attackingCountry = (CountryButton) e.getSource();
+
+        // converts all countries that the attacking country can attack into their respective country button instance in the view and stores in a list
+        ArrayList<CountryButton> defendingCountries = convertCountryToCountryButtons(attackingCountry.getCountry().getAdjacentCountries());
+        defendingCountries.forEach(countryButton -> countryButton.setEnabled(true)); // enable all possible countries to attack
+
+        // disables all attacking countries from being pressed
+        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(getAttackingPlayer().getCountriesOwned());
+        countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
+
+        currentState = attackState.COMMENCE_ATTACK;
+
+        // asks for number of troops to attack with
+        return Integer.parseInt(getAttackingTroopCount(attackingCountry)); // number of troops to attack with
+    }
+
+    private String getAttackingTroopCount(CountryButton attackingCountry) {
+        int troopCount = attackingCountry.getTroopCount()-1;
+        Object[] troopList = buildTroopDropdownList(troopCount);
+        Object selectionObject = JOptionPane.showInputDialog(riskView, "Select", "Choose Troops", JOptionPane.OK_OPTION, null, troopList, troopList[0]);
+        return selectionObject.toString();
+    }
+
+    private Object[] buildTroopDropdownList(int troopCount) {
+        Object[] troopList = new Object[troopCount];
+        // iterates one less to build a list from 1 - troopCount
+        for (int i = 0; i < troopList.length; i++) {
+            troopList[i] = troopCount;
+            troopCount--;
+        }
+        return troopList;
+    }
+
+    private void performAttack(Country attackingCountry, Country defendingCountry, int troopCount) {
+        riskModel.attack(attackingCountry, defendingCountry, troopCount);
+
+        // disable all defending countries of the attacking country
+        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(attackingCountry.getAdjacentCountries());
+        countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
+
+        showAttackingCountries(); // re-enable the user to choose countries for continuous attacking
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
         if(e.getActionCommand().equals("country")) {
+            CountryButton countryButton = (CountryButton) e.getSource();
             // Dealing with countries being clicked
             //identify what turn it is
-
+            if (currentState == attackState.SHOW_DEFENDING_COUNTRIES) {
+                attackingCountry = countryButton.getCountry();
+                troopCount = showDefendingCountries(e);
+            } else if (currentState == attackState.COMMENCE_ATTACK) {
+                defendingCountry = countryButton.getCountry();
+                performAttack(attackingCountry,defendingCountry,troopCount);
+            }
         }else if (e.getActionCommand().equals("endturn")){
 
         } else if (e.getActionCommand().equals("attack")){
             // show all countries that we can attack with
             // this button should get disabled after until the attacking phase has been completed
-
-            if (attackState == 0){
-                // disables the attack button
-                JButton attack = (JButton) e.getSource();
-                attack.setEnabled(false);
-
-                // enable all country buttons that this player owns
-
-                int turnIndex = riskModel.getTurnIndex();
-                ArrayList<Player> players = riskModel.getBoard().getPlayers();
-
-                // player who is attacking
-                Player currentPlayer = players.get(turnIndex);
-
-                // get all the Country Buttons that the current player owns
-                ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(currentPlayer.getCountriesOwned());
-
-
-                for (CountryButton cb : countryButtons){
-                    if (cb.getCountry().getPossibleAttacks().size() != 0) {
-                        cb.setEnabled(true);
-                    }
-                }
-                attackState++;
-
-            }
+            currentState = attackState.SHOW_PLAYER_COUNTRIES;
+            JButton attack = (JButton) e.getSource();
+            attack.setEnabled(false);
+            if (currentState == attackState.SHOW_PLAYER_COUNTRIES)
+                showAttackingCountries();
         }
 
     }
