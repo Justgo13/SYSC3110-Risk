@@ -4,26 +4,36 @@ import java.awt.*;
 public class RiskFrame extends JFrame {
     public RiskFrame() {
         super("Risk!");
+        setLayout(new GridBagLayout());
         //Instantiating the model
         RiskGame model = new RiskGame();
         model.playGame();
 
+        // Creating a constraint for the entire frame
+        GridBagConstraints frameConstraint = new GridBagConstraints();
+        frameConstraint.weighty = 1.0;
+        frameConstraint .weightx = 1.0;
+        frameConstraint .anchor = GridBagConstraints.FIRST_LINE_START;
+        frameConstraint .fill = GridBagConstraints.BOTH;
+
         // Creates the control panel at the bottom of the GUI
         JPanel panel = new JPanel(new GridBagLayout());
+        frameConstraint.gridx = 0;
+        frameConstraint.gridy = 1;
         GridBagConstraints controlPanelConstraints = new GridBagConstraints();
         controlPanelConstraints.weighty = 1.0;
         controlPanelConstraints.weightx = 1.0;
         controlPanelConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
         controlPanelConstraints.fill = GridBagConstraints.BOTH;
 
-        controlPanelConstraints.gridx = 0;
-        controlPanelConstraints.gridy = 0;
-        controlPanelConstraints.gridwidth = 3;
-        controlPanelConstraints.gridheight = 1;
-        controlPanelConstraints.anchor = GridBagConstraints.FIRST_LINE_END;
-        JTextArea console = new JTextArea();
-        console.setEditable(false);
-        panel.add(console, controlPanelConstraints);
+//        controlPanelConstraints.gridx = 0;
+//        controlPanelConstraints.gridy = 0;
+//        controlPanelConstraints.gridwidth = 3;
+//        controlPanelConstraints.gridheight = 1;
+//        controlPanelConstraints.anchor = GridBagConstraints.FIRST_LINE_END;
+//        JTextArea console = new JTextArea();
+//        console.setEditable(false);
+//        panel.add(console, controlPanelConstraints);
 
         controlPanelConstraints.gridx = 0;
         controlPanelConstraints.gridy = 1;
@@ -47,10 +57,23 @@ public class RiskFrame extends JFrame {
         endturn.setEnabled(true);
         panel.add(endturn, controlPanelConstraints);
 
+        add(panel, frameConstraint);
+
+        frameConstraint.gridx = 0;
+        frameConstraint.gridy = 0;
 
         // Creates the VIEW
         RiskView riskView = new RiskView(model);
         model.addRiskView(riskView);
+        add(riskView, frameConstraint);
+
+        //Text Area
+        frameConstraint.gridx = 1;
+        frameConstraint.gridy = 0;
+        frameConstraint.gridheight = 2;
+        JTextArea textArea = new JTextArea();
+        textArea.setEditable(false);
+        add(textArea, frameConstraint);
 
         // Creates the Controller
         RiskController riskController = new RiskController(model,riskView);
@@ -70,9 +93,6 @@ public class RiskFrame extends JFrame {
             cb.setActionCommand("country");
         }
 
-
-        add(riskView, BorderLayout.CENTER);
-        add(panel, BorderLayout.PAGE_END);
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setVisible(true);
