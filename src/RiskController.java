@@ -9,6 +9,7 @@ public class RiskController implements ActionListener{
     private RiskView riskView;
     private Country attackingCountry;
     private Country defendingCountry;
+    private JButton attack;
     private int troopCount;
     private enum attackState {
         SHOW_PLAYER_COUNTRIES, SHOW_DEFENDING_COUNTRIES, COMMENCE_ATTACK
@@ -116,12 +117,19 @@ public class RiskController implements ActionListener{
                 performAttack(attackingCountry,defendingCountry,troopCount);
             }
         }else if (e.getActionCommand().equals("endturn")){
+            if (currentState == attackState.SHOW_DEFENDING_COUNTRIES) {
+                // disable all attacking countries of current player
+                ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(getAttackingPlayer().getCountriesOwned());
+                countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
 
+                riskModel.incrementTurnIndex(); // moves to next player
+                attack.setEnabled(true);
+            }
         } else if (e.getActionCommand().equals("attack")){
             // show all countries that we can attack with
             // this button should get disabled after until the attacking phase has been completed
             currentState = attackState.SHOW_PLAYER_COUNTRIES;
-            JButton attack = (JButton) e.getSource();
+            attack = (JButton) e.getSource();
             attack.setEnabled(false);
             if (currentState == attackState.SHOW_PLAYER_COUNTRIES)
                 showAttackingCountries();

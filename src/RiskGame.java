@@ -274,6 +274,10 @@ public class RiskGame {
         return turnIndex;
     }
 
+    public void incrementTurnIndex() {
+        this.turnIndex = (1+turnIndex) % board.getNumOfPlayers();
+    }
+
     /**
      * Update the view to reflect the new number of troops in all countries
      *

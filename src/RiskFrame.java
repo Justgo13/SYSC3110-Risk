@@ -44,7 +44,7 @@ public class RiskFrame extends JFrame {
         controlPanelConstraints.gridy = 1;
         controlPanelConstraints.anchor = GridBagConstraints.LAST_LINE_END;
         JButton endturn = new JButton("END TURN");
-        endturn.setEnabled(false);
+        endturn.setEnabled(true);
         panel.add(endturn, controlPanelConstraints);
 
 
