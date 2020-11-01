@@ -108,7 +108,7 @@ public class RiskGame {
             System.out.println("Congratulations, "+board.getPlayers().get(0).getName()+". You won!");
             System.exit(0);
         }
-
+        updateAttackView(attackingCountry, defendingCountry);
     }
 
     /**
@@ -264,6 +264,18 @@ public class RiskGame {
         for (RiskView v : views){
             v.handleAttackEvent(new AttackEvent(this,attackingCountry,defendingCountry));
         }
+    }
+
+    public Board getBoard() {
+        return board;
+    }
+
+    public int getTurnIndex() {
+        return turnIndex;
+    }
+
+    public void incrementTurnIndex() {
+        this.turnIndex = (1+turnIndex) % board.getNumOfPlayers();
     }
 
     /**

@@ -11,22 +11,11 @@ public class RiskFrame extends JFrame {
         // Creates the control panel at the bottom of the GUI
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints controlPanelConstraints = new GridBagConstraints();
-        // TODO Do we need the dice roll button?
-//        controlPanelConstraints.gridx = 0;
-//        controlPanelConstraints.gridy = 0;
-//        controlPanelConstraints.gridheight = 2;
-//        controlPanelConstraints.weighty = 1.0;
-//        controlPanelConstraints.weightx = 1.0;
-//        controlPanelConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
-//        controlPanelConstraints.fill = GridBagConstraints.BOTH;
-//        JButton diceButton = new JButton("Roll die");
-//        diceButton.setEnabled(false);
-//        panel.add(diceButton, controlPanelConstraints);
-
         controlPanelConstraints.weighty = 1.0;
         controlPanelConstraints.weightx = 1.0;
         controlPanelConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
         controlPanelConstraints.fill = GridBagConstraints.BOTH;
+
         controlPanelConstraints.gridx = 0;
         controlPanelConstraints.gridy = 0;
         controlPanelConstraints.gridwidth = 3;
@@ -55,12 +44,31 @@ public class RiskFrame extends JFrame {
         controlPanelConstraints.gridy = 1;
         controlPanelConstraints.anchor = GridBagConstraints.LAST_LINE_END;
         JButton endturn = new JButton("END TURN");
-        endturn.setEnabled(false);
+        endturn.setEnabled(true);
         panel.add(endturn, controlPanelConstraints);
 
 
         // Creates the VIEW
         RiskView riskView = new RiskView(model);
+        model.addRiskView(riskView);
+
+        // Creates the Controller
+        RiskController riskController = new RiskController(model,riskView);
+
+        // Add bottom Game Buttons to the controller
+        riskController.addActionListener(attack);
+        attack.setActionCommand("attack");
+
+        riskController.addActionListener(endturn);
+        endturn.setActionCommand("endturn");
+        //riskController.addActionListener(reinforce);
+
+
+        // Add all country J Buttons to the controller
+        for (CountryButton cb : riskView.getCountryButtons().values()){
+            riskController.addActionListener(cb);
+            cb.setActionCommand("country");
+        }
 
 
         add(riskView, BorderLayout.CENTER);

@@ -26,6 +26,26 @@ public class CountryButton extends JButton {
         this.update();
     }
 
+    public int getTroopCount() {
+        return troopCount;
+    }
+
+    public int getPlayerIndex() {
+        return playerIndex;
+    }
+
+    public Country getCountry() {
+        return country;
+    }
+
+    public String getContinent() {
+        return continent;
+    }
+
+    public static Color[] getColors() {
+        return colors;
+    }
+
     /**
      * Author:Shashaank
      * Will update the Countrybuttons text fields to display the updated information
@@ -39,7 +59,7 @@ public class CountryButton extends JButton {
         super.setText(text);
         super.setForeground(Color.black);
         super.setBackground(colors[playerIndex-1]);
-    }
+}
 
     /**
      * Author: Shashaank
