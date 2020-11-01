@@ -48,24 +48,80 @@ public class RiskGame {
            - 6 fight 5 remove attacker
            - 5 fight 5 remove attacker on tie
          */
-        Random random = new Random();
-        ArrayList<Integer> attackerDice = new ArrayList<>();
-        ArrayList<Integer> defenderDice = new ArrayList<>();
+        ArrayList<Integer> attackerDice = attackingDiceInitialization(numOfAttackers);
+        ArrayList<Integer> defenderDice = defendingDiceInitialization(defendingCountry.getArmySize());
 
-        // initialize defender dice values
-        if (defendingCountry.getArmySize() >= 2) {
+        attackPhase(defendingCountry, attackingCountry, attackerDice, defenderDice, numOfAttackers);
+
+        checkDefenderLostCountry(defendingCountry, attackingCountry, numOfAttackers);
+
+        battleResult(defendingCountry.getArmySize(), attackingCountry.getArmySize());
+
+        if(board.checkWinner()){
+            System.out.println("Congratulations, "+board.getPlayers().get(0).getName()+". You won!");
+            System.exit(0);
+        }
+        updateAttackView(attackingCountry, defendingCountry);
+    }
+
+    /**
+     * Displays the result of the battle between an attacking country and
+     * defending country
+     * @param defendingArmySize
+     * @param attackingArmySize
+     */
+    public void battleResult(int defendingArmySize, int attackingArmySize){
+        System.out.println("Here is the results of the battle: ");
+        System.out.println("Your country troops remaining: " + attackingArmySize);
+        System.out.println("Defending country troops remaining: " + defendingArmySize);
+    }
+
+    /**
+     * initializes the defending country dice
+     * @param defendingArmySize the size of the defending army
+     * @return ArrayList of Integers
+     */
+
+    public ArrayList<Integer> defendingDiceInitialization(int defendingArmySize){
+        Random random = new Random();
+        ArrayList<Integer> defenderDice = new ArrayList<>();
+        if (defendingArmySize >= 2) {
             defenderDice.add(random.nextInt(6)+1);
             defenderDice.add(random.nextInt(6)+1);
-        } else if (defendingCountry.getArmySize() == 1) {
+        } else if (defendingArmySize == 1) {
             defenderDice.add(random.nextInt(6)+1);
         }
 
+        return defenderDice;
+    }
+
+    /**
+     * initializes the attacking country dice
+     * @param numOfAttackers the size of the attacking army
+     * @return an ArrayList of Integers
+     */
+    public  ArrayList<Integer> attackingDiceInitialization(int numOfAttackers){
+        Random random = new Random();
+        ArrayList<Integer> attackerDice = new ArrayList<>();
         // initialize attacker dice values
         for (int i = 0; i < numOfAttackers; i++) {
             attackerDice.add(random.nextInt(6)+1);
         }
 
-        // attack phase
+        return attackerDice;
+    }
+
+    /**
+     * The calculations done after an attack has occured between an attacking
+     * and defending country
+     * @param defenderDice the defending country's dice arraylist
+     * @param attackerDice the attacking country's dice arraylist
+     * @param defendingCountry the country that is defending
+     * @param attackingCountry the country that is attacking
+     * @param numOfAttackers the size of the attacking army
+     * @return void
+     */
+    public void attackPhase(Country defendingCountry, Country attackingCountry, ArrayList<Integer> attackerDice, ArrayList<Integer> defenderDice, int numOfAttackers){
         for (int i = defenderDice.size(); i > 0; i--) {
             if (attackerDice.size() == 0) {
                 break;
@@ -86,7 +142,9 @@ public class RiskGame {
             defenderDice.remove(defenderMax);
         }
 
-        // defender lost the country
+    }
+
+    public void checkDefenderLostCountry(Country defendingCountry, Country attackingCountry, int numOfAttackers){
         if (defendingCountry.getArmySize() == 0) {
             System.out.println("Player " + board.getPlayers().get(turnIndex).getId() + ", you have taken " + defendingCountry.getName()
                     + " from Player " + defendingCountry.getPlayer().getId());
@@ -101,14 +159,6 @@ public class RiskGame {
             System.out.println("You failed to take " + defendingCountry.getName());
         }
 
-        System.out.println("Here is the results of the battle: ");
-        System.out.println("Your country troops remaining: " + attackingCountry.getArmySize());
-        System.out.println("Defending country troops remaining: " + defendingCountry.getArmySize());
-        if(board.checkWinner()){
-            System.out.println("Congratulations, "+board.getPlayers().get(0).getName()+". You won!");
-            System.exit(0);
-        }
-        updateAttackView(attackingCountry, defendingCountry);
     }
 
     /**
@@ -153,10 +203,5 @@ public class RiskGame {
 
     public void incrementTurnIndex() {
         this.turnIndex = (1+turnIndex) % board.getNumOfPlayers();
-    }
-
-    public static void main (String[] args) {
-        RiskGame game = new RiskGame();
-        game.playGame();
     }
 }
