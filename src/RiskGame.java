@@ -63,19 +63,6 @@ public class RiskGame {
         }
         updateAttackView(attackingCountry, defendingCountry);
     }
-
-    /**
-     * Displays the result of the battle between an attacking country and
-     * defending country
-     * @param defendingArmySize
-     * @param attackingArmySize
-     */
-    public void battleResult(int defendingArmySize, int attackingArmySize){
-        System.out.println("Here is the results of the battle: ");
-        System.out.println("Your country troops remaining: " + attackingArmySize);
-        System.out.println("Defending country troops remaining: " + defendingArmySize);
-    }
-
     /**
      * initializes the defending country dice
      * @param defendingArmySize the size of the defending army
@@ -128,8 +115,7 @@ public class RiskGame {
             }
             Integer attackerMax = Collections.max(attackerDice);
             Integer defenderMax = Collections.max(defenderDice);
-            System.out.println("Attacker rolled: " + attackerMax);
-            System.out.println("Defender rolled: " + defenderMax);
+            diceResult(attackerMax, defenderMax);
             if (attackerMax > defenderMax) { // attackers win
                 defendingCountry.removeArmy();
             } else { // defenders win
@@ -145,9 +131,8 @@ public class RiskGame {
     }
 
     public void checkDefenderLostCountry(Country defendingCountry, Country attackingCountry, int numOfAttackers){
+        defendingCountryLost(defendingCountry, board.getPlayers().get(turnIndex).getId());
         if (defendingCountry.getArmySize() == 0) {
-            System.out.println("Player " + board.getPlayers().get(turnIndex).getId() + ", you have taken " + defendingCountry.getName()
-                    + " from Player " + defendingCountry.getPlayer().getId());
             defendingCountry.getPlayer().removeCountry(defendingCountry); // removes the lost country from the defending player
             defendingCountry.setPlayer(attackingCountry.getPlayer()); // assigns country to the dominating player
             board.getPlayers().get(turnIndex).addCountry(defendingCountry);// add new country to the dominating player
@@ -155,8 +140,6 @@ public class RiskGame {
             defendingCountry.setArmySize(numOfAttackers); // moves remaining attackers to conquered country
             attackingCountry.setArmySize(attackersStayed); // removes attackers from original country
             board.checkEliminated();
-        } else {
-            System.out.println("You failed to take " + defendingCountry.getName());
         }
 
     }
@@ -192,6 +175,37 @@ public class RiskGame {
             v.handleAttackEvent(new AttackEvent(this,attackingCountry,defendingCountry));
         }
     }
+
+    /**
+     * Displays the result of the battle between an attacking country and
+     * defending country
+     * @param defendingArmySize
+     * @param attackingArmySize
+     */
+    public void battleResult(int defendingArmySize, int attackingArmySize){
+        for(RiskView v : views){
+            v.handleResultEvent(attackingArmySize, defendingArmySize);
+        }
+    }
+
+    /**
+     * Notifying the views to handle dice rolls
+     * @param attackerMax
+     * @param defenderMax
+     */
+    public void diceResult(int attackerMax, int defenderMax){
+        for(RiskView v : views){
+            v.handleDiceRolls(attackerMax, defenderMax);
+        }
+    }
+
+    public void defendingCountryLost(Country defendingCountry, int attackingPlayerIndex){
+        for(RiskView v: views){
+            v.handleDefendingCountryLost(defendingCountry, attackingPlayerIndex);
+        }
+
+    }
+
 
     public Board getBoard() {
         return board;

@@ -58,14 +58,6 @@ public class RiskFrame extends JFrame {
         model.addRiskView(riskView);
         add(riskView, frameConstraint);
 
-        //Text Area
-        frameConstraint.gridx = 1;
-        frameConstraint.gridy = 0;
-        frameConstraint.gridheight = 2;
-        JTextArea textArea = new JTextArea();
-        textArea.setEditable(false);
-        add(textArea, frameConstraint);
-
         // Creates the Controller
         RiskController riskController = new RiskController(model,riskView);
 
@@ -87,10 +79,8 @@ public class RiskFrame extends JFrame {
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setVisible(true);
-        setSize(1920, 960);
-        setLocationRelativeTo(null);
-
-
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setResizable(false);
 
     }
 
