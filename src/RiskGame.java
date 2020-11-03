@@ -130,6 +130,13 @@ public class RiskGame {
 
     }
 
+    /**
+     * Checks if the defending country had lost the battle between the attacking country.
+     * If so, calculations are made to the troop numbers
+     * @param defendingCountry the defending country
+     * @param attackingCountry the attacking country
+     * @param numOfAttackers the size of the attacking army
+     */
     public void checkDefenderLostCountry(Country defendingCountry, Country attackingCountry, int numOfAttackers){
         defendingCountryLost(defendingCountry, board.getPlayers().get(turnIndex).getId());
         if (defendingCountry.getArmySize() == 0) {
@@ -206,6 +213,11 @@ public class RiskGame {
 
     }
 
+    public void endTurnPhase(int playerID){
+        for(RiskView v: views){
+            v.handleEndTurn(playerID);
+        }
+    }
 
     public Board getBoard() {
         return board;

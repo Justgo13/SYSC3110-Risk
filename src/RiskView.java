@@ -497,8 +497,9 @@ public class RiskView extends JPanel {
 
     }
 
-    public void handleEndTurn(){
+    public void handleEndTurn(int playerId){
         textArea.setText("");
+        textArea.append("It is Player "+playerId+"'s turn\n");
         //also make sure to display whos turn it is
     }
 

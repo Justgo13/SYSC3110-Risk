@@ -117,12 +117,13 @@ public class RiskController implements ActionListener{
                 performAttack(attackingCountry,defendingCountry,troopCount);
             }
         }else if (e.getActionCommand().equals("endturn")){
-            if (currentState == attackState.SHOW_DEFENDING_COUNTRIES) {
+            if (currentState == attackState.SHOW_DEFENDING_COUNTRIES || currentState == null) {
                 // disable all attacking countries of current player
                 ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(getAttackingPlayer().getCountriesOwned());
                 countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
 
                 riskModel.incrementTurnIndex(); // moves to next player
+                riskModel.endTurnPhase(riskModel.getBoard().getPlayers().get(riskModel.getTurnIndex()).getId());
                 attack.setEnabled(true);
             }
         } else if (e.getActionCommand().equals("attack")){
