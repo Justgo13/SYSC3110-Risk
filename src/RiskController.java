@@ -77,14 +77,27 @@ public class RiskController implements ActionListener{
     }
 
     private String getAttackingTroopCount(CountryButton attackingCountry) {
+        String[] options = {"OK"};
         int troopCount = attackingCountry.getTroopCount()-1;
-        Object[] troopList = buildTroopDropdownList(troopCount);
-        Object selectionObject = JOptionPane.showInputDialog(riskView, "Select", "Choose Troops", JOptionPane.OK_OPTION, null, troopList, troopList[0]);
-        return selectionObject.toString();
+        Integer[] troopList = buildTroopDropdownList(troopCount);
+        JPanel panel = new JPanel();
+        JLabel label = new JLabel("Select the number of troops to attack with: ");
+        JComboBox comboBox = new JComboBox(troopList);
+        comboBox.setSelectedIndex(0);
+        panel.add(label);
+        panel.add(comboBox);
+        int selectionObject = JOptionPane.showOptionDialog(riskView, panel, "Choose Troops", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        String result = "0";
+        if (selectionObject == JOptionPane.CLOSED_OPTION) {
+        }
+        if (selectionObject == 0) {
+            result = comboBox.getSelectedItem().toString();
+        }
+        return result;
     }
 
-    private Object[] buildTroopDropdownList(int troopCount) {
-        Object[] troopList = new Object[troopCount];
+    private Integer[] buildTroopDropdownList(int troopCount) {
+        Integer[] troopList = new Integer[troopCount];
         // iterates one less to build a list from 1 - troopCount
         for (int i = 0; i < troopList.length; i++) {
             troopList[i] = troopCount;
