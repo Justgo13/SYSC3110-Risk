@@ -496,14 +496,12 @@ public class RiskView extends JPanel {
 
     /**
      * Handles a BattleResultEvent by printing the information to the text area console
-     * @param attackingArmySize The attacking army size
-     * @param defendingArmySize The defending army size
+     * @param bre The BattleResultEvent containing information about the battle results
      */
-    public void handleResultEvent(int attackingArmySize, int defendingArmySize) {
+    public void handleResultEvent(BattleResultEvent bre) {
         textArea.append("Here is the results of the battle: \n" +
-                "Your country troops remaining: " + attackingArmySize+"\n"+
-                "Defending country troops remaining: " + defendingArmySize+"\n\n");
-
+                "Your country troops remaining: " + bre.getAttackingArmySize() +"\n"+
+                "Defending country troops remaining: " + bre.getDefendingArmySize() +"\n\n");
     }
 
     /**
@@ -529,15 +527,14 @@ public class RiskView extends JPanel {
     /**
      * Handles a CountryLostEvent by printing whether or not the player conquered the defending
      * country or not.
-     * @param defendingCountry The defending country being attacked
-     * @param attackingPlayerIndex The current player who is attacking
+     * @param cle The CountryLostEvent that contains information about a country being taken
      */
-    public void handleDefendingCountryLost(Country defendingCountry, int attackingPlayerIndex) {
-        if(defendingCountry.getArmySize() == 0){
-            textArea.append("Player " + attackingPlayerIndex + ", you have taken " + defendingCountry.getName()
-                    + " from Player " + defendingCountry.getPlayer().getId()+"\n");
+    public void handleDefendingCountryLost(CountryLostEvent cle) {
+        if(cle.getDefendingCountry().getArmySize() == 0){
+            textArea.append("Player " + cle.getAttackingPlayerIndex() + ", you have taken " + cle.getDefendingCountry().getName()
+                    + " from Player " + cle.getDefendingCountry().getPlayer().getId()+"\n");
         }else{
-            textArea.append("You have failed to conquer "+ defendingCountry.getName()+"\n");
+            textArea.append("You have failed to conquer "+ cle.getDefendingCountry().getName()+"\n");
         }
     }
 
