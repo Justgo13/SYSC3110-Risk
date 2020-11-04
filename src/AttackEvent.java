@@ -13,7 +13,7 @@ public class AttackEvent extends EventObject {
      * @param defendingCountry a Country referencing the defending country
      */
 
-    public AttackEvent(RiskModel riskModel, Country attackingCountry, Country defendingCountry) {
+    public AttackEvent(RiskGame riskModel, Country attackingCountry, Country defendingCountry) {
         super(riskModel);
         this.attackingCountry = attackingCountry;
         this.defendingCountry = defendingCountry;

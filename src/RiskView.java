@@ -4,10 +4,10 @@ import java.util.HashMap;
 
 public class RiskView extends JPanel {
     private HashMap<String, CountryButton> countryButtons;
-    private RiskModel model;
+    private RiskGame model;
     private HashMap<String, Country> countries;
     private JTextArea textArea;
-    public RiskView(RiskModel model) {
+    public RiskView(RiskGame model) {
         this.model = model;
         this.countries = model.getCountries();
 
