@@ -154,8 +154,23 @@ public class RiskGame {
      * Initial method that is called to start the risk game
      */
     public void playGame() {
-        String numPlayers = JOptionPane.showInputDialog(null, "Please enter the number of players: ");
-        board.setupBoard(Integer.parseInt(numPlayers));
+        String[] options = {"OK"};
+        final String[] players = {"2","3","4","5","6"};
+        JPanel panel = new JPanel();
+        JLabel label = new JLabel("Select the number of players: ");
+        JComboBox comboBox = new JComboBox(players);
+        comboBox.setSelectedIndex(0);
+        panel.add(label);
+        panel.add(comboBox);
+        int numPlayers = JOptionPane.showOptionDialog(null, panel, "Choose Troops", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        String result = "0";
+        while (numPlayers != 0) {
+            numPlayers = JOptionPane.showOptionDialog(null, panel, "Choose Troops", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        }
+        if (numPlayers == 0) {
+            result = comboBox.getSelectedItem().toString();
+        }
+        board.setupBoard(Integer.parseInt(result));
     }
 
     /**
