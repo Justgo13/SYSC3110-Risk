@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ public class RiskController implements ActionListener{
         // converts all countries that the attacking country can attack into their respective country button instance in the view and stores in a list
         ArrayList<CountryButton> defendingCountries = convertCountryToCountryButtons(attackingCountry.getCountry().getAdjacentCountries());
         defendingCountries.forEach(countryButton -> countryButton.setEnabled(true)); // enable all possible countries to attack
-
+        defendingCountries.forEach(countryButton -> countryButton.setBorder(BorderFactory.createLineBorder(Color.yellow, 3)));
         // disables all attacking countries from being pressed
         ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(getAttackingPlayer().getCountriesOwned());
         countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
@@ -112,6 +113,7 @@ public class RiskController implements ActionListener{
         // disable all defending countries of the attacking country
         ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(attackingCountry.getAdjacentCountries());
         countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
+        countryButtons.forEach(countryButton -> countryButton.setBorder(null));
 
         showAttackingCountries(); // re-enable the user to choose countries for continuous attacking
     }

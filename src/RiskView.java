@@ -2,6 +2,7 @@ import org.w3c.dom.Text;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Line2D;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -516,4 +517,5 @@ public class RiskView extends JPanel {
             textArea.append("You have failed to conquer "+ defendingCountry.getName()+"\n");
         }
     }
+
 }
