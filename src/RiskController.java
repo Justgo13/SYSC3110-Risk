@@ -10,7 +10,7 @@ import java.util.HashMap;
  * @author Jason, Harjap
  */
 public class RiskController implements ActionListener{
-    private RiskGame riskModel;
+    private RiskModel riskModel;
     private RiskView riskView;
     private Country attackingCountry;
     private Country defendingCountry;
@@ -21,7 +21,7 @@ public class RiskController implements ActionListener{
     }
     private attackState currentState;
 
-    public RiskController(RiskGame riskModel, RiskView riskView){
+    public RiskController(RiskModel riskModel, RiskView riskView){
         this.riskModel = riskModel;
         this.riskView = riskView;
         this.currentState = null;
