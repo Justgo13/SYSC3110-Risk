@@ -1,7 +1,7 @@
 import javax.swing.*;
 import java.util.*;
 
-public class RiskGame {
+public class RiskModel {
     private Board board;
     private int turnIndex;
 
@@ -10,7 +10,7 @@ public class RiskGame {
     /**
      * Creates an instance of the Risk game
      */
-    public RiskGame()
+    public RiskModel()
     {
         board = new Board();
         turnIndex = 0;
