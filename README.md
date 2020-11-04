@@ -27,7 +27,7 @@ The objective of the game is to conquer as many countries and other player's occ
 4. Run the command **java -jar SYSC3110-Risk.jar**
 
 # Known issues
-- Clicking the close button on the JOptionPane that asks for troops to use will break the game
+- GUI will sometimes resize the text area and button panel when a country button is clicked
 
 # How to play
 The text area on the right hand side will say whose turn it is and will report battle results
