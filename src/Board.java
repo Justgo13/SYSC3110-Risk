@@ -130,7 +130,7 @@ public class Board {
      *
      *
      */
-    public void buildMap() {
+    private void buildMap() {
         for (String countryName : countryNames) {
             countries.put(countryName, new Country(countryName));
         }
@@ -153,7 +153,7 @@ public class Board {
      * @author Jason Gao
      * @param numPlayers number of players in the game
      */
-    public void placePlayers(int numPlayers) {
+    private void placePlayers(int numPlayers) {
         int countryIndex;
         final int TROOPS = players.size() * players.get(0).getInitArmySize();
         int playerCountriesHeld = Math.floorDiv(COUNTRY_COUNT, numPlayers); // evenly divides total regions based on player count
@@ -207,7 +207,7 @@ public class Board {
      *
      * @author Harjap Gill
      */
-    public void setAdjacentCountries(){
+    private void setAdjacentCountries(){
 
         try {
             InputStream inputStream = this.getClass().getResourceAsStream("adjacentCountries.txt");

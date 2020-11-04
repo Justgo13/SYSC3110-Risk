@@ -31,20 +31,8 @@ public class CountryButton extends JButton {
         return troopCount;
     }
 
-    public int getPlayerIndex() {
-        return playerIndex;
-    }
-
     public Country getCountry() {
         return country;
-    }
-
-    public String getContinent() {
-        return continent;
-    }
-
-    public static Color[] getColors() {
-        return colors;
     }
 
     /**

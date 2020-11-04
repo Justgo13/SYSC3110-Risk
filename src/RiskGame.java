@@ -51,7 +51,7 @@ public class RiskGame {
 
         checkDefenderLostCountry(defendingCountry, attackingCountry, numOfAttackers);
 
-        battleResult(defendingCountry.getArmySize(), attackingCountry.getArmySize());
+        updateBattleResults(defendingCountry.getArmySize(), attackingCountry.getArmySize());
 
         if(board.checkWinner()){
             System.out.println("Congratulations, "+board.getPlayers().get(0).getName()+". You won!");
@@ -85,7 +85,7 @@ public class RiskGame {
      * @param numOfAttackers the size of the attacking army
      * @return List of the randomly generated dice rolls
      */
-    public  ArrayList<Integer> attackingDiceInitialization(int numOfAttackers){
+    private  ArrayList<Integer> attackingDiceInitialization(int numOfAttackers){
         Random random = new Random();
         ArrayList<Integer> attackerDice = new ArrayList<>();
         // initialize attacker dice values
@@ -106,7 +106,7 @@ public class RiskGame {
      * @param attackingCountry the country that is attacking
      * @param numOfAttackers the size of the attacking army
      */
-    public void attackPhase(Country defendingCountry, Country attackingCountry, ArrayList<Integer> attackerDice, ArrayList<Integer> defenderDice, int numOfAttackers){
+    private void attackPhase(Country defendingCountry, Country attackingCountry, ArrayList<Integer> attackerDice, ArrayList<Integer> defenderDice, int numOfAttackers){
         for (int i = defenderDice.size(); i > 0; i--) {
             if (attackerDice.size() == 0) {
                 break;
@@ -136,8 +136,8 @@ public class RiskGame {
      * @param attackingCountry the attacking country
      * @param numOfAttackers the size of the attacking army
      */
-    public void checkDefenderLostCountry(Country defendingCountry, Country attackingCountry, int numOfAttackers){
-        defendingCountryLost(defendingCountry, board.getPlayers().get(turnIndex).getId());
+    private void checkDefenderLostCountry(Country defendingCountry, Country attackingCountry, int numOfAttackers){
+        updateCountryLost(defendingCountry, board.getPlayers().get(turnIndex).getId());
         if (defendingCountry.getArmySize() == 0) {
             defendingCountry.getPlayer().removeCountry(defendingCountry); // removes the lost country from the defending player
             defendingCountry.setPlayer(attackingCountry.getPlayer()); // assigns country to the dominating player
@@ -199,9 +199,9 @@ public class RiskGame {
      * @param defendingArmySize The defending country army size
      * @param attackingArmySize The attacking coutnry army size
      */
-    public void battleResult(int defendingArmySize, int attackingArmySize){
+    public void updateBattleResults(int defendingArmySize, int attackingArmySize){
         for(RiskView v : views){
-            v.handleResultEvent(attackingArmySize, defendingArmySize);
+            v.handleResultEvent(new BattleResultEvent(attackingArmySize, defendingArmySize));
         }
     }
 
@@ -223,9 +223,9 @@ public class RiskGame {
      * @param defendingCountry The defending country that was taken
      * @param attackingPlayerIndex The player who took the country
      */
-    public void defendingCountryLost(Country defendingCountry, int attackingPlayerIndex){
+    public void updateCountryLost(Country defendingCountry, int attackingPlayerIndex){
         for(RiskView v: views){
-            v.handleDefendingCountryLost(defendingCountry, attackingPlayerIndex);
+            v.handleDefendingCountryLost(new CountryLostEvent(defendingCountry, attackingPlayerIndex));
         }
 
     }
