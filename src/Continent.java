@@ -1,5 +1,9 @@
 import java.util.ArrayList;
 
+/**
+ * Creates a continent object for holding countries and assigning bonus army to players
+ * @author Shashaank
+ */
 public class Continent {
     private String name;
     private int bonusArmy;
@@ -10,28 +14,19 @@ public class Continent {
         this.bonusArmy = bonusArmy;
         countries = new ArrayList<>();
     }
-    /**
-    Author: Shashaank
-    */
+
     public void addCountry(Country country) {
         countries.add(country);
     }
 
-    /**
-    Author: Shashaank
-    */
     public String getName() {
         return name;
     }
-    /**
-    Author: Shashaank
-    */
+
     public int getBonusArmy() {
         return bonusArmy;
     }
-    /**
-    Author: Shashaank
-    */
+
     public ArrayList<Country> getCountries() {
         return countries;
     }

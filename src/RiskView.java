@@ -1,11 +1,6 @@
-import org.w3c.dom.Text;
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.Line2D;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.ArrayList;
 
 public class RiskView extends JPanel {
     private HashMap<String, CountryButton> countryButtons;
@@ -462,10 +457,15 @@ public class RiskView extends JPanel {
 
         viewConstraints.gridx = 1;
         viewConstraints.gridy = 0;
+        viewConstraints.ipadx = 120;
 
+        // create a text area for printing game events to a console and added a scrollPane in case of long turns
         textArea = new JTextArea();
+        JScrollPane scroll = new JScrollPane(textArea);
+        scroll.setPreferredSize(textArea.getPreferredSize());
+        textArea.append("It is Player "+ model.getBoard().getPlayers().get(model.getTurnIndex()).getId() +"'s turn\n");
         textArea.setEditable(false);
-        add(textArea, viewConstraints);
+        add(scroll, viewConstraints);
 
     }
 
@@ -473,7 +473,11 @@ public class RiskView extends JPanel {
         return countryButtons;
     }
 
-
+    /**
+     * Handles an AttackEvent by telling the respective countries to update their visuals which include
+     * color and button text
+     * @param ae The AttackEvent which contains information about a completed attack
+     */
     public void handleAttackEvent(AttackEvent ae){
         Country attackingCountry = ae.getAttackingCountry();
         Country defendingCountry = ae.getDefendingCountry();
@@ -490,25 +494,44 @@ public class RiskView extends JPanel {
 
     }
 
-
+    /**
+     * Handles a BattleResultEvent by printing the information to the text area console
+     * @param attackingArmySize The attacking army size
+     * @param defendingArmySize The defending army size
+     */
     public void handleResultEvent(int attackingArmySize, int defendingArmySize) {
         textArea.append("Here is the results of the battle: \n" +
                 "Your country troops remaining: " + attackingArmySize+"\n"+
-                "Defending country troops remaining: " + defendingArmySize+"\n");
+                "Defending country troops remaining: " + defendingArmySize+"\n\n");
 
     }
 
+    /**
+     * Handles an EndTurnEvent by printing the information to the text area console
+     * @param playerId The next player's ID
+     */
     public void handleEndTurn(int playerId){
         textArea.setText("");
         textArea.append("It is Player "+playerId+"'s turn\n");
         //also make sure to display whos turn it is
     }
 
+    /**
+     * Handles a DiceRollEvent by printing the attacker and defender max rolls to the text area console
+     * @param attackerMax The max roll of the attacking player
+     * @param defenderMax The max roll of the defending country
+     */
     public void handleDiceRolls(int attackerMax, int defenderMax) {
         textArea.append("Attacker rolled: " + attackerMax+"\n"+
                 "Defender rolled: " + defenderMax+"\n");
     }
 
+    /**
+     * Handles a CountryLostEvent by printing whether or not the player conquered the defending
+     * country or not.
+     * @param defendingCountry The defending country being attacked
+     * @param attackingPlayerIndex The current player who is attacking
+     */
     public void handleDefendingCountryLost(Country defendingCountry, int attackingPlayerIndex) {
         if(defendingCountry.getArmySize() == 0){
             textArea.append("Player " + attackingPlayerIndex + ", you have taken " + defendingCountry.getName()

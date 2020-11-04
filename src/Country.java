@@ -1,5 +1,9 @@
 import java.util.ArrayList;
 
+/**
+ * Creates a country that holds information such as current player and troop count which is used as data for the model.
+ * @author Jason
+ */
 public class Country {
     private String name;
     private Player player;

@@ -1,6 +1,11 @@
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Creates a specialized JButton with extra information such as the corresponding country instance,
+ * player holding the country, color, and troop count
+ * @author Shashaank
+ */
 public class CountryButton extends JButton {
     private int troopCount;
     private int playerIndex; // Will work once initialization is complete for the GUI
@@ -8,12 +13,8 @@ public class CountryButton extends JButton {
     private String continent;
     private static final Color[] colors = {Color.red, Color.blue, Color.pink, Color.gray, Color.orange, Color.green};
 
-
-
-
     /**
-     * Author: Shashaank Srivastava
-     * instantiating fields and populating data that needs to be held
+     * Instantiating fields and populating data that needs to be held
      * by the country button class
      * @param country country to get data such as continent and other info from
      */
@@ -47,10 +48,9 @@ public class CountryButton extends JButton {
     }
 
     /**
-     * Author:Shashaank
-     * Will update the Countrybuttons text fields to display the updated information
+     * Will update the Country buttons text field to display the updated information
      * after events have been carried out
-     * e.g. new color for new country owner, new troopcount
+     * e.g. new color for new country owner, new troop count
      */
     public void update(){
         updateFields();
@@ -62,8 +62,7 @@ public class CountryButton extends JButton {
 }
 
     /**
-     * Author: Shashaank
-     * updating the fields so they can be used directly
+     * Updated the troop count and player holding the current country
      */
     private void updateFields(){
         this.troopCount = country.getArmySize();
