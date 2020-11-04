@@ -86,6 +86,7 @@ public class RiskController implements ActionListener{
         // disables all attacking countries from being pressed
         ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(getAttackingPlayer().getCountriesOwned());
         countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
+        countryButtons.forEach(countryButton -> countryButton.setBorder(null));
 
         currentState = attackState.COMMENCE_ATTACK;
 
@@ -109,12 +110,11 @@ public class RiskController implements ActionListener{
         panel.add(label);
         panel.add(comboBox);
         int selectionObject = JOptionPane.showOptionDialog(riskView, panel, "Choose Troops", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-        String result = "0";
-        if (selectionObject == JOptionPane.CLOSED_OPTION) {
+        String result;
+        while (selectionObject != 0) {
+            selectionObject = JOptionPane.showOptionDialog(riskView, panel, "Choose Troops", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         }
-        if (selectionObject == 0) {
-            result = comboBox.getSelectedItem().toString();
-        }
+        result = comboBox.getSelectedItem().toString();
         return result;
     }
 
