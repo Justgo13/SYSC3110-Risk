@@ -1,7 +1,10 @@
-public class CountryLostEvent {
+import java.util.EventObject;
+
+public class CountryLostEvent extends EventObject {
     private Country defendingCountry;
     private int attackingPlayerIndex;
-    public CountryLostEvent(Country defendingCountry, int attackingPlayerIndex) {
+    public CountryLostEvent(RiskModel riskModel, Country defendingCountry, int attackingPlayerIndex) {
+        super(riskModel);
         this.defendingCountry = defendingCountry;
         this.attackingPlayerIndex = attackingPlayerIndex;
     }

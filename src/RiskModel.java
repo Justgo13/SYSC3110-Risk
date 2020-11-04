@@ -1,7 +1,7 @@
 import javax.swing.*;
 import java.util.*;
 
-public class RiskGame {
+public class RiskModel {
     private Board board;
     private int turnIndex;
 
@@ -10,7 +10,7 @@ public class RiskGame {
     /**
      * Creates an instance of the Risk game
      */
-    public RiskGame()
+    public RiskModel()
     {
         board = new Board();
         turnIndex = 0;
@@ -201,7 +201,7 @@ public class RiskGame {
      */
     public void updateBattleResults(int defendingArmySize, int attackingArmySize){
         for(RiskView v : views){
-            v.handleResultEvent(new BattleResultEvent(attackingArmySize, defendingArmySize));
+            v.handleResultEvent(new BattleResultEvent(this,attackingArmySize, defendingArmySize));
         }
     }
 
@@ -225,7 +225,7 @@ public class RiskGame {
      */
     public void updateCountryLost(Country defendingCountry, int attackingPlayerIndex){
         for(RiskView v: views){
-            v.handleDefendingCountryLost(new CountryLostEvent(defendingCountry, attackingPlayerIndex));
+            v.handleDefendingCountryLost(new CountryLostEvent(this, defendingCountry, attackingPlayerIndex));
         }
 
     }
