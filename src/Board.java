@@ -16,8 +16,8 @@ public class Board {
     private  ArrayList<Integer> continentBonusArmies;
 
     /**
-    * Authors: Jason, Harjap, Shashaank
-    * Initializing fields
+    * @author Jason, Harjap, Shashaank
+    * Initializes data structures such as HashMaps and ArrayLists to store countries, players, and continents
     */
     public Board() {
         numOfPlayers = 0; // will be changed at runtime
@@ -146,8 +146,9 @@ public class Board {
     }
 
     /**
-     * Place players on random countries based on the number of players. Distribute troops to the various countries
-     * randomly ensuring every country has at least one troop.
+     * Place players on countries based on the number of players. Distribute troops to the various countries
+     * randomly ensuring every country has at least one troop. Places extra troops for each player after the initial
+     * troop placement is over.
      *
      * @author Jason Gao
      * @param numPlayers number of players in the game
@@ -243,24 +244,10 @@ public class Board {
     }
 
     /**
-     * Shows all countries along with the player that owns it and the number of troops that are found on the country
-     *
-     * @author Jason Gao
+     * Checks if a player has won the game
+     * @author Albara'a
+     * @return true if a player has won, false otherwise
      */
-
-    public void showMap() {
-        for (Player player : players) {
-            for (Country country : player.getCountriesOwned()) {
-                System.out.println("Player " + player.getId() + ", " + country.getName() + ", Troops: " + country.getArmySize());
-            }
-        }
-    }
-
-    /**
-     * Checks if one of the players has won the game
-     *
-    * Author: Albaraa
-    */
     public boolean checkWinner(){
         if(players.size()==1){
             return true;

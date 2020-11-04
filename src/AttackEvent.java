@@ -8,9 +8,9 @@ public class AttackEvent extends EventObject {
     /**
      * Attack Event to update the view after an attack has taken place
      *
-     * @param riskModel
-     * @param attackingCountry
-     * @param defendingCountry
+     * @param riskModel the risk model containing the game data
+     * @param attackingCountry a Country referencing the attacking country
+     * @param defendingCountry a Country referencing the defending country
      */
 
     public AttackEvent(RiskGame riskModel, Country attackingCountry, Country defendingCountry) {

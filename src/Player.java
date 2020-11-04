@@ -32,10 +32,6 @@ public class Player {
         return countriesOwned;
     }
 
-    public int getArmiesToPlace() {
-        return armiesToPlace;
-    }
-
     public String getName() {
         return name;
     }

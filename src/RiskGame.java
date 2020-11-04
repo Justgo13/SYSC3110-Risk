@@ -1,8 +1,8 @@
+import javax.swing.*;
 import java.util.*;
 
 public class RiskGame {
     private Board board;
-    private Parser parser;
     private int turnIndex;
 
     private List<RiskView> views;
@@ -13,22 +13,18 @@ public class RiskGame {
     public RiskGame()
     {
         board = new Board();
-        parser = new Parser();
         turnIndex = 0;
         views = new ArrayList<>();
     }
 
-    /**
-     * Author: Shashaank
-     * @return the hashmap that contains all of the country objects
-     */
     public HashMap<String,Country> getCountries(){
         return board.getCountries();
     }
 
     /**
-     * The attack method simulates the risk battle between one attacking country and one defending country and will
-     * update the board based on the outcome of the battle
+     * The attack method simulates the risk battle between one attacking country and one defending country
+     * by randomly generating dice values corresponding to how many attacker and defender there are.
+     * The board will then be updated by notifying the respective view.
      *
      * @author Jason Gao
      *
@@ -63,12 +59,13 @@ public class RiskGame {
         }
         updateAttackView(attackingCountry, defendingCountry);
     }
-    /**
-     * initializes the defending country dice
-     * @param defendingArmySize the size of the defending army
-     * @return ArrayList of Integers
-     */
 
+    /**
+     * Initializes the defending country dice roll through random generation
+     * @author Albara'a
+     * @param defendingArmySize the size of the defending army
+     * @return List of the randomly generated dice rolls
+     */
     public ArrayList<Integer> defendingDiceInitialization(int defendingArmySize){
         Random random = new Random();
         ArrayList<Integer> defenderDice = new ArrayList<>();
@@ -83,9 +80,10 @@ public class RiskGame {
     }
 
     /**
-     * initializes the attacking country dice
+     * Initializes the attacking country dice roll through random generation
+     * @author Albara'a
      * @param numOfAttackers the size of the attacking army
-     * @return an ArrayList of Integers
+     * @return List of the randomly generated dice rolls
      */
     public  ArrayList<Integer> attackingDiceInitialization(int numOfAttackers){
         Random random = new Random();
@@ -99,14 +97,14 @@ public class RiskGame {
     }
 
     /**
-     * The calculations done after an attack has occured between an attacking
-     * and defending country
-     * @param defenderDice the defending country's dice arraylist
-     * @param attackerDice the attacking country's dice arraylist
+     * Performs the attack between the attacking country and defending country and will remove troops from their
+     * respective countries based on the result of the dice rolls.
+     * @author Albara'a
+     * @param defenderDice the defending country's dice rolls
+     * @param attackerDice the attacking country's dice rolls
      * @param defendingCountry the country that is defending
      * @param attackingCountry the country that is attacking
      * @param numOfAttackers the size of the attacking army
-     * @return void
      */
     public void attackPhase(Country defendingCountry, Country attackingCountry, ArrayList<Integer> attackerDice, ArrayList<Integer> defenderDice, int numOfAttackers){
         for (int i = defenderDice.size(); i > 0; i--) {
@@ -131,8 +129,9 @@ public class RiskGame {
     }
 
     /**
-     * Checks if the defending country had lost the battle between the attacking country.
-     * If so, calculations are made to the troop numbers
+     * Once the defending country is seized by the attacking player, the number of troops remaining in the attack
+     * will move into the defending country.
+     * @author Albara'a
      * @param defendingCountry the defending country
      * @param attackingCountry the attacking country
      * @param numOfAttackers the size of the attacking army
@@ -153,29 +152,25 @@ public class RiskGame {
 
     /**
      * Initial method that is called to start the risk game
-     * @author Jason Gao, Harjap Gill, Shashaank Srivastava, Albaraa Salem
      */
     public void playGame() {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Welcome to Risk! Please enter how many players are playing: ");
-        int numPlayers = sc.nextInt();
-
-        board.setupBoard(numPlayers);
-
-        //board.testConfiguration();
-
-        boolean gameOver = false;
+        String numPlayers = JOptionPane.showInputDialog(null, "Please enter the number of players: ");
+        board.setupBoard(Integer.parseInt(numPlayers));
     }
 
+    /**
+     * Adds a view to listen to changes in the model
+     * @param view The view instance containing the map and text area console
+     */
     public void addRiskView(RiskView view){
         views.add(view);
     }
 
     /**
-     * After an attack has taken place, update the view to reflect the results
-     *
-     * @param attackingCountry
-     * @param defendingCountry
+     * Notifies the view that an AttackEvent has occurred
+     * @author Albara'a
+     * @param attackingCountry The attacking country
+     * @param defendingCountry The country being attacked
      */
     public void updateAttackView(Country attackingCountry, Country defendingCountry){
         for (RiskView v : views){
@@ -184,10 +179,10 @@ public class RiskGame {
     }
 
     /**
-     * Displays the result of the battle between an attacking country and
-     * defending country
-     * @param defendingArmySize
-     * @param attackingArmySize
+     * Notifies the view that a battle result event needs to be printed
+     * @author Albara'a
+     * @param defendingArmySize The defending country army size
+     * @param attackingArmySize The attacking coutnry army size
      */
     public void battleResult(int defendingArmySize, int attackingArmySize){
         for(RiskView v : views){
@@ -196,9 +191,10 @@ public class RiskGame {
     }
 
     /**
-     * Notifying the views to handle dice rolls
-     * @param attackerMax
-     * @param defenderMax
+     * Notifying the views to handle a dice roll event
+     * @author Albara'a
+     * @param attackerMax The highest dice roll the attacking player rolled
+     * @param defenderMax The highest dice roll of the defending country
      */
     public void diceResult(int attackerMax, int defenderMax){
         for(RiskView v : views){
@@ -206,6 +202,12 @@ public class RiskGame {
         }
     }
 
+    /**
+     * Notifies the view to handle a country being taken over event
+     * @author Albara'a
+     * @param defendingCountry The defending country that was taken
+     * @param attackingPlayerIndex The player who took the country
+     */
     public void defendingCountryLost(Country defendingCountry, int attackingPlayerIndex){
         for(RiskView v: views){
             v.handleDefendingCountryLost(defendingCountry, attackingPlayerIndex);
@@ -213,6 +215,11 @@ public class RiskGame {
 
     }
 
+    /**
+     * Notifies the view that a turn has ended
+     * @author Albara'a
+     * @param playerID The ID of the next player
+     */
     public void endTurnPhase(int playerID){
         for(RiskView v: views){
             v.handleEndTurn(playerID);
