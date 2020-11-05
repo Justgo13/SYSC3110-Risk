@@ -26,7 +26,7 @@ public class RiskModel {
      * by randomly generating dice values corresponding to how many attacker and defender there are.
      * The board will then be updated by notifying the respective view.
      *
-     * @author Jason Gao
+     * @author Jason Gao, Albara'a
      *
      * @param attackingCountry Country that is initializing the battle
      * @param defendingCountry Country that is defending against an attack
@@ -152,6 +152,7 @@ public class RiskModel {
 
     /**
      * Initial method that is called to start the risk game
+     * @author Jason
      */
     public void playGame() {
         String[] options = {"OK"};
@@ -175,6 +176,7 @@ public class RiskModel {
 
     /**
      * Adds a view to listen to changes in the model
+     * @author Harjap
      * @param view The view instance containing the map and text area console
      */
     public void addRiskView(RiskView view){

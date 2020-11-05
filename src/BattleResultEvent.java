@@ -1,5 +1,9 @@
 import java.util.EventObject;
 
+/**
+ * An event containing information about a battle result
+ * @author Jason
+ */
 public class BattleResultEvent extends EventObject {
     private int attackingArmySize;
     private int defendingArmySize;

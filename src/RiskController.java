@@ -29,6 +29,7 @@ public class RiskController implements ActionListener{
 
     /**
      * Takes in countries and returns a list of their corresponding country button instances from RiskView
+     * @author Harjap
      * @param countries A list of all countries the player can use to attack
      * @return A list of all the CountryButton instances
      */
@@ -48,6 +49,7 @@ public class RiskController implements ActionListener{
 
     /**
      * Gets the current player who is attacking
+     * @author Jason
      * @return An instance of Player corresponding to the attacking player
      */
     private Player getAttackingPlayer() {
@@ -58,6 +60,7 @@ public class RiskController implements ActionListener{
 
     /**
      * Enables the attacking players CountryButton so that they may choose a country to attack from
+     * @author Jason
      */
     private void showAttackingCountries() {
         // get all the Country Buttons that the current player owns
@@ -73,6 +76,7 @@ public class RiskController implements ActionListener{
 
     /**
      * Highlights all the countries the attacking player can attack from by creating a border around it
+     * @author Jason
      * @param e An ActionEvent corresponding to the event created when a CountryButton was clicked
      * @return The number of troops that the player chose to use in attacking the country
      */
@@ -96,6 +100,7 @@ public class RiskController implements ActionListener{
 
     /**
      * Creates a dialog box with a dropdown list asking the user for the number of troops they want to attack with
+     * @author Jason
      * @param attackingCountry The country the player is attacking from
      * @return The number of troops the player chose to attack with
      */
@@ -121,6 +126,7 @@ public class RiskController implements ActionListener{
     /**
      * Create a list of Integers with the different amount of troops the player can use to attack with
      * which ranges from 1..n-1
+     * @author Jason
      * @param troopCount The number of troops available to attack with
      * @return A Integer list containing the different options of troops the player can attack with
      */
@@ -137,6 +143,7 @@ public class RiskController implements ActionListener{
     /**
      * Handles the behaviour behind executing an attack by calling on the respective method in the model.
      * This method also deals with setting up a continuous attack phase in case the user would like to attack again.
+     * @author Jason
      * @param attackingCountry The country the user is attacking from
      * @param defendingCountry The country the user is attacking
      * @param troopCount The number of troops from the attacking country used to attack

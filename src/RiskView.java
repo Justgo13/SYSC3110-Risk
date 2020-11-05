@@ -2,11 +2,22 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 
+/**
+ * A view class that represents the map and text area that a user will see change dynamically
+ * over the course of the Risk Game
+ * @author Jason, Albrara'a
+ */
 public class RiskView extends JPanel {
     private HashMap<String, CountryButton> countryButtons;
     private RiskModel model;
     private HashMap<String, Country> countries;
     private JTextArea textArea;
+
+    /**
+     * Creates the Risk map with country buttons
+     * @author Jason
+     * @param model The model containing data about the Risk game
+     */
     public RiskView(RiskModel model) {
         this.model = model;
         this.countries = model.getCountries();
@@ -476,6 +487,7 @@ public class RiskView extends JPanel {
     /**
      * Handles an AttackEvent by telling the respective countries to update their visuals which include
      * color and button text
+     * @author Albara'a
      * @param ae The AttackEvent which contains information about a completed attack
      */
     public void handleAttackEvent(AttackEvent ae){
@@ -496,6 +508,7 @@ public class RiskView extends JPanel {
 
     /**
      * Handles a BattleResultEvent by printing the information to the text area console
+     * @author Albara'a
      * @param bre The BattleResultEvent containing information about the battle results
      */
     public void handleResultEvent(BattleResultEvent bre) {
@@ -506,6 +519,7 @@ public class RiskView extends JPanel {
 
     /**
      * Handles an EndTurnEvent by printing the information to the text area console
+     * @author Albara'a
      * @param playerId The next player's ID
      */
     public void handleEndTurn(int playerId){
@@ -516,6 +530,7 @@ public class RiskView extends JPanel {
 
     /**
      * Handles a DiceRollEvent by printing the attacker and defender max rolls to the text area console
+     * @author Albara'a
      * @param attackerMax The max roll of the attacking player
      * @param defenderMax The max roll of the defending country
      */
@@ -527,6 +542,7 @@ public class RiskView extends JPanel {
     /**
      * Handles a CountryLostEvent by printing whether or not the player conquered the defending
      * country or not.
+     * @author Albara'a
      * @param cle The CountryLostEvent that contains information about a country being taken
      */
     public void handleDefendingCountryLost(CountryLostEvent cle) {

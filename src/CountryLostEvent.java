@@ -1,5 +1,9 @@
 import java.util.EventObject;
 
+/**
+ * An event containing information about a country that was seized in an attack
+ * @author Jason
+ */
 public class CountryLostEvent extends EventObject {
     private Country defendingCountry;
     private int attackingPlayerIndex;

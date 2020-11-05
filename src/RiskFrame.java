@@ -1,6 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Creates a JFrame for the Risk game containing a button panel and view class
+ * @author Jason
+ */
 public class RiskFrame extends JFrame {
     public RiskFrame() {
         super("Risk!");
