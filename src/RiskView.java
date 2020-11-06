@@ -3,6 +3,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 /**
@@ -15,7 +16,7 @@ public class RiskView extends JPanel {
     private RiskModel model;
     private HashMap<String, Country> countries;
     private JTextArea textArea;
-    private ArrayList<JButton> dice;
+    private ArrayList<JButton> diceJButtons;
 
     private ArrayList<Image> diceIcons;
 
@@ -489,7 +490,7 @@ public class RiskView extends JPanel {
 
         // Setting Up Dice Rolls Display
 
-        dice = new ArrayList<JButton>();
+        diceJButtons = new ArrayList<JButton>();
 
         viewConstraints.gridx = 1;
         viewConstraints.gridy = 1;
@@ -509,20 +510,25 @@ public class RiskView extends JPanel {
         JButton defendDice2 = new JButton();
         attackDice1.setActionCommand("defend2");
 
-        dice.add(attackDice1);
-        dice.add(attackDice2);
-        dice.add(attackDice3);
-        dice.add(defendDice1);
-        dice.add(defendDice2);
+        diceJButtons.add(attackDice1);
+        diceJButtons.add(attackDice2);
+        diceJButtons.add(attackDice3);
+        diceJButtons.add(defendDice1);
+        diceJButtons.add(defendDice2);
+
 
 
         dicePanel.setLayout(new GridLayout(4,2));
         dicePanel.add(new JLabel("Attacking Dice"));
         dicePanel.add(new JLabel("Defending Dice"));
 
-        for (JButton die: dice){
-            dicePanel.add(die);
-        }
+
+        dicePanel.add(attackDice1);
+        dicePanel.add(defendDice1);
+        dicePanel.add(attackDice2);
+        dicePanel.add(defendDice2);
+        dicePanel.add(attackDice3);
+
 
         // Setting up Dice Icons
         diceIcons = new ArrayList<Image>();
@@ -565,6 +571,7 @@ public class RiskView extends JPanel {
             }
         }
 
+
     }
 
     /**
@@ -598,11 +605,43 @@ public class RiskView extends JPanel {
     public void handleDiceRolls(DiceEvent de) {
         ArrayList<Integer> attackingDice = de.getAttackerDice();
         ArrayList<Integer> defendingDice = de.getDefenderDice();
-        /*
-        textArea.append("Attacker rolled: " + attackerMax+"\n"+
-                "Defender rolled: " + defenderMax+"\n");
 
-         */
+        Collections.sort(attackingDice, Collections.reverseOrder());
+        Collections.sort(defendingDice, Collections.reverseOrder());
+
+        // Clear Dice JButtons before getting new Icons
+        for (JButton jb: diceJButtons){
+            jb.setVisible(false);
+        }
+
+        for (int i=0; i < attackingDice.size(); i++){
+            int diceNum = attackingDice.get(i);
+            setDiceIcon(diceJButtons.get(i), diceNum);
+            diceJButtons.get(i).setVisible(true);
+        }
+
+        for (int i=0; i < defendingDice.size(); i++){
+            int diceNum = defendingDice.get(i);
+            setDiceIcon(diceJButtons.get(i+3), diceNum);
+            diceJButtons.get(i+3).setVisible(true);
+        }
+
+        String attackNums = "";
+        for(int i: attackingDice){
+            attackNums += " " + i;
+        }
+
+        String defendNums = "";
+        for(int i: defendingDice){
+            defendNums += " " + i;
+        }
+
+
+
+        textArea.append("Attacker rolled: " + attackNums+"\n"+
+                "Defender rolled: " + defendNums+"\n");
+
+
     }
 
     /**
@@ -620,10 +659,10 @@ public class RiskView extends JPanel {
         }
     }
 
-    public void setDiceIcon(int diceNum, int selectedDice){
+    public void setDiceIcon(JButton diceJButton, int diceNum){
         ImageIcon icon = new ImageIcon(diceIcons.get(diceNum-1));
 
-        dice.get(selectedDice-1).setIcon(icon);
+        diceJButton.setIcon(icon);
 
     }
 

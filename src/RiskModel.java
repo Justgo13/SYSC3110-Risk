@@ -47,6 +47,9 @@ public class RiskModel {
         ArrayList<Integer> attackerDice = attackingDiceInitialization(numOfAttackers);
         ArrayList<Integer> defenderDice = defendingDiceInitialization(defendingCountry.getArmySize());
 
+        // Update the Dice results
+        updateDiceResult(attackerDice, defenderDice);
+
         attackPhase(defendingCountry, attackingCountry, attackerDice, defenderDice, numOfAttackers);
 
         checkDefenderLostCountry(defendingCountry, attackingCountry, numOfAttackers);
@@ -58,6 +61,7 @@ public class RiskModel {
             System.exit(0);
         }
         updateAttackView(attackingCountry, defendingCountry);
+
     }
 
     /**
@@ -107,13 +111,14 @@ public class RiskModel {
      * @param numOfAttackers the size of the attacking army
      */
     private void attackPhase(Country defendingCountry, Country attackingCountry, ArrayList<Integer> attackerDice, ArrayList<Integer> defenderDice, int numOfAttackers){
+
         for (int i = defenderDice.size(); i > 0; i--) {
             if (attackerDice.size() == 0) {
                 break;
             }
             Integer attackerMax = Collections.max(attackerDice);
             Integer defenderMax = Collections.max(defenderDice);
-            updateDiceResult(attackerDice, defenderDice);
+
             if (attackerMax > defenderMax) { // attackers win
                 defendingCountry.removeArmy();
             } else { // defenders win
