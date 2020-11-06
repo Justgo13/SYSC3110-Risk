@@ -92,6 +92,11 @@ public class RiskModel {
     private  ArrayList<Integer> attackingDiceInitialization(int numOfAttackers){
         Random random = new Random();
         ArrayList<Integer> attackerDice = new ArrayList<>();
+        // If number of attackers exceeds 3, set it to 3
+        if (numOfAttackers > 3){
+            numOfAttackers = 3;
+        }
+
         // initialize attacker dice values
         for (int i = 0; i < numOfAttackers; i++) {
             attackerDice.add(random.nextInt(6)+1);
