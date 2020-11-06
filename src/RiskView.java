@@ -1,5 +1,7 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -14,6 +16,8 @@ public class RiskView extends JPanel {
     private HashMap<String, Country> countries;
     private JTextArea textArea;
     private ArrayList<JButton> dice;
+
+    private ArrayList<Image> diceIcons;
 
     /**
      * Creates the Risk map with country buttons
@@ -520,12 +524,19 @@ public class RiskView extends JPanel {
             dicePanel.add(die);
         }
 
+        // Setting up Dice Icons
+        diceIcons = new ArrayList<Image>();
 
+        try{
+            for (int i = 1; i< 7;i++) {
+                InputStream inputStream = this.getClass().getResourceAsStream(i+ ".png");
+                diceIcons.add(ImageIO.read(inputStream));
 
+            }
 
-
-
-
+        }catch(Exception e){
+            System.out.println(e);
+        }
 
 
     }
@@ -587,7 +598,6 @@ public class RiskView extends JPanel {
     public void handleDiceRolls(DiceEvent de) {
         ArrayList<Integer> attackingDice = de.getAttackerDice();
         ArrayList<Integer> defendingDice = de.getDefenderDice();
-
         /*
         textArea.append("Attacker rolled: " + attackerMax+"\n"+
                 "Defender rolled: " + defenderMax+"\n");
@@ -608,6 +618,13 @@ public class RiskView extends JPanel {
         }else{
             textArea.append("You have failed to conquer "+ cle.getDefendingCountry().getName()+"\n");
         }
+    }
+
+    public void setDiceIcon(int diceNum, int selectedDice){
+        ImageIcon icon = new ImageIcon(diceIcons.get(diceNum-1));
+
+        dice.get(selectedDice-1).setIcon(icon);
+
     }
 
 }
