@@ -33,21 +33,18 @@ public class RiskFrame extends JFrame {
         controlPanelConstraints.gridx = 0;
         controlPanelConstraints.gridy = 1;
         controlPanelConstraints.gridwidth = 1;
-        controlPanelConstraints.anchor = GridBagConstraints.LAST_LINE_END;
         JButton reinforce = new JButton("REINFORCE");
         reinforce.setEnabled(false);
         panel.add(reinforce, controlPanelConstraints);
 
         controlPanelConstraints.gridx = 1;
         controlPanelConstraints.gridy = 1;
-        controlPanelConstraints.anchor = GridBagConstraints.LAST_LINE_END;
         JButton attack = new JButton("ATTACK");
         attack.setEnabled(true);
         panel.add(attack, controlPanelConstraints);
 
         controlPanelConstraints.gridx = 2;
         controlPanelConstraints.gridy = 1;
-        controlPanelConstraints.anchor = GridBagConstraints.LAST_LINE_END;
         JButton endturn = new JButton("END TURN");
         endturn.setEnabled(true);
         panel.add(endturn, controlPanelConstraints);
