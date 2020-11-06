@@ -47,6 +47,9 @@ public class RiskModel {
         ArrayList<Integer> attackerDice = attackingDiceInitialization(numOfAttackers);
         ArrayList<Integer> defenderDice = defendingDiceInitialization(defendingCountry.getArmySize());
 
+        // Update the Dice results
+        updateDiceResult(attackerDice, defenderDice);
+
         attackPhase(defendingCountry, attackingCountry, attackerDice, defenderDice, numOfAttackers);
 
         checkDefenderLostCountry(defendingCountry, attackingCountry, numOfAttackers);
@@ -58,6 +61,7 @@ public class RiskModel {
             System.exit(0);
         }
         updateAttackView(attackingCountry, defendingCountry);
+
     }
 
     /**
@@ -88,6 +92,11 @@ public class RiskModel {
     private  ArrayList<Integer> attackingDiceInitialization(int numOfAttackers){
         Random random = new Random();
         ArrayList<Integer> attackerDice = new ArrayList<>();
+        // If number of attackers exceeds 3, set it to 3
+        if (numOfAttackers > 3){
+            numOfAttackers = 3;
+        }
+
         // initialize attacker dice values
         for (int i = 0; i < numOfAttackers; i++) {
             attackerDice.add(random.nextInt(6)+1);
@@ -107,13 +116,14 @@ public class RiskModel {
      * @param numOfAttackers the size of the attacking army
      */
     private void attackPhase(Country defendingCountry, Country attackingCountry, ArrayList<Integer> attackerDice, ArrayList<Integer> defenderDice, int numOfAttackers){
+
         for (int i = defenderDice.size(); i > 0; i--) {
             if (attackerDice.size() == 0) {
                 break;
             }
             Integer attackerMax = Collections.max(attackerDice);
             Integer defenderMax = Collections.max(defenderDice);
-            diceResult(attackerMax, defenderMax);
+
             if (attackerMax > defenderMax) { // attackers win
                 defendingCountry.removeArmy();
             } else { // defenders win
@@ -210,12 +220,13 @@ public class RiskModel {
     /**
      * Notifying the views to handle a dice roll event
      * @author Albara'a
-     * @param attackerMax The highest dice roll the attacking player rolled
-     * @param defenderMax The highest dice roll of the defending country
+     *
+     * @param attackerDice arraylist of the attackers dice rolls
+     * @param defenderDice arraylist of the defenders dice rolls
      */
-    public void diceResult(int attackerMax, int defenderMax){
+    public void updateDiceResult(ArrayList<Integer> attackerDice, ArrayList<Integer> defenderDice){
         for(RiskView v : views){
-            v.handleDiceRolls(attackerMax, defenderMax);
+            v.handleDiceRolls(new DiceEvent(this,attackerDice,defenderDice));
         }
     }
 
