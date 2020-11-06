@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -12,6 +13,7 @@ public class RiskView extends JPanel {
     private RiskModel model;
     private HashMap<String, Country> countries;
     private JTextArea textArea;
+    private ArrayList<JButton> dice;
 
     /**
      * Creates the Risk map with country buttons
@@ -464,11 +466,13 @@ public class RiskView extends JPanel {
 
         viewConstraints.gridx = 0;
         viewConstraints.gridy = 0;
+        viewConstraints.gridheight=2;
         add(countryPanel, viewConstraints);
 
         viewConstraints.gridx = 1;
         viewConstraints.gridy = 0;
         viewConstraints.ipadx = 120;
+        viewConstraints.gridheight=1;
 
         // create a text area for printing game events to a console and added a scrollPane in case of long turns
         textArea = new JTextArea();
@@ -477,6 +481,52 @@ public class RiskView extends JPanel {
         textArea.append("It is Player "+ model.getBoard().getPlayers().get(model.getTurnIndex()).getId() +"'s turn\n");
         textArea.setEditable(false);
         add(scroll, viewConstraints);
+
+
+        // Setting Up Dice Rolls Display
+
+        dice = new ArrayList<JButton>();
+
+        viewConstraints.gridx = 1;
+        viewConstraints.gridy = 1;
+        JPanel dicePanel = new JPanel();
+        //dicePanel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+        add(dicePanel,viewConstraints);
+
+
+        JButton attackDice1 = new JButton();
+        attackDice1.setActionCommand("attack1");
+        JButton attackDice2 = new JButton();
+        attackDice1.setActionCommand("attack2");
+        JButton attackDice3 = new JButton();
+        attackDice1.setActionCommand("attack3");
+        JButton defendDice1 = new JButton();
+        attackDice1.setActionCommand("defend1");
+        JButton defendDice2 = new JButton();
+        attackDice1.setActionCommand("defend2");
+
+        dice.add(attackDice1);
+        dice.add(attackDice2);
+        dice.add(attackDice3);
+        dice.add(defendDice1);
+        dice.add(defendDice2);
+
+
+        dicePanel.setLayout(new GridLayout(4,2));
+        dicePanel.add(new JLabel("Attacking Dice"));
+        dicePanel.add(new JLabel("Defending Dice"));
+
+        for (JButton die: dice){
+            dicePanel.add(die);
+        }
+
+
+
+
+
+
+
+
 
     }
 
@@ -531,12 +581,18 @@ public class RiskView extends JPanel {
     /**
      * Handles a DiceRollEvent by printing the attacker and defender max rolls to the text area console
      * @author Albara'a
-     * @param attackerMax The max roll of the attacking player
-     * @param defenderMax The max roll of the defending country
+     *
+     * @param de
      */
-    public void handleDiceRolls(int attackerMax, int defenderMax) {
+    public void handleDiceRolls(DiceEvent de) {
+        ArrayList<Integer> attackingDice = de.getAttackerDice();
+        ArrayList<Integer> defendingDice = de.getDefenderDice();
+
+        /*
         textArea.append("Attacker rolled: " + attackerMax+"\n"+
                 "Defender rolled: " + defenderMax+"\n");
+
+         */
     }
 
     /**

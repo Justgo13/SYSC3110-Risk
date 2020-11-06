@@ -113,7 +113,7 @@ public class RiskModel {
             }
             Integer attackerMax = Collections.max(attackerDice);
             Integer defenderMax = Collections.max(defenderDice);
-            diceResult(attackerMax, defenderMax);
+            updateDiceResult(attackerDice, defenderDice);
             if (attackerMax > defenderMax) { // attackers win
                 defendingCountry.removeArmy();
             } else { // defenders win
@@ -210,12 +210,13 @@ public class RiskModel {
     /**
      * Notifying the views to handle a dice roll event
      * @author Albara'a
-     * @param attackerMax The highest dice roll the attacking player rolled
-     * @param defenderMax The highest dice roll of the defending country
+     *
+     * @param attackerDice arraylist of the attackers dice rolls
+     * @param defenderDice arraylist of the defenders dice rolls
      */
-    public void diceResult(int attackerMax, int defenderMax){
+    public void updateDiceResult(ArrayList<Integer> attackerDice, ArrayList<Integer> defenderDice){
         for(RiskView v : views){
-            v.handleDiceRolls(attackerMax, defenderMax);
+            v.handleDiceRolls(new DiceEvent(this,attackerDice,defenderDice));
         }
     }
 
