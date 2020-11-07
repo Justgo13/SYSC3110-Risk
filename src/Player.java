@@ -40,4 +40,7 @@ public class Player {
         return id;
     }
 
+    public void setCountriesOwned(ArrayList<Country> countriesOwned) {
+        this.countriesOwned = countriesOwned;
+    }
 }

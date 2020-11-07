@@ -66,8 +66,6 @@ public class Board {
         continentCountries.add(Arrays.asList(
                 "Eastern Australia", "Indonesia", "New Guinea", "Western Australia"));
         //added buildMap so that countries map will be populated when used (testing for countrybutton)
-
-
     }
 
     public HashMap<String, Country> getCountries(){
@@ -91,7 +89,19 @@ public class Board {
     public void randomizePlayers () {
         Collections.shuffle(players);
     }
-    
+
+    public void setPlayers(ArrayList<Player> players){
+        this.players = players;
+    }
+
+    public void setCountries(HashMap<String, Country> countries) {
+        this.countries = countries;
+    }
+
+    public void setContinents(HashMap<String, Continent> continents) {
+        this.continents = continents;
+    }
+
     /**
      * Checks to see if any players have been eliminated and removes them from the player pool
      *

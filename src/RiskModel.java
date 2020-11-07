@@ -4,17 +4,20 @@ import java.util.*;
 public class RiskModel {
     private Board board;
     private int turnIndex;
-
+    private Boolean gameOver;
     private List<RiskView> views;
+    private Boolean testing;
 
     /**
      * Creates an instance of the Risk game
      */
-    public RiskModel()
+    public RiskModel(Boolean testing)
     {
+        this.testing = testing;
         board = new Board();
         turnIndex = 0;
         views = new ArrayList<>();
+        gameOver = false;
     }
 
     public HashMap<String,Country> getCountries(){
@@ -58,7 +61,8 @@ public class RiskModel {
 
         if(board.checkWinner()){
             System.out.println("Congratulations, "+board.getPlayers().get(0).getName()+". You won!");
-            System.exit(0);
+            gameOver = true;
+            //System.exit(0);
         }
         updateAttackView(attackingCountry, defendingCountry);
 
@@ -71,6 +75,14 @@ public class RiskModel {
      * @return List of the randomly generated dice rolls
      */
     public ArrayList<Integer> defendingDiceInitialization(int defendingArmySize){
+        if (testing){
+            if (defendingArmySize >= 2) {
+                return new ArrayList<Integer>(Arrays.asList(5,4));
+            } else if (defendingArmySize == 1) {
+                return new ArrayList<Integer>(Arrays.asList(5));
+            }
+
+        }
         Random random = new Random();
         ArrayList<Integer> defenderDice = new ArrayList<>();
         if (defendingArmySize >= 2) {
@@ -90,6 +102,15 @@ public class RiskModel {
      * @return List of the randomly generated dice rolls
      */
     private  ArrayList<Integer> attackingDiceInitialization(int numOfAttackers){
+        if (testing){
+            if (numOfAttackers >= 3) {
+                return new ArrayList<Integer>(Arrays.asList(5,4,6));
+            } else if (numOfAttackers == 2) {
+                return new ArrayList<Integer>(Arrays.asList(5,4));
+            } else if(numOfAttackers == 1) {
+                return new ArrayList<Integer>(Arrays.asList(5));
+            }
+        }
         Random random = new Random();
         ArrayList<Integer> attackerDice = new ArrayList<>();
         // If number of attackers exceeds 3, set it to 3
@@ -165,6 +186,11 @@ public class RiskModel {
      * @author Jason
      */
     public void playGame() {
+        if(testing){
+            board.setupBoard(2);
+            return;
+
+        }
         String[] options = {"OK"};
         final String[] players = {"2","3","4","5","6"};
         JPanel panel = new JPanel();
@@ -257,6 +283,8 @@ public class RiskModel {
     public Board getBoard() {
         return board;
     }
+
+    public Boolean getGameOver() { return gameOver; }
 
     public int getTurnIndex() {
         return turnIndex;
