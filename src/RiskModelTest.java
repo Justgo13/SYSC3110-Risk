@@ -10,12 +10,12 @@ public class RiskModelTest {
     RiskModel rm;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         rm = new RiskModel(true);
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         rm = null;
     }
 
@@ -117,8 +117,8 @@ public class RiskModelTest {
         Player player1 = rm.getBoard().getPlayers().get(0);
         Player player2 = rm.getBoard().getPlayers().get(1);
 
-        player1.setCountriesOwned(new ArrayList<>(Arrays.asList(Canada)));
-        player2.setCountriesOwned(new ArrayList<>(Arrays.asList(India)));
+        player1.setCountriesOwned(new ArrayList<>(Collections.singletonList(Canada)));
+        player2.setCountriesOwned(new ArrayList<>(Collections.singletonList(India)));
 
         Canada.setPlayer(player1);
         India.setPlayer(player2);
@@ -140,8 +140,7 @@ public class RiskModelTest {
         Canada.addAdjacentCountry(Usa);
         Usa.addAdjacentCountry(Canada);
 
-        Canada.setArmySize(100);
-        Usa.setArmySize(3);
+
 
         //managing countries owned by the players
         Player player1 = rm.getBoard().getPlayers().get(0);
@@ -149,6 +148,9 @@ public class RiskModelTest {
 
         Canada.setPlayer(player1);
         Usa.setPlayer(player2);
+
+        Canada.setArmySize(100);
+        Usa.setArmySize(3);
 
         //checking if number of dice decreases when number of troops changes
         assertEquals(3, rm.attackingDiceInitialization(Canada.getArmySize()).size());
@@ -199,7 +201,7 @@ public class RiskModelTest {
         assertTrue(actual.contains("Yakutsk"));
         assertTrue(actual.contains("Egypt"));
         assertTrue(actual.contains("Western Australia"));
-        assertTrue(actual.size() == 42);
+        assertEquals(42,actual.size());
     }
 
     @Test
