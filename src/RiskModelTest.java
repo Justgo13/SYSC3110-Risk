@@ -12,6 +12,7 @@ public class RiskModelTest {
     @Before
     public void setUp() {
         rm = new RiskModel(true);
+        rm.playGame();
     }
 
     @After
@@ -21,16 +22,11 @@ public class RiskModelTest {
 
     @Test
     public void testDefenderLostCountry(){
-        rm.playGame();
-        Map<String,Country> testCountries = new HashMap<>();
 
         //Creating our own country objects so we can specify values
         Country Canada = new  Country("canada");
-        testCountries.put("Canada",Canada);
         Country Usa = new  Country("Usa");
-        testCountries.put("Usa",Usa);
         Country India = new  Country("India");
-        testCountries.put("India",India);
 
         Canada.addAdjacentCountry(India);
         Canada.addAdjacentCountry(Usa);
@@ -52,7 +48,7 @@ public class RiskModelTest {
         Usa.setPlayer(player2);
 
         //players have an arraylist of countries that they own so we can overwrite the previous values
-        player1.setCountriesOwned(new ArrayList<>(Arrays.asList(Canada)));
+        player1.setCountriesOwned(new ArrayList<>(Collections.singletonList(Canada)));
         player2.setCountriesOwned(new ArrayList<>(Arrays.asList(India,Usa)));
 
         assertEquals(player1 ,Canada.getPlayer());
@@ -64,16 +60,11 @@ public class RiskModelTest {
 
     @Test
     public void testPlayerOwnsCountries(){
-        rm.playGame();
-        Map<String,Country> testCountries = new HashMap<>();
 
         //Creating our own country objects so we can specify values
         Country Canada = new  Country("canada");
-        testCountries.put("Canada",Canada);
         Country Usa = new  Country("Usa");
-        testCountries.put("Usa",Usa);
         Country India = new  Country("India");
-        testCountries.put("India",India);
 
         Canada.addAdjacentCountry(India);
         Canada.addAdjacentCountry(Usa);
@@ -101,14 +92,10 @@ public class RiskModelTest {
 
     @Test
     public void testCountryHasRightPlayer(){
-        rm.playGame();
-        Map<String,Country> testCountries = new HashMap<>();
 
         //Creating our own country objects so we can specify values
         Country Canada = new  Country("Canada");
-        testCountries.put("Canada",Canada);
         Country India = new  Country("India");
-        testCountries.put("India",India);
 
         Canada.addAdjacentCountry(India);
         India.addAdjacentCountry(Canada);
@@ -129,13 +116,9 @@ public class RiskModelTest {
 
     @Test
     public void testNumberOfDice(){
-        rm.playGame();
 
-        Map<String,Country> testCountries = new HashMap<>();
         Country Canada = new  Country("canada");
-        testCountries.put("Canada",Canada);
         Country Usa = new  Country("Usa");
-        testCountries.put("Usa",Usa);
 
         Canada.addAdjacentCountry(Usa);
         Usa.addAdjacentCountry(Canada);
@@ -164,8 +147,7 @@ public class RiskModelTest {
 
     @Test
     public void testAdjacentCountries(){
-        rm.playGame();
-        Map countries =  rm.getBoard().getCountries();
+        HashMap countries =  rm.getBoard().getCountries();
         assertEquals(Arrays.asList(countries.get("Brazil"),countries.get("Peru")),((Country) countries.get("Argentina")).getAdjacentCountries());
         assertEquals(Arrays.asList(countries.get("Kamchatka"),countries.get("Mongolia")) ,((Country) countries.get("Japan")).getAdjacentCountries());
         assertEquals(Arrays.asList(countries.get("China"),countries.get("India"), countries.get("Indonesia")) ,((Country) countries.get("Siam")).getAdjacentCountries());
@@ -175,9 +157,8 @@ public class RiskModelTest {
 
     @Test
     public void testContinentsCountries(){
-        rm.playGame();
-        Map continents =  rm.getBoard().getContinents();
-        Map countries =  rm.getBoard().getCountries();
+        HashMap continents =  rm.getBoard().getContinents();
+        HashMap countries =  rm.getBoard().getCountries();
         assertEquals(((Continent) continents.get("North America")).getName(), ((Country) countries.get("Alaska")).getContinent());
         assertEquals(((Continent) continents.get("South America")).getName(), ((Country) countries.get("Peru")).getContinent());
         assertEquals(((Continent) continents.get("Australia")).getName(), ((Country) countries.get("Western Australia")).getContinent());
@@ -193,7 +174,6 @@ public class RiskModelTest {
 
     @Test
     public void testCountryStrings(){
-        rm.playGame();
         Set actual =  rm.getBoard().getCountries().keySet();
         assertTrue(actual.contains("Alaska"));
         assertTrue(actual.contains("Central America"));
@@ -206,16 +186,10 @@ public class RiskModelTest {
 
     @Test
     public void testGameWinner(){
-        rm.playGame();
-        Map<String,Country> testCountries = new HashMap<>();
 
-        //Creating our own country objects so we can specify values
         Country Canada = new  Country("canada");
-        testCountries.put("Canada",Canada);
         Country Usa = new  Country("Usa");
-        testCountries.put("Usa",Usa);
         Country India = new  Country("India");
-        testCountries.put("India",India);
 
         Canada.addAdjacentCountry(India);
         Canada.addAdjacentCountry(Usa);
@@ -228,7 +202,6 @@ public class RiskModelTest {
         India.setArmySize(1);
         Usa.setArmySize(1);
 
-        //managing countries owned by the players
         Player player1 = rm.getBoard().getPlayers().get(0);
         Player player2 = rm.getBoard().getPlayers().get(1);
 
@@ -236,64 +209,11 @@ public class RiskModelTest {
         India.setPlayer(player2);
         Usa.setPlayer(player1);
 
-        //players have an arraylist of countries that they own so we can overwrite the previous values
         player1.setCountriesOwned(new ArrayList<>(Arrays.asList(Canada,Usa)));
         player2.setCountriesOwned(new ArrayList<>(Arrays.asList(India)));
 
         rm.attack(Canada, India,10);
         assertTrue(rm.getGameOver());
     }
-    /*
-    @Test
-    public void getCountries() {
-    }
 
-    @Test
-    public void attack() {
-    }
-
-    @Test
-    public void defendingDiceInitialization() {
-    }
-
-    @Test
-    public void playGame() {
-    }
-
-    @Test
-    public void addRiskView() {
-    }
-
-    @Test
-    public void updateAttackView() {
-    }
-
-    @Test
-    public void updateBattleResults() {
-    }
-
-    @Test
-    public void updateDiceResult() {
-    }
-
-    @Test
-    public void updateCountryLost() {
-    }
-
-    @Test
-    public void endTurnPhase() {
-    }
-
-    @Test
-    public void getBoard() {
-    }
-
-    @Test
-    public void getTurnIndex() {
-    }
-
-    @Test
-    public void incrementTurnIndex() {
-    }
-     */
 }
