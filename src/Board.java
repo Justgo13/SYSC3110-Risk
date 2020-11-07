@@ -66,14 +66,16 @@ public class Board {
         continentCountries.add(Arrays.asList(
                 "Eastern Australia", "Indonesia", "New Guinea", "Western Australia"));
         //added buildMap so that countries map will be populated when used (testing for countrybutton)
-
-
     }
 
     public HashMap<String, Country> getCountries(){
         return countries;
     }
-    
+
+    public HashMap<String, Continent> getContinents() {
+        return continents;
+    }
+
     public void addPlayer(Player player) {
         players.add(player);
     }
@@ -91,7 +93,19 @@ public class Board {
     public void randomizePlayers () {
         Collections.shuffle(players);
     }
-    
+
+    public void setPlayers(ArrayList<Player> players){
+        this.players = players;
+    }
+
+    public void setCountries(HashMap<String, Country> countries) {
+        this.countries = countries;
+    }
+
+    public void setContinents(HashMap<String, Continent> continents) {
+        this.continents = continents;
+    }
+
     /**
      * Checks to see if any players have been eliminated and removes them from the player pool
      *
@@ -139,9 +153,11 @@ public class Board {
         for (int i = 0; i<continentNames.size(); i++) {
             continents.put(continentNames.get(i), new Continent(continentNames.get(i), continentBonusArmies.get(i))); // creates continents objects
 
+            //gets all continents and populates them with their specific countries
+            //also gives every country the continent it belongs in
             for(int j = 0; j<continentCountries.get(i).size(); j++){
                 Continent continent = continents.get(continentNames.get(i));
-                continent.addCountry(countries.get(continentCountries.get(i).get(j))); // populates continents with their specific countries
+                continent.addCountry((String) continentCountries.get(i).get(j),countries.get(continentCountries.get(i).get(j)) ); // populates continents with their specific countries
                 countries.get(continentCountries.get(i).get(j)).setContinent(continent.getName()); // sets the continent name of each country
             }
         }
@@ -251,11 +267,7 @@ public class Board {
      * @return true if a player has won, false otherwise
      */
     public boolean checkWinner(){
-        if(players.size()==1){
-            return true;
-        }else{
-            return false;
-        }
+        return (players.size()==1);
     }
 
     /**
