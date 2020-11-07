@@ -157,7 +157,7 @@ public class Board {
             //also gives every country the continent it belongs in
             for(int j = 0; j<continentCountries.get(i).size(); j++){
                 Continent continent = continents.get(continentNames.get(i));
-                continent.addCountry(countries.get(continentCountries.get(i).get(j))); // populates continents with their specific countries
+                continent.addCountry((String) continentCountries.get(i).get(j),countries.get(continentCountries.get(i).get(j)) ); // populates continents with their specific countries
                 countries.get(continentCountries.get(i).get(j)).setContinent(continent.getName()); // sets the continent name of each country
             }
         }

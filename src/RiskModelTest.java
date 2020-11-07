@@ -63,6 +63,71 @@ public class RiskModelTest {
     }
 
     @Test
+    public void testPlayerOwnsCountries(){
+        rm.playGame();
+        Map<String,Country> testCountries = new HashMap<>();
+
+        //Creating our own country objects so we can specify values
+        Country Canada = new  Country("canada");
+        testCountries.put("Canada",Canada);
+        Country Usa = new  Country("Usa");
+        testCountries.put("Usa",Usa);
+        Country India = new  Country("India");
+        testCountries.put("India",India);
+
+        Canada.addAdjacentCountry(India);
+        Canada.addAdjacentCountry(Usa);
+        India.addAdjacentCountry(Canada);
+        India.addAdjacentCountry(Usa);
+        Usa.addAdjacentCountry(India);
+        Usa.addAdjacentCountry(Canada);
+
+        Canada.setArmySize(100);
+        India.setArmySize(1);
+        Usa.setArmySize(1);
+
+        //managing countries owned by the players
+        Player player1 = rm.getBoard().getPlayers().get(0);
+        Player player2 = rm.getBoard().getPlayers().get(1);
+
+        Canada.setPlayer(player1);
+        India.setPlayer(player2);
+        Usa.setPlayer(player1);
+
+        assertEquals(player1, Usa.getPlayer());
+        assertEquals(player1, Canada.getPlayer());
+        assertEquals(player2, India.getPlayer());
+    }
+
+    @Test
+    public void testCountryHasRightPlayer(){
+        rm.playGame();
+        Map<String,Country> testCountries = new HashMap<>();
+
+        //Creating our own country objects so we can specify values
+        Country Canada = new  Country("Canada");
+        testCountries.put("Canada",Canada);
+        Country India = new  Country("India");
+        testCountries.put("India",India);
+
+        Canada.addAdjacentCountry(India);
+        India.addAdjacentCountry(Canada);
+
+        //managing countries owned by the players
+        Player player1 = rm.getBoard().getPlayers().get(0);
+        Player player2 = rm.getBoard().getPlayers().get(1);
+
+        player1.setCountriesOwned(new ArrayList<>(Arrays.asList(Canada)));
+        player2.setCountriesOwned(new ArrayList<>(Arrays.asList(India)));
+
+        Canada.setPlayer(player1);
+        India.setPlayer(player2);
+
+        assertTrue(player1.getCountriesOwned().contains(Canada));
+        assertTrue(player2.getCountriesOwned().contains(India));
+    }
+
+    @Test
     public void testNumberOfDice(){
         rm.playGame();
 
@@ -116,11 +181,12 @@ public class RiskModelTest {
         assertEquals(((Continent) continents.get("Australia")).getName(), ((Country) countries.get("Western Australia")).getContinent());
         assertEquals(("Africa"), ((Country) countries.get("South Africa")).getContinent());
 
-        /* still in progress
-        continents.get("North America").
-        index = continents
-        assertTrue(((Continent) continents.get("North America")).getCountries().get(().indexOf("Alaska")));
-         */
+        assertEquals(countries.get("Alaska") , ((Continent) continents.get("North America")).getCountry("Alaska"));
+        assertEquals(countries.get("Peru") , ((Continent) continents.get("South America")).getCountry("Peru"));
+        assertEquals(countries.get("Western Australia") , ((Continent) continents.get("Australia")).getCountry("Western Australia"));
+        assertEquals(countries.get("South Africa") , ((Continent) continents.get("Africa")).getCountry("South Africa"));
+
+
     }
 
     @Test
