@@ -71,7 +71,11 @@ public class Board {
     public HashMap<String, Country> getCountries(){
         return countries;
     }
-    
+
+    public HashMap<String, Continent> getContinents() {
+        return continents;
+    }
+
     public void addPlayer(Player player) {
         players.add(player);
     }
@@ -149,6 +153,8 @@ public class Board {
         for (int i = 0; i<continentNames.size(); i++) {
             continents.put(continentNames.get(i), new Continent(continentNames.get(i), continentBonusArmies.get(i))); // creates continents objects
 
+            //gets all continents and populates them with their specific countries
+            //also gives every country the continent it belongs in
             for(int j = 0; j<continentCountries.get(i).size(); j++){
                 Continent continent = continents.get(continentNames.get(i));
                 continent.addCountry(countries.get(continentCountries.get(i).get(j))); // populates continents with their specific countries
@@ -261,11 +267,7 @@ public class Board {
      * @return true if a player has won, false otherwise
      */
     public boolean checkWinner(){
-        if(players.size()==1){
-            return true;
-        }else{
-            return false;
-        }
+        return (players.size()==1);
     }
 
     /**

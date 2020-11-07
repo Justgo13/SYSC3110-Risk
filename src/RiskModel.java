@@ -74,7 +74,7 @@ public class RiskModel {
      * @param defendingArmySize the size of the defending army
      * @return List of the randomly generated dice rolls
      */
-    public ArrayList<Integer> defendingDiceInitialization(int defendingArmySize){
+    protected ArrayList<Integer> defendingDiceInitialization(int defendingArmySize){
         if (testing){
             if (defendingArmySize >= 2) {
                 return new ArrayList<Integer>(Arrays.asList(5,4));
@@ -101,7 +101,7 @@ public class RiskModel {
      * @param numOfAttackers the size of the attacking army
      * @return List of the randomly generated dice rolls
      */
-    private  ArrayList<Integer> attackingDiceInitialization(int numOfAttackers){
+    protected  ArrayList<Integer> attackingDiceInitialization(int numOfAttackers){
         if (testing){
             if (numOfAttackers >= 3) {
                 return new ArrayList<Integer>(Arrays.asList(5,4,6));
