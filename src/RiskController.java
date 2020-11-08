@@ -178,7 +178,7 @@ public class RiskController implements ActionListener{
                 ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(getAttackingPlayer().getCountriesOwned());
                 countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
 
-                riskModel.incrementTurnIndex(); // moves to next player
+                // moves to next player
                 riskModel.endTurnPhase(riskModel.getBoard().getPlayers().get(riskModel.getTurnIndex()).getId());
                 attack.setEnabled(true);
             }

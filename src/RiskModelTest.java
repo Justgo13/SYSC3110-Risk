@@ -2,23 +2,118 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 import static org.junit.Assert.*;
 
 public class RiskModelTest {
-    RiskModel rm;
+    RiskMockModel rm;
 
     @Before
     public void setUp() {
-        rm = new RiskModel(true);
-        rm.playGame();
+        rm = new RiskMockModel();
+        rm.playGame(2);
     }
 
     @After
     public void tearDown() {
         rm = null;
     }
+
+    @Test
+    public void testDefendDiceOneTroop(){
+        assertEquals(1,rm.defendingDiceInitialization(1).size());
+    }
+
+    @Test
+    public void testDefendDiceTwoTroop(){
+        assertEquals(2,rm.defendingDiceInitialization(2).size());
+        assertEquals(2,rm.defendingDiceInitialization(3).size());
+        assertEquals(2,rm.defendingDiceInitialization(7).size());
+    }
+
+    @Test
+    public void testAttackDiceOneTroop(){
+        assertEquals(1,rm.attackingDiceInitialization(1).size());
+    }
+
+    @Test
+    public void testAttackDiceTwoTroops(){
+        assertEquals(2,rm.attackingDiceInitialization(2).size());
+    }
+
+    @Test
+    public void testAttackDiceThreeTroops(){
+        assertEquals(3,rm.attackingDiceInitialization(3).size());
+        assertEquals(3,rm.attackingDiceInitialization(5).size());
+        assertEquals(3,rm.attackingDiceInitialization(7).size());
+    }
+
+    @Test
+    public void testAttackerWinPhase(){
+        Country A1 = new Country("Attacker");
+        Country D1 = new Country("Defender");
+        A1.setArmySize(5);
+        D1.setArmySize(5);
+        rm.attackPhase(D1,A1,new ArrayList<>(Arrays.asList(6,5,4)),new ArrayList<>(Arrays.asList(5,4)),4);
+        assertEquals(5, A1.getArmySize());
+        assertEquals(3, D1.getArmySize());
+    }
+
+    @Test
+    public void testAttackerLosePhase(){
+        Country A1 = new Country("Attacker");
+        Country D1 = new Country("Defender");
+        A1.setArmySize(5);
+        D1.setArmySize(5);
+        rm.attackPhase(D1,A1,new ArrayList<>(Arrays.asList(6,5,4)),new ArrayList<>(Arrays.asList(6,5)),4);
+        assertEquals(3, A1.getArmySize());
+        assertEquals(5, D1.getArmySize());
+    }
+
+    @Test
+    public void testAttackerTiePhase(){
+        Country A1 = new Country("Attacker");
+        Country D1 = new Country("Defender");
+        A1.setArmySize(5);
+        D1.setArmySize(5);
+        rm.attackPhase(D1,A1,new ArrayList<>(Arrays.asList(6,5,4)),new ArrayList<>(Arrays.asList(6,4)),4);
+        assertEquals(4, A1.getArmySize());
+        assertEquals(4, D1.getArmySize());
+    }
+
+    @Test
+    public void testAttackerTakesDefenderCountry(){
+        Country A1 = new Country("Attacker");
+        Country D1 = new Country("Defender");
+        A1.setArmySize(5);
+        D1.setArmySize(0);
+        Player P1 = new Player("P1", 20, 1);
+        Player P2 = new Player("P2", 20, 2);
+        A1.setPlayer(P1);
+        D1.setPlayer(P2);
+        rm.checkDefenderLostCountry(D1,A1,4);
+        assertEquals(P1, A1.getPlayer());
+        assertEquals(P1, D1.getPlayer());
+    }
+
+    @Test
+    public void testAttackerFailsToTakeDefenderCountry(){
+        Country A1 = new Country("Attacker");
+        Country D1 = new Country("Defender");
+        A1.setArmySize(5);
+        D1.setArmySize(1);
+        Player P1 = new Player("P1", 20, 1);
+        Player P2 = new Player("P2", 20, 2);
+        A1.setPlayer(P1);
+        D1.setPlayer(P2);
+        rm.checkDefenderLostCountry(D1,A1,4);
+        assertEquals(P1, A1.getPlayer());
+        assertEquals(P2, D1.getPlayer());
+    }
+    //end of unit style tests and more Functional style testing is below
+
 
     @Test
     public void testDefenderLostCountry(){

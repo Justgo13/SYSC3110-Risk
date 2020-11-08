@@ -10,7 +10,7 @@ public class RiskFrame extends JFrame {
         super("Risk!");
         setLayout(new GridBagLayout());
         //Instantiating the model
-        RiskModel model = new RiskModel(false);
+        RiskModel model = new RiskModel();
         model.playGame();
 
         // Creating a constraint for the entire frame
