@@ -6,14 +6,12 @@ public class RiskModel {
     private int turnIndex;
     private Boolean gameOver;
     private List<RiskView> views;
-    private Boolean testing;
 
     /**
      * Creates an instance of the Risk game
      */
-    public RiskModel(Boolean testing)
+    public RiskModel()
     {
-        this.testing = testing;
         board = new Board();
         turnIndex = 0;
         views = new ArrayList<>();
@@ -75,14 +73,6 @@ public class RiskModel {
      * @return List of the randomly generated dice rolls
      */
     protected ArrayList<Integer> defendingDiceInitialization(int defendingArmySize){
-        if (testing){
-            if (defendingArmySize >= 2) {
-                return new ArrayList<Integer>(Arrays.asList(5,4));
-            } else if (defendingArmySize == 1) {
-                return new ArrayList<Integer>(Arrays.asList(5));
-            }
-
-        }
         Random random = new Random();
         ArrayList<Integer> defenderDice = new ArrayList<>();
         if (defendingArmySize >= 2) {
@@ -102,15 +92,6 @@ public class RiskModel {
      * @return List of the randomly generated dice rolls
      */
     protected  ArrayList<Integer> attackingDiceInitialization(int numOfAttackers){
-        if (testing){
-            if (numOfAttackers >= 3) {
-                return new ArrayList<Integer>(Arrays.asList(5,4,6));
-            } else if (numOfAttackers == 2) {
-                return new ArrayList<Integer>(Arrays.asList(5,4));
-            } else if(numOfAttackers == 1) {
-                return new ArrayList<Integer>(Arrays.asList(5));
-            }
-        }
         Random random = new Random();
         ArrayList<Integer> attackerDice = new ArrayList<>();
         // If number of attackers exceeds 3, set it to 3
@@ -136,7 +117,7 @@ public class RiskModel {
      * @param attackingCountry the country that is attacking
      * @param numOfAttackers the size of the attacking army
      */
-    private void attackPhase(Country defendingCountry, Country attackingCountry, ArrayList<Integer> attackerDice, ArrayList<Integer> defenderDice, int numOfAttackers){
+    protected void attackPhase(Country defendingCountry, Country attackingCountry, ArrayList<Integer> attackerDice, ArrayList<Integer> defenderDice, int numOfAttackers){
 
         for (int i = defenderDice.size(); i > 0; i--) {
             if (attackerDice.size() == 0) {
@@ -156,7 +137,6 @@ public class RiskModel {
             attackerDice.remove(attackerMax);
             defenderDice.remove(defenderMax);
         }
-
     }
 
     /**
@@ -167,7 +147,7 @@ public class RiskModel {
      * @param attackingCountry the attacking country
      * @param numOfAttackers the size of the attacking army
      */
-    private void checkDefenderLostCountry(Country defendingCountry, Country attackingCountry, int numOfAttackers){
+    protected void checkDefenderLostCountry(Country defendingCountry, Country attackingCountry, int numOfAttackers){
         updateCountryLost(defendingCountry, board.getPlayers().get(turnIndex).getId());
         if (defendingCountry.getArmySize() == 0) {
             defendingCountry.getPlayer().removeCountry(defendingCountry); // removes the lost country from the defending player
@@ -186,11 +166,6 @@ public class RiskModel {
      * @author Jason
      */
     public void playGame() {
-        if(testing){
-            board.setupBoard(2);
-            return;
-
-        }
         String[] options = {"OK"};
         final String[] players = {"2","3","4","5","6"};
         JPanel panel = new JPanel();
@@ -275,6 +250,7 @@ public class RiskModel {
      * @param playerID The ID of the next player
      */
     public void endTurnPhase(int playerID){
+        incrementTurnIndex();
         for(RiskView v: views){
             v.handleEndTurn(playerID);
         }
