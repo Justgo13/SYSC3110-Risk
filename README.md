@@ -6,7 +6,7 @@ The objective of the game is to conquer as many countries and other player's occ
 
 # Previous Deliverables
 - Model for the MVC pattern of Risk game
-- Code for the Risk game 
+- Code for the text-based Risk game 
 - UML diagrams, sequence diagrams
 
 # Current Deliverables
@@ -28,6 +28,11 @@ The objective of the game is to conquer as many countries and other player's occ
 
 # Known issues
 - GUI will sometimes resize the text area and button panel when a country button is clicked
+- Due to map resizing when a country button is clicked, the lines to connect countries across bodies of water could not be drawn leading to some confusion for players when 
+they attack an adjacent country.
+
+# JUnit version
+JUnit4
 
 # How to play
 The text area on the right hand side will say whose turn it is and will report battle results
