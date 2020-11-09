@@ -659,6 +659,20 @@ public class RiskView extends JPanel {
         }
     }
 
+    /**
+     * Handles the game over event and creates a OptionPane for the player to see who won
+     * @param playerID ID of the player who won
+     */
+    public void handleGameOver(int playerID) {
+        JOptionPane.showMessageDialog(this, "Congratulations Player " + playerID + " you won Risk!");
+    }
+
+    /**
+     * Sets the dice icon corresponding to the attacker and defending dice rolls
+     * @author Harjap
+     * @param diceJButton The JButton the icon will be placed on
+     * @param diceNum The dice value
+     */
     public void setDiceIcon(JButton diceJButton, int diceNum){
         ImageIcon icon = new ImageIcon(diceIcons.get(diceNum-1));
 

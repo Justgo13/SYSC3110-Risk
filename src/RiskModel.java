@@ -58,7 +58,7 @@ public class RiskModel {
         updateBattleResults(defendingCountry.getArmySize(), attackingCountry.getArmySize());
 
         if(board.checkWinner()){
-            System.out.println("Congratulations, "+board.getPlayers().get(0).getName()+". You won!");
+            updateGameOver(board.getPlayers().get(0).getId());
             gameOver = true;
             //System.exit(0);
         }
@@ -242,6 +242,18 @@ public class RiskModel {
             v.handleDefendingCountryLost(new CountryLostEvent(this, defendingCountry, attackingPlayerIndex));
         }
 
+    }
+
+    /**
+     * Notifies the view that the game is over and who won
+     * @author Jason
+     * @param
+     */
+
+    public void updateGameOver(int playerID) {
+        for (RiskView v : views) {
+            v.handleGameOver(playerID);
+        }
     }
 
     /**
