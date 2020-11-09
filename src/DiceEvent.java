@@ -19,16 +19,6 @@ public class DiceEvent extends EventObject {
         this.defenderDice=defenderDice;
     }
 
-
-
-    public int getAttackerMaxRoll(){
-        return Collections.max(attackerDice);
-    }
-
-    public int getDefenderMaxRoll(){
-        return Collections.max(defenderDice);
-    }
-
     public ArrayList<Integer> getAttackerDice() {
         return attackerDice;
     }
