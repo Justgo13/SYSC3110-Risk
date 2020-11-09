@@ -1,7 +1,5 @@
-import java.awt.*;
 import java.io.*;
 import java.util.*;
-import java.util.List;
 
 public class Board {
     private int numOfPlayers;
@@ -92,18 +90,6 @@ public class Board {
 
     public void randomizePlayers () {
         Collections.shuffle(players);
-    }
-
-    public void setPlayers(ArrayList<Player> players){
-        this.players = players;
-    }
-
-    public void setCountries(HashMap<String, Country> countries) {
-        this.countries = countries;
-    }
-
-    public void setContinents(HashMap<String, Continent> continents) {
-        this.continents = continents;
     }
 
     /**
@@ -269,47 +255,4 @@ public class Board {
     public boolean checkWinner(){
         return (players.size()==1);
     }
-
-    /**
-     * Prints the countries and their adjacents. Also prints continents and their contained countries
-
-    public void testConfiguration(){
-        // print every country and its adjacent countries
-        System.out.println();
-        for (Country country: countries.values()) {
-
-            System.out.print(country.getName() + " Adjacent: ");
-            for (Country adjacentCountry: country.getAdjacentCountries()){
-                System.out.print(adjacentCountry.getName() + " ");
-            }
-            System.out.println();
-        }
-
-        //print every continent and its contained countries
-        for (Continent continent: continents.values()){
-            System.out.println(continent.getName());
-
-            for (Country innerCountry: continent.getCountries()){
-                System.out.println(innerCountry.getName());
-            }
-            System.out.println();
-            System.out.println();
-
-        }
-
-        //print every Player's countries
-        int count = 0;
-        for (Player player: players){
-
-            System.out.println(player.getId());
-            for (Country country: player.getCountriesOwned()){
-                System.out.println(country.getName() + " "+ country.getArmySize());
-                count += country.getArmySize();
-            }
-            System.out.println();
-
-
-        }
-
-    }*/
 }

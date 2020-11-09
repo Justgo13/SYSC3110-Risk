@@ -24,14 +24,6 @@ public class Continent {
         return name;
     }
 
-    public int getBonusArmy() {
-        return bonusArmy;
-    }
-
-    public Collection<Country> getCountries() {
-        return countries.values();
-    }
-
     public Country getCountry(String name){
         return countries.get(name);
     }
