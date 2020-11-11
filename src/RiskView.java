@@ -1,6 +1,7 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -549,6 +550,120 @@ public class RiskView extends JPanel {
 
     public HashMap<String, CountryButton> getCountryButtons(){
         return countryButtons;
+    }
+
+    /**
+     * Enables the attacking players CountryButton so that they may choose a country to attack from
+     * @author Jason
+     */
+    public void showAttackingCountries() {
+        // get all the Country Buttons that the current player owns
+        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getAttackingPlayer().getCountriesOwned());
+
+        for (CountryButton cb : countryButtons){
+            if (cb.getCountry().getPossibleAttacks().size() != 0 && cb.getCountry().getArmySize() >= 2) {
+                cb.setEnabled(true);
+            }
+        }
+    }
+
+    /**
+     * Highlights all the countries the attacking player can attack from by creating a border around it
+     * @author Jason
+     * @param e An ActionEvent corresponding to the event created when a CountryButton was clicked
+     * @return The number of troops that the player chose to use in attacking the country
+     */
+    public int showDefendingCountries(ActionEvent e) {
+        CountryButton attackingCountry = (CountryButton) e.getSource();
+
+        // converts all countries that the attacking country can attack into their respective country button instance in the view and stores in a list
+        ArrayList<CountryButton> defendingCountries = convertCountryToCountryButtons(attackingCountry.getCountry().getAdjacentCountries());
+        defendingCountries.forEach(countryButton -> countryButton.setEnabled(true)); // enable all possible countries to attack
+        defendingCountries.forEach(countryButton -> countryButton.setBorder(BorderFactory.createLineBorder(Color.yellow, 3)));
+        // disables all attacking countries from being pressed
+        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getAttackingPlayer().getCountriesOwned());
+        countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
+        countryButtons.forEach(countryButton -> countryButton.setBorder(null));
+
+        // asks for number of troops to attack with
+        return Integer.parseInt(getAttackingTroopCount(attackingCountry)); // number of troops to attack with
+    }
+
+    /**
+     * Handles the behaviour behind executing an attack by calling on the respective method in the model.
+     * This method also deals with setting up a continuous attack phase in case the user would like to attack again.
+     * @author Jason
+     * @param attackingCountry The country the user is attacking from
+     */
+    public void performAttack(Country attackingCountry) {
+        // disable all defending countries of the attacking country
+        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(attackingCountry.getAdjacentCountries());
+        countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
+        countryButtons.forEach(countryButton -> countryButton.setBorder(null));
+
+        showAttackingCountries(); // re-enable the user to choose countries for continuous attacking
+    }
+
+    /**
+     * Takes in countries and returns a list of their corresponding country button instances from RiskView
+     * @author Harjap
+     * @param countries A list of all countries the player can use to attack
+     * @return A list of all the CountryButton instances
+     */
+    public ArrayList<CountryButton> convertCountryToCountryButtons(ArrayList<Country> countries){
+        // get hashmap from view that holds relationship between country name and country Button
+        HashMap<String, CountryButton> countryButtonHashMap = this.getCountryButtons();
+
+        // create empty arraylist for return
+        ArrayList<CountryButton> countryButtons = new ArrayList<CountryButton>();
+
+        for (Country c: countries){
+            countryButtons.add(countryButtonHashMap.get(c.getName()));
+        }
+
+        return countryButtons;
+    }
+
+    /**
+     * Creates a dialog box with a dropdown list asking the user for the number of troops they want to attack with
+     * @author Jason
+     * @param attackingCountry The country the player is attacking from
+     * @return The number of troops the player chose to attack with
+     */
+    public String getAttackingTroopCount(CountryButton attackingCountry) {
+        String[] options = {"OK"};
+        int troopCount = attackingCountry.getTroopCount()-1;
+        Integer[] troopList = buildTroopDropdownList(troopCount);
+        JPanel panel = new JPanel();
+        JLabel label = new JLabel("Select the number of troops to attack with: ");
+        JComboBox comboBox = new JComboBox(troopList);
+        comboBox.setSelectedIndex(0);
+        panel.add(label);
+        panel.add(comboBox);
+        int selectionObject = JOptionPane.showOptionDialog(this, panel, "Choose Troops", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        String result;
+        while (selectionObject != 0) {
+            selectionObject = JOptionPane.showOptionDialog(this, panel, "Choose Troops", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        }
+        result = comboBox.getSelectedItem().toString();
+        return result;
+    }
+
+    /**
+     * Create a list of Integers with the different amount of troops the player can use to attack with
+     * which ranges from 1..n-1
+     * @author Jason
+     * @param troopCount The number of troops available to attack with
+     * @return A Integer list containing the different options of troops the player can attack with
+     */
+    private Integer[] buildTroopDropdownList(int troopCount) {
+        Integer[] troopList = new Integer[troopCount];
+        // iterates one less to build a list from 1 - troopCount
+        for (int i = 0; i < troopList.length; i++) {
+            troopList[i] = troopCount;
+            troopCount--;
+        }
+        return troopList;
     }
 
     /**
