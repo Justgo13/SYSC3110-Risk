@@ -272,6 +272,17 @@ public class RiskModel {
         return board;
     }
 
+    /**
+     * Gets the current player who is attacking
+     * @author Jason
+     * @return An instance of Player corresponding to the attacking player
+     */
+    public Player getAttackingPlayer() {
+        int turnIndex = this.getTurnIndex();
+        ArrayList<Player> players = this.getBoard().getPlayers();
+        return players.get(turnIndex);
+    }
+
     public Boolean getGameOver() { return gameOver; }
 
     public int getTurnIndex() {
