@@ -6,6 +6,7 @@ public class RiskModel {
     private int turnIndex;
     private Boolean gameOver;
     private List<RiskView> views;
+    private AttackState state;
 
     /**
      * Creates an instance of the Risk game
@@ -16,10 +17,27 @@ public class RiskModel {
         turnIndex = 0;
         views = new ArrayList<>();
         gameOver = false;
+        state = null;
     }
 
     public HashMap<String,Country> getCountries(){
         return board.getCountries();
+    }
+
+    public AttackState getState() {
+        return state;
+    }
+
+    public void setState(AttackState state) {
+        this.state = state;
+    }
+
+    public void updateNextState() {
+        state = state.next();
+    }
+
+    public void updatePrevState() {
+        state = state.previous();
     }
 
     /**
@@ -165,24 +183,8 @@ public class RiskModel {
      * Initial method that is called to start the risk game
      * @author Jason
      */
-    public void playGame() {
-        String[] options = {"OK"};
-        final String[] players = {"2","3","4","5","6"};
-        JPanel panel = new JPanel();
-        JLabel label = new JLabel("Select the number of players: ");
-        JComboBox comboBox = new JComboBox(players);
-        comboBox.setSelectedIndex(0);
-        panel.add(label);
-        panel.add(comboBox);
-        int numPlayers = JOptionPane.showOptionDialog(null, panel, "Choose Troops", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-        String result = "0";
-        while (numPlayers != 0) {
-            numPlayers = JOptionPane.showOptionDialog(null, panel, "Choose Troops", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-        }
-        if (numPlayers == 0) {
-            result = comboBox.getSelectedItem().toString();
-        }
-        board.setupBoard(Integer.parseInt(result));
+    public void playGame(int numPlayers) {
+        board.setupBoard(numPlayers);
     }
 
     /**

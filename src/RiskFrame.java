@@ -6,12 +6,15 @@ import java.awt.*;
  * @author Jason
  */
 public class RiskFrame extends JFrame {
+    private RiskModel model;
     public RiskFrame() {
-        super("Risk!");
+        super(PlayGame.GAMETITLE.toString());
         setLayout(new GridBagLayout());
+        // ask for player number
+        int numPlayer = invokePlayerPopup();
+
         //Instantiating the model
-        RiskModel model = new RiskModel();
-        model.playGame();
+        setupModel(numPlayer);
 
         // Creating a constraint for the entire frame
         GridBagConstraints frameConstraint = new GridBagConstraints();
@@ -33,21 +36,21 @@ public class RiskFrame extends JFrame {
         controlPanelConstraints.gridx = 0;
         controlPanelConstraints.gridy = 1;
         controlPanelConstraints.gridwidth = 1;
-        JButton reinforce = new JButton("REINFORCE");
+        JButton reinforce = new JButton(ButtonText.REINFORCE.toString());
         reinforce.setEnabled(false);
         panel.add(reinforce, controlPanelConstraints);
 
         controlPanelConstraints.gridx = 1;
         controlPanelConstraints.gridy = 1;
-        JButton attack = new JButton("ATTACK");
+        JButton attack = new JButton(ButtonText.ATTACK.toString());
         attack.setEnabled(true);
         panel.add(attack, controlPanelConstraints);
 
         controlPanelConstraints.gridx = 2;
         controlPanelConstraints.gridy = 1;
-        JButton endturn = new JButton("END TURN");
-        endturn.setEnabled(true);
-        panel.add(endturn, controlPanelConstraints);
+        JButton endTurn = new JButton(ButtonText.ENDTURN.toString());
+        endTurn.setEnabled(true);
+        panel.add(endTurn, controlPanelConstraints);
 
         add(panel, frameConstraint);
 
@@ -64,17 +67,17 @@ public class RiskFrame extends JFrame {
 
         // Add bottom Game Buttons to the controller
         riskController.addActionListener(attack);
-        attack.setActionCommand("attack");
+        attack.setActionCommand(ButtonCommand.ATTACK.toString());
 
-        riskController.addActionListener(endturn);
-        endturn.setActionCommand("endturn");
+        riskController.addActionListener(endTurn);
+        endTurn.setActionCommand(ButtonCommand.ENDTURN.toString());
         //riskController.addActionListener(reinforce);
 
 
         // Add all country J Buttons to the controller
         for (CountryButton cb : riskView.getCountryButtons().values()){
             riskController.addActionListener(cb);
-            cb.setActionCommand("country");
+            cb.setActionCommand(ButtonCommand.COUNTRY.toString());
         }
 
 
@@ -83,6 +86,31 @@ public class RiskFrame extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setResizable(false);
 
+    }
+
+    private int invokePlayerPopup() {
+        JPanel panel = new JPanel();
+        JLabel label = new JLabel(PlayGame.LABEL.toString());
+        JComboBox comboBox = new JComboBox(PlayGame.PLAYERS.getArray());
+        comboBox.setSelectedIndex(0);
+        panel.add(label);
+        panel.add(comboBox);
+        int numPlayers = JOptionPane.showOptionDialog(null, panel, PlayGame.TITLE.toString(), JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+                null, PlayGame.OK_CANCEL_OPTION.getArray(), PlayGame.OK_CANCEL_OPTION.getArray()[0]);
+        String result = PlayGame.DEFAULTPLAYER.toString();
+        while (numPlayers != 0) {
+            numPlayers = JOptionPane.showOptionDialog(null, panel, PlayGame.TITLE.toString(), JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+                    null, PlayGame.OK_CANCEL_OPTION.getArray(), PlayGame.OK_CANCEL_OPTION.getArray()[0]);
+        }
+        if (numPlayers == 0) {
+            result = comboBox.getSelectedItem().toString();
+        }
+        return Integer.parseInt(result);
+    }
+
+    private void setupModel(int numPlayers) {
+        model = new RiskModel();
+        model.playGame(numPlayers);
     }
 
     public static void main(String[] args) {
