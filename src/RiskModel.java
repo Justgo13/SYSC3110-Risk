@@ -24,21 +24,23 @@ public class RiskModel {
         attackingTroops = 0;
     }
 
-    public HashMap<String,Country> getCountries(){
-        return board.getCountries();
+    /**
+     * Initial method that is called to start the risk game
+     * @author Jason
+     */
+    public void playGame(int numPlayers) {
+        board.setupBoard(numPlayers);
     }
 
-    public void setAttackingTroops(int attackingTroops) {
-        this.attackingTroops = attackingTroops;
+    /**
+     * Adds a view to listen to changes in the model
+     * @author Harjap
+     * @param view The view instance containing the map and text area console
+     */
+    public void addRiskView(RiskView view){
+        views.add(view);
     }
 
-    public void updateNextState() {
-        state = state.next();
-    }
-
-    public void updatePrevState() {
-        state = state.previous();
-    }
 
     /**
      * The attack method simulates the risk battle between one attacking country and one defending country
@@ -177,23 +179,6 @@ public class RiskModel {
             board.checkEliminated();
         }
 
-    }
-
-    /**
-     * Initial method that is called to start the risk game
-     * @author Jason
-     */
-    public void playGame(int numPlayers) {
-        board.setupBoard(numPlayers);
-    }
-
-    /**
-     * Adds a view to listen to changes in the model
-     * @author Harjap
-     * @param view The view instance containing the map and text area console
-     */
-    public void addRiskView(RiskView view){
-        views.add(view);
     }
 
     /**
@@ -339,5 +324,22 @@ public class RiskModel {
 
     public void incrementTurnIndex() {
         this.turnIndex = (1+turnIndex) % board.getNumOfPlayers();
+    }
+
+
+    public HashMap<String,Country> getCountries(){
+        return board.getCountries();
+    }
+
+    public void setAttackingTroops(int attackingTroops) {
+        this.attackingTroops = attackingTroops;
+    }
+
+    public void updateNextState() {
+        state = state.next();
+    }
+
+    public void updatePrevState() {
+        state = state.previous();
     }
 }
