@@ -1,7 +1,6 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -514,15 +513,15 @@ public class RiskFrame extends JFrame implements RiskView{
 
 
         JButton attackDice1 = new JButton();
-        attackDice1.setActionCommand("attack1");
+        attackDice1.setActionCommand(DiceConstant.A1.toString());
         JButton attackDice2 = new JButton();
-        attackDice1.setActionCommand("attack2");
+        attackDice1.setActionCommand(DiceConstant.A2.toString());
         JButton attackDice3 = new JButton();
-        attackDice1.setActionCommand("attack3");
+        attackDice1.setActionCommand(DiceConstant.A3.toString());
         JButton defendDice1 = new JButton();
-        attackDice1.setActionCommand("defend1");
+        attackDice1.setActionCommand(DiceConstant.D1.toString());
         JButton defendDice2 = new JButton();
-        attackDice1.setActionCommand("defend2");
+        attackDice1.setActionCommand(DiceConstant.D2.toString());
 
         diceJButtons.add(attackDice1);
         diceJButtons.add(attackDice2);
@@ -531,8 +530,8 @@ public class RiskFrame extends JFrame implements RiskView{
         diceJButtons.add(defendDice2);
 
         dicePanel.setLayout(new GridLayout(4,2));
-        dicePanel.add(new JLabel("Attacking Dice"));
-        dicePanel.add(new JLabel("Defending Dice"));
+        dicePanel.add(new JLabel(DiceConstant.ALABEL.toString()));
+        dicePanel.add(new JLabel(DiceConstant.DLABEL.toString()));
 
 
         dicePanel.add(attackDice1);
@@ -633,41 +632,6 @@ public class RiskFrame extends JFrame implements RiskView{
         return Integer.parseInt(result);
     }
 
-    public HashMap<String, CountryButton> getCountryButtons(){
-        return countryButtons;
-    }
-
-    /**
-     * Enables the attacking players CountryButton so that they may choose a country to attack from
-     * @author Jason
-     */
-    public void handleShowAttackingCountry() {
-        // get all the Country Buttons that the current player owns
-        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getAttackingPlayer().getCountriesOwned());
-
-        for (CountryButton cb : countryButtons){
-            if (cb.getCountry().getPossibleAttacks().size() != 0 && cb.getCountry().getArmySize() >= 2) {
-                cb.setEnabled(true);
-            }
-        }
-        attack.setEnabled(false);
-    }
-
-    /**
-     * Handles the behaviour behind executing an attack by calling on the respective method in the model.
-     * This method also deals with setting up a continuous attack phase in case the user would like to attack again.
-     * @author Jason
-     * @param attackingCountry The country the user is attacking from
-     */
-    public void handleCountryAttack(Country attackingCountry) {
-        // disable all defending countries of the attacking country
-        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(attackingCountry.getAdjacentCountries());
-        countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
-        countryButtons.forEach(countryButton -> countryButton.setBorder(null));
-
-        handleShowAttackingCountry(); // re-enable the user to choose countries for continuous attacking
-    }
-
     /**
      * Takes in countries and returns a list of their corresponding country button instances from RiskView
      * @author Harjap
@@ -740,6 +704,37 @@ public class RiskFrame extends JFrame implements RiskView{
 
         diceJButton.setIcon(icon);
 
+    }
+
+    /**
+     * Enables the attacking players CountryButton so that they may choose a country to attack from
+     * @author Jason
+     */
+    public void handleShowAttackingCountry() {
+        // get all the Country Buttons that the current player owns
+        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getAttackingPlayer().getCountriesOwned());
+
+        for (CountryButton cb : countryButtons){
+            if (cb.getCountry().getPossibleAttacks().size() != 0 && cb.getCountry().getArmySize() >= 2) {
+                cb.setEnabled(true);
+            }
+        }
+        attack.setEnabled(false);
+    }
+
+    /**
+     * Handles the behaviour behind executing an attack by calling on the respective method in the model.
+     * This method also deals with setting up a continuous attack phase in case the user would like to attack again.
+     * @author Jason
+     * @param attackingCountry The country the user is attacking from
+     */
+    public void handleCountryAttack(Country attackingCountry) {
+        // disable all defending countries of the attacking country
+        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(attackingCountry.getAdjacentCountries());
+        countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
+        countryButtons.forEach(countryButton -> countryButton.setBorder(null));
+
+        handleShowAttackingCountry(); // re-enable the user to choose countries for continuous attacking
     }
 
     /**
@@ -880,6 +875,10 @@ public class RiskFrame extends JFrame implements RiskView{
 
         // asks for number of troops to attack with
         getAttackingTroopCount(attackingCountry); // number of troops to attack with
+    }
+
+    public HashMap<String, CountryButton> getCountryButtons(){
+        return countryButtons;
     }
 
     public static void main(String[] args) {
