@@ -1,4 +1,3 @@
-import javax.swing.*;
 import java.util.*;
 
 public class RiskModel {
@@ -7,7 +6,9 @@ public class RiskModel {
     private Boolean gameOver;
     private List<RiskView> views;
     private AttackState state;
-
+    private Country attackingCountry;
+    private Country defendingCountry;
+    private int attackingTroops;
     /**
      * Creates an instance of the Risk game
      */
@@ -18,18 +19,17 @@ public class RiskModel {
         views = new ArrayList<>();
         gameOver = false;
         state = null;
+        attackingCountry = null;
+        defendingCountry = null;
+        attackingTroops = 0;
     }
 
     public HashMap<String,Country> getCountries(){
         return board.getCountries();
     }
 
-    public AttackState getState() {
-        return state;
-    }
-
-    public void setState(AttackState state) {
-        this.state = state;
+    public void setAttackingTroops(int attackingTroops) {
+        this.attackingTroops = attackingTroops;
     }
 
     public void updateNextState() {
@@ -197,6 +197,40 @@ public class RiskModel {
     }
 
     /**
+     * Returns a boolean stating whether or not a turn can end
+     * @return True if a end turn command can be done, false otherwise
+     */
+    private boolean canEndTurn() {
+        return state == AttackState.SHOW_DEFENDING_COUNTRIES || state == null;
+    }
+
+
+    public void countryClicked(Country country) {
+        if (state.equals(AttackState.SHOW_DEFENDING_COUNTRIES)) {
+            attackingCountry = country;
+            for (RiskView v : views) {
+                v.handleShowDefendingCountry(country);
+            }
+            updateNextState();
+        } else if (state.equals(AttackState.COMMENCE_ATTACK)) {
+            defendingCountry = country;
+            attack(attackingCountry, defendingCountry, attackingTroops);
+            for (RiskView v : views) {
+                v.handleCountryAttack(attackingCountry);
+            }
+            updatePrevState();
+        }
+    }
+
+    public void attackClicked() {
+        state = AttackState.SHOW_PLAYER_COUNTRIES;
+        for (RiskView v : views) {
+            v.handleShowAttackingCountry();
+        }
+        updateNextState();
+    }
+
+    /**
      * Notifies the view that an AttackEvent has occurred
      * @author Albara'a
      * @param attackingCountry The attacking country
@@ -261,12 +295,14 @@ public class RiskModel {
     /**
      * Notifies the view that a turn has ended
      * @author Albara'a
-     * @param playerID The ID of the next player
      */
-    public void endTurnPhase(int playerID){
-        incrementTurnIndex();
-        for(RiskView v: views){
-            v.handleEndTurn(playerID);
+    public void endTurnPhase(){
+        if (canEndTurn()) {
+            incrementTurnIndex();
+            int playerID = board.getPlayers().get(turnIndex).getId();
+            for (RiskView v : views) {
+                v.handleEndTurn(playerID);
+            }
         }
     }
 
@@ -275,12 +311,22 @@ public class RiskModel {
     }
 
     /**
+     * Gets the player who ended their turn
+     * @author Jason
+     * @return An instance of Player corresponding to player who just ended their turn
+     */
+    public Player getEndTurnPlayer() {
+        int playerEndTurn = (((turnIndex-1)%board.getNumOfPlayers()) + board.getNumOfPlayers()) % board.getNumOfPlayers();
+        ArrayList<Player> players = this.getBoard().getPlayers();
+        return players.get(playerEndTurn);
+    }
+
+    /**
      * Gets the current player who is attacking
      * @author Jason
      * @return An instance of Player corresponding to the attacking player
      */
     public Player getAttackingPlayer() {
-        int turnIndex = this.getTurnIndex();
         ArrayList<Player> players = this.getBoard().getPlayers();
         return players.get(turnIndex);
     }
