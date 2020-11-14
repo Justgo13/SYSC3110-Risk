@@ -8,50 +8,37 @@ import java.util.Collections;
 import java.util.HashMap;
 
 /**
- * Creates a JFrame for the Risk game containing a button panel and view class
- * @author Jason
+ * A view class that represents the map and text area that a user will see change dynamically
+ * over the course of the Risk Game
+ * @author Jason, Albrara'a
  */
-public class RiskFrame extends JFrame implements RiskView{
-    private RiskModel model;
+public class RiskGamePanel extends JPanel {
     private HashMap<String, CountryButton> countryButtons;
+    private RiskModel model;
     private HashMap<String, Country> countries;
     private JTextArea textArea;
     private ArrayList<JButton> diceJButtons;
+
     private ArrayList<Image> diceIcons;
-    private JButton attack;
-    private JButton endTurn;
-    public RiskFrame() {
-        super(PlayGame.GAMETITLE.toString());
-        setLayout(new GridBagLayout());
-        // ask for player number
-        int numPlayer = invokePlayerPopup();
 
-        //Instantiating the model
-        model = new RiskModel();
-        model.playGame(numPlayer);
-        model.addRiskView(this); // Adds the view to the model
-
-        // Creates the Controller
-        RiskController riskController = new RiskController(model);
-
-        // Creating a constraint for the entire frame
-        GridBagConstraints frameConstraint = new GridBagConstraints();
-        frameConstraint.weighty = 1.0;
-        frameConstraint .weightx = 1.0;
-        frameConstraint .anchor = GridBagConstraints.FIRST_LINE_START;
-        frameConstraint .fill = GridBagConstraints.BOTH;
-
-        // create map
+    /**
+     * Creates the Risk map with country buttons
+     * @author Jason
+     * @param model The model containing data about the Risk game
+     */
+    public RiskGamePanel(RiskModel model) {
+        this.model = model;
         this.countries = model.getCountries();
-        JPanel gamePanel = new JPanel(new GridBagLayout());
+
         JPanel countryPanel = new JPanel(new GridBagLayout());
 
         //setting
-        GridBagConstraints gamePanelConstraints = new GridBagConstraints();
-        gamePanelConstraints.weighty = 1.0;
-        gamePanelConstraints.weightx = 1.0;
-        gamePanelConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
-        gamePanelConstraints.fill = GridBagConstraints.BOTH;
+        setLayout(new GridBagLayout());
+        GridBagConstraints viewConstraints = new GridBagConstraints();
+        viewConstraints.weighty = 1.0;
+        viewConstraints.weightx = 1.0;
+        viewConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
+        viewConstraints.fill = GridBagConstraints.BOTH;
 
         countryButtons = new HashMap<>();
         setLayout(new GridBagLayout());
@@ -59,14 +46,13 @@ public class RiskFrame extends JFrame implements RiskView{
         mapConstraints.weighty = 1.0;
         mapConstraints.weightx = 1.0;
         mapConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
-        mapConstraints.fill = GridBagConstraints.BOTH;
 
         /*
         NORTH AMERICA
          */
 
         // Alaska
-
+        mapConstraints.fill = GridBagConstraints.BOTH;
         mapConstraints.insets = new Insets(0,50,0,0);
         mapConstraints.gridx = 0;
         mapConstraints.gridy = 0;
@@ -484,16 +470,15 @@ public class RiskFrame extends JFrame implements RiskView{
         mapConstraints.insets = new Insets(0,0,0,0);
 
 
-        // add map to game panel
-        gamePanelConstraints.gridx = 0;
-        gamePanelConstraints.gridy = 0;
-        gamePanelConstraints.gridheight=2;
-        gamePanel.add(countryPanel, gamePanelConstraints);
+        viewConstraints.gridx = 0;
+        viewConstraints.gridy = 0;
+        viewConstraints.gridheight=2;
+        add(countryPanel, viewConstraints);
 
-        gamePanelConstraints.gridx = 1;
-        gamePanelConstraints.gridy = 0;
-        gamePanelConstraints.ipadx = 120;
-        gamePanelConstraints.gridheight=1;
+        viewConstraints.gridx = 1;
+        viewConstraints.gridy = 0;
+        viewConstraints.ipadx = 120;
+        viewConstraints.gridheight=1;
 
         // create a text area for printing game events to a console and added a scrollPane in case of long turns
         textArea = new JTextArea();
@@ -501,16 +486,18 @@ public class RiskFrame extends JFrame implements RiskView{
         scroll.setPreferredSize(textArea.getPreferredSize());
         textArea.append("It is Player "+ model.getBoard().getPlayers().get(model.getTurnIndex()).getId() +"'s turn\n");
         textArea.setEditable(false);
-        gamePanel.add(scroll, gamePanelConstraints);
+        add(scroll, viewConstraints);
 
 
         // Setting Up Dice Rolls Display
-        diceJButtons = new ArrayList<>();
 
-        gamePanelConstraints.gridx = 1;
-        gamePanelConstraints.gridy = 1;
+        diceJButtons = new ArrayList<JButton>();
+
+        viewConstraints.gridx = 1;
+        viewConstraints.gridy = 1;
         JPanel dicePanel = new JPanel();
-        gamePanel.add(dicePanel,gamePanelConstraints);
+        //dicePanel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+        add(dicePanel,viewConstraints);
 
 
         JButton attackDice1 = new JButton();
@@ -530,6 +517,8 @@ public class RiskFrame extends JFrame implements RiskView{
         diceJButtons.add(defendDice1);
         diceJButtons.add(defendDice2);
 
+
+
         dicePanel.setLayout(new GridLayout(4,2));
         dicePanel.add(new JLabel("Attacking Dice"));
         dicePanel.add(new JLabel("Defending Dice"));
@@ -541,8 +530,9 @@ public class RiskFrame extends JFrame implements RiskView{
         dicePanel.add(defendDice2);
         dicePanel.add(attackDice3);
 
+
         // Setting up Dice Icons
-        diceIcons = new ArrayList<>();
+        diceIcons = new ArrayList<Image>();
 
         try{
             for (int i = 1; i< 7;i++) {
@@ -555,82 +545,7 @@ public class RiskFrame extends JFrame implements RiskView{
             System.out.println(e);
         }
 
-        frameConstraint.gridx = 0;
-        frameConstraint.gridy = 0;
-        add(gamePanel, frameConstraint);
 
-        // Creates the control panel at the bottom of the GUI
-        JPanel panel = new JPanel(new GridBagLayout());
-        frameConstraint.gridx = 0;
-        frameConstraint.gridy = 1;
-        GridBagConstraints controlPanelConstraints = new GridBagConstraints();
-        controlPanelConstraints.weighty = 1.0;
-        controlPanelConstraints.weightx = 1.0;
-        controlPanelConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
-        controlPanelConstraints.fill = GridBagConstraints.BOTH;
-
-        controlPanelConstraints.gridx = 0;
-        controlPanelConstraints.gridy = 1;
-        controlPanelConstraints.gridwidth = 1;
-        JButton reinforce = new JButton(ButtonText.REINFORCE.toString());
-        reinforce.setEnabled(false);
-        panel.add(reinforce, controlPanelConstraints);
-
-        controlPanelConstraints.gridx = 1;
-        controlPanelConstraints.gridy = 1;
-        attack = new JButton(ButtonText.ATTACK.toString());
-        attack.setEnabled(true);
-        panel.add(attack, controlPanelConstraints);
-
-        controlPanelConstraints.gridx = 2;
-        controlPanelConstraints.gridy = 1;
-        endTurn = new JButton(ButtonText.ENDTURN.toString());
-        endTurn.setEnabled(true);
-        panel.add(endTurn, controlPanelConstraints);
-
-        add(panel, frameConstraint);
-
-
-        // Add bottom Game Buttons to the controller
-        attack.addActionListener(riskController);
-        attack.setActionCommand(ButtonCommand.ATTACK.toString());
-
-        endTurn.addActionListener(riskController);
-        endTurn.setActionCommand(ButtonCommand.ENDTURN.toString());
-        //riskController.addActionListener(reinforce);
-
-
-        // Add all country J Buttons to the controller
-        for (CountryButton cb : getCountryButtons().values()){
-            cb.addActionListener(riskController);
-            cb.setActionCommand(ButtonCommand.COUNTRY.toString());
-        }
-
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setVisible(true);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setResizable(false);
-
-    }
-
-    private int invokePlayerPopup() {
-        JPanel panel = new JPanel();
-        JLabel label = new JLabel(PlayGame.LABEL.toString());
-        JComboBox comboBox = new JComboBox(PlayGame.PLAYERS.getArray());
-        comboBox.setSelectedIndex(0);
-        panel.add(label);
-        panel.add(comboBox);
-        int numPlayers = JOptionPane.showOptionDialog(null, panel, PlayGame.TITLE.toString(), JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-                null, PlayGame.OK_CANCEL_OPTION.getArray(), PlayGame.OK_CANCEL_OPTION.getArray()[0]);
-        String result = PlayGame.DEFAULTPLAYER.toString();
-        while (numPlayers != 0) {
-            numPlayers = JOptionPane.showOptionDialog(null, panel, PlayGame.TITLE.toString(), JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-                    null, PlayGame.OK_CANCEL_OPTION.getArray(), PlayGame.OK_CANCEL_OPTION.getArray()[0]);
-        }
-        if (numPlayers == 0) {
-            result = comboBox.getSelectedItem().toString();
-        }
-        return Integer.parseInt(result);
     }
 
     public HashMap<String, CountryButton> getCountryButtons(){
@@ -641,7 +556,7 @@ public class RiskFrame extends JFrame implements RiskView{
      * Enables the attacking players CountryButton so that they may choose a country to attack from
      * @author Jason
      */
-    public void handleShowAttackingCountry() {
+    public void showAttackingCountries() {
         // get all the Country Buttons that the current player owns
         ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getAttackingPlayer().getCountriesOwned());
 
@@ -650,7 +565,28 @@ public class RiskFrame extends JFrame implements RiskView{
                 cb.setEnabled(true);
             }
         }
-        attack.setEnabled(false);
+    }
+
+    /**
+     * Highlights all the countries the attacking player can attack from by creating a border around it
+     * @author Jason
+     * @param e An ActionEvent corresponding to the event created when a CountryButton was clicked
+     * @return The number of troops that the player chose to use in attacking the country
+     */
+    public int showDefendingCountries(ActionEvent e) {
+        CountryButton attackingCountry = (CountryButton) e.getSource();
+
+        // converts all countries that the attacking country can attack into their respective country button instance in the view and stores in a list
+        ArrayList<CountryButton> defendingCountries = convertCountryToCountryButtons(attackingCountry.getCountry().getAdjacentCountries());
+        defendingCountries.forEach(countryButton -> countryButton.setEnabled(true)); // enable all possible countries to attack
+        defendingCountries.forEach(countryButton -> countryButton.setBorder(BorderFactory.createLineBorder(Color.yellow, 3)));
+        // disables all attacking countries from being pressed
+        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getAttackingPlayer().getCountriesOwned());
+        countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
+        countryButtons.forEach(countryButton -> countryButton.setBorder(null));
+
+        // asks for number of troops to attack with
+        return Integer.parseInt(getAttackingTroopCount(attackingCountry)); // number of troops to attack with
     }
 
     /**
@@ -659,13 +595,13 @@ public class RiskFrame extends JFrame implements RiskView{
      * @author Jason
      * @param attackingCountry The country the user is attacking from
      */
-    public void handleCountryAttack(Country attackingCountry) {
+    public void performAttack(Country attackingCountry) {
         // disable all defending countries of the attacking country
         ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(attackingCountry.getAdjacentCountries());
         countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
         countryButtons.forEach(countryButton -> countryButton.setBorder(null));
 
-        handleShowAttackingCountry(); // re-enable the user to choose countries for continuous attacking
+        showAttackingCountries(); // re-enable the user to choose countries for continuous attacking
     }
 
     /**
@@ -692,10 +628,11 @@ public class RiskFrame extends JFrame implements RiskView{
      * Creates a dialog box with a dropdown list asking the user for the number of troops they want to attack with
      * @author Jason
      * @param attackingCountry The country the player is attacking from
+     * @return The number of troops the player chose to attack with
      */
-    public void getAttackingTroopCount(Country attackingCountry) {
+    public String getAttackingTroopCount(CountryButton attackingCountry) {
         String[] options = {"OK"};
-        int troopCount = attackingCountry.getArmySize()-1;
+        int troopCount = attackingCountry.getTroopCount()-1;
         Integer[] troopList = buildTroopDropdownList(troopCount);
         JPanel panel = new JPanel();
         JLabel label = new JLabel("Select the number of troops to attack with: ");
@@ -709,7 +646,7 @@ public class RiskFrame extends JFrame implements RiskView{
             selectionObject = JOptionPane.showOptionDialog(this, panel, "Choose Troops", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         }
         result = comboBox.getSelectedItem().toString();
-        model.setAttackingTroops(Integer.parseInt(result));
+        return result;
     }
 
     /**
@@ -727,19 +664,6 @@ public class RiskFrame extends JFrame implements RiskView{
             troopCount--;
         }
         return troopList;
-    }
-
-    /**
-     * Sets the dice icon corresponding to the attacker and defending dice rolls
-     * @author Harjap
-     * @param diceJButton The JButton the icon will be placed on
-     * @param diceNum The dice value
-     */
-    public void setDiceIcon(JButton diceJButton, int diceNum){
-        ImageIcon icon = new ImageIcon(diceIcons.get(diceNum-1));
-
-        diceJButton.setIcon(icon);
-
     }
 
     /**
@@ -783,11 +707,11 @@ public class RiskFrame extends JFrame implements RiskView{
      */
     public void handleEndTurn(int playerId){
         // disable all attacking countries of current player
-        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getEndTurnPlayer().getCountriesOwned());
+        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getAttackingPlayer().getCountriesOwned());
         countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
         textArea.setText("");
         textArea.append("It is Player "+playerId+"'s turn\n");
-        attack.setEnabled(true);
+        //also make sure to display whos turn it is
     }
 
     /**
@@ -862,27 +786,16 @@ public class RiskFrame extends JFrame implements RiskView{
     }
 
     /**
-     * Highlights all the countries the attacking player can attack from by creating a border around it
-     * @author Jason
-     * @param attackingCountry The attacking country
-     * @return The number of troops that the player chose to use in attacking the country
+     * Sets the dice icon corresponding to the attacker and defending dice rolls
+     * @author Harjap
+     * @param diceJButton The JButton the icon will be placed on
+     * @param diceNum The dice value
      */
-    @Override
-    public void handleShowDefendingCountry(Country attackingCountry) {
-        // converts all countries that the attacking country can attack into their respective country button instance in the view and stores in a list
-        ArrayList<CountryButton> defendingCountries = convertCountryToCountryButtons(attackingCountry.getAdjacentCountries());
-        defendingCountries.forEach(countryButton -> countryButton.setEnabled(true)); // enable all possible countries to attack
-        defendingCountries.forEach(countryButton -> countryButton.setBorder(BorderFactory.createLineBorder(Color.yellow, 3)));
-        // disables all attacking countries from being pressed
-        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getAttackingPlayer().getCountriesOwned());
-        countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
-        countryButtons.forEach(countryButton -> countryButton.setBorder(null));
+    public void setDiceIcon(JButton diceJButton, int diceNum){
+        ImageIcon icon = new ImageIcon(diceIcons.get(diceNum-1));
 
-        // asks for number of troops to attack with
-        getAttackingTroopCount(attackingCountry); // number of troops to attack with
+        diceJButton.setIcon(icon);
+
     }
 
-    public static void main(String[] args) {
-        new RiskFrame();
-    }
 }

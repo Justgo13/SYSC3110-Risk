@@ -1,4 +1,3 @@
-import javax.swing.*;
 import java.util.*;
 
 public class RiskModel {
@@ -6,7 +5,10 @@ public class RiskModel {
     private int turnIndex;
     private Boolean gameOver;
     private List<RiskView> views;
-
+    private AttackState state;
+    private Country attackingCountry;
+    private Country defendingCountry;
+    private int attackingTroops;
     /**
      * Creates an instance of the Risk game
      */
@@ -16,10 +18,26 @@ public class RiskModel {
         turnIndex = 0;
         views = new ArrayList<>();
         gameOver = false;
+        state = null;
+        attackingCountry = null;
+        defendingCountry = null;
+        attackingTroops = 0;
     }
 
     public HashMap<String,Country> getCountries(){
         return board.getCountries();
+    }
+
+    public void setAttackingTroops(int attackingTroops) {
+        this.attackingTroops = attackingTroops;
+    }
+
+    public void updateNextState() {
+        state = state.next();
+    }
+
+    public void updatePrevState() {
+        state = state.previous();
     }
 
     /**
@@ -165,24 +183,8 @@ public class RiskModel {
      * Initial method that is called to start the risk game
      * @author Jason
      */
-    public void playGame() {
-        String[] options = {"OK"};
-        final String[] players = {"2","3","4","5","6"};
-        JPanel panel = new JPanel();
-        JLabel label = new JLabel("Select the number of players: ");
-        JComboBox comboBox = new JComboBox(players);
-        comboBox.setSelectedIndex(0);
-        panel.add(label);
-        panel.add(comboBox);
-        int numPlayers = JOptionPane.showOptionDialog(null, panel, "Choose Troops", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-        String result = "0";
-        while (numPlayers != 0) {
-            numPlayers = JOptionPane.showOptionDialog(null, panel, "Choose Troops", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-        }
-        if (numPlayers == 0) {
-            result = comboBox.getSelectedItem().toString();
-        }
-        board.setupBoard(Integer.parseInt(result));
+    public void playGame(int numPlayers) {
+        board.setupBoard(numPlayers);
     }
 
     /**
@@ -192,6 +194,40 @@ public class RiskModel {
      */
     public void addRiskView(RiskView view){
         views.add(view);
+    }
+
+    /**
+     * Returns a boolean stating whether or not a turn can end
+     * @return True if a end turn command can be done, false otherwise
+     */
+    private boolean canEndTurn() {
+        return state == AttackState.SHOW_DEFENDING_COUNTRIES || state == null;
+    }
+
+
+    public void countryClicked(Country country) {
+        if (state.equals(AttackState.SHOW_DEFENDING_COUNTRIES)) {
+            attackingCountry = country;
+            for (RiskView v : views) {
+                v.handleShowDefendingCountry(country);
+            }
+            updateNextState();
+        } else if (state.equals(AttackState.COMMENCE_ATTACK)) {
+            defendingCountry = country;
+            attack(attackingCountry, defendingCountry, attackingTroops);
+            for (RiskView v : views) {
+                v.handleCountryAttack(attackingCountry);
+            }
+            updatePrevState();
+        }
+    }
+
+    public void attackClicked() {
+        state = AttackState.SHOW_PLAYER_COUNTRIES;
+        for (RiskView v : views) {
+            v.handleShowAttackingCountry();
+        }
+        updateNextState();
     }
 
     /**
@@ -259,12 +295,14 @@ public class RiskModel {
     /**
      * Notifies the view that a turn has ended
      * @author Albara'a
-     * @param playerID The ID of the next player
      */
-    public void endTurnPhase(int playerID){
-        incrementTurnIndex();
-        for(RiskView v: views){
-            v.handleEndTurn(playerID);
+    public void endTurnPhase(){
+        if (canEndTurn()) {
+            incrementTurnIndex();
+            int playerID = board.getPlayers().get(turnIndex).getId();
+            for (RiskView v : views) {
+                v.handleEndTurn(playerID);
+            }
         }
     }
 
@@ -273,12 +311,22 @@ public class RiskModel {
     }
 
     /**
+     * Gets the player who ended their turn
+     * @author Jason
+     * @return An instance of Player corresponding to player who just ended their turn
+     */
+    public Player getEndTurnPlayer() {
+        int playerEndTurn = (((turnIndex-1)%board.getNumOfPlayers()) + board.getNumOfPlayers()) % board.getNumOfPlayers();
+        ArrayList<Player> players = this.getBoard().getPlayers();
+        return players.get(playerEndTurn);
+    }
+
+    /**
      * Gets the current player who is attacking
      * @author Jason
      * @return An instance of Player corresponding to the attacking player
      */
     public Player getAttackingPlayer() {
-        int turnIndex = this.getTurnIndex();
         ArrayList<Player> players = this.getBoard().getPlayers();
         return players.get(turnIndex);
     }
