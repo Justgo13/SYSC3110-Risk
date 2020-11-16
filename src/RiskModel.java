@@ -127,6 +127,23 @@ public class RiskModel {
         return attackerDice;
     }
 
+    public ArrayList<Country> getPlayersAdjacentCountries(Country country){
+        ArrayList<Country> adjacentCountries = new ArrayList();
+        countryRecurse(adjacentCountries, country);
+        return adjacentCountries;
+
+    }
+
+    private void countryRecurse(ArrayList playerCountries, Country country){
+        playerCountries.add(country);
+        for (Country adjacent: country.getAdjacentCountries()){
+            //if owned by same player and not in list already add it
+            if(adjacent.getPlayer() == ((Country) playerCountries.get(0)).getPlayer() && !playerCountries.contains(adjacent)) {
+                countryRecurse(playerCountries, adjacent);
+            }
+        }
+    }
+
     /**
      * Performs the attack between the attacking country and defending country and will remove troops from their
      * respective countries based on the result of the dice rolls.
