@@ -154,6 +154,12 @@ public class RiskModelTest {
     }
 
     @Test
+    public void testGroupOfNeighbouringCountries(){
+
+        rm.getPlayersAdjacentCountries(rm.getCountries().get("China"));
+    }
+
+    @Test
     public void testPlayerOwnsCountries(){
 
         //Creating our own country objects so we can specify values
