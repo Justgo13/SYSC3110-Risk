@@ -233,6 +233,26 @@ public class RiskModel {
     }
 
     /**
+     * According how many countries or continents the player owns,
+     * they will receive a specific troop bonus at the beginning
+     * of their turn with a minimum of 3.
+     * @param player
+     * @return bonus troop
+     */
+
+    public int bonusTroopCalculation(Player player){
+        int troops = 3;
+        troops += player.getCountriesOwned().size() / 3;
+
+        for(Continent c: board.getContinents().values()){
+            if(player.equals(c.getContinentOwner())){
+                troops += c.getBonusArmy();
+            }
+        }
+        return troops;
+    }
+
+    /**
      * Notifies the view that an AttackEvent has occurred
      * @author Albara'a
      * @param attackingCountry The attacking country
