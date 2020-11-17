@@ -127,7 +127,30 @@ public class RiskModel {
         return attackerDice;
     }
 
-    public ArrayList<Country> getPlayersAdjacentCountries(Country country){
+    /**
+     * Will move troops from one country to another assuming they are connected and owned by the same player
+     * @param donor
+     * @param reinforced
+     * @param numTroops
+     * @return
+     */
+    public Boolean reinforceCountry(Country donor, Country reinforced, int numTroops){
+        // checks for validity, connectedCountries doesn't need to check for donor as it will always be in the list of countries
+        if(numTroops >= donor.getArmySize() || !getConnectedCountries(donor).contains(reinforced)) return false;
+
+        //if it is a valid request make the changes
+        reinforced.setArmySize(reinforced.getArmySize() + numTroops);
+        donor.setArmySize(donor.getArmySize() - numTroops);
+        return true;
+    }
+
+
+    /**
+     * returns all of a players connected countries given a single country
+     * @param country the country to start from
+     * @return a list of countries that are connected and owned by that player
+     */
+    protected ArrayList<Country> getConnectedCountries(Country country){
         ArrayList<Country> adjacentCountries = new ArrayList();
         countryRecurse(adjacentCountries, country);
         return adjacentCountries;
@@ -137,7 +160,7 @@ public class RiskModel {
     private void countryRecurse(ArrayList playerCountries, Country country){
         playerCountries.add(country);
         for (Country adjacent: country.getAdjacentCountries()){
-            //if owned by same player and not in list already add it
+            //if owned by same player and not in list already add it(get 0 is the first country that was passed into the function)
             if(adjacent.getPlayer() == ((Country) playerCountries.get(0)).getPlayer() && !playerCountries.contains(adjacent)) {
                 countryRecurse(playerCountries, adjacent);
             }
