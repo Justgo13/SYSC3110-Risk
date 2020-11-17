@@ -4,8 +4,7 @@ import org.junit.Test;
 
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class RiskModelTest {
     RiskMockModel rm;
@@ -154,9 +153,42 @@ public class RiskModelTest {
     }
 
     @Test
-    public void testGroupOfNeighbouringCountries(){
+    public void testConnectedCountriesForDuplicates(){
+        ArrayList<Country> countries = rm.getConnectedCountries(rm.getCountries().get("China"));
+        HashSet sets = new HashSet(countries);
+        assertEquals(countries.size(),sets.size());
+    }
 
-        rm.getPlayersAdjacentCountries(rm.getCountries().get("China"));
+    @Test
+    public void testConnectedCountries(){
+        Country Canada = new  Country("canada");
+        Country Usa = new  Country("Usa");
+        Country India = new  Country("India");
+
+        Canada.addAdjacentCountry(India);
+        Canada.addAdjacentCountry(Usa);
+        India.addAdjacentCountry(Canada);
+        India.addAdjacentCountry(Usa);
+        Usa.addAdjacentCountry(India);
+        Usa.addAdjacentCountry(Canada);
+
+        Canada.setArmySize(100);
+        India.setArmySize(1);
+        Usa.setArmySize(1);
+
+        //managing countries owned by the players
+        Player player1 = rm.getBoard().getPlayers().get(0);
+        Player player2 = rm.getBoard().getPlayers().get(1);
+
+        Canada.setPlayer(player1);
+        India.setPlayer(player2);
+        Usa.setPlayer(player1);
+
+        assertFalse(rm.reinforceCountry(Canada, India, 30));
+        assertFalse(rm.reinforceCountry(Usa, Canada, 5));
+        assertTrue(rm.reinforceCountry(Canada, Usa, 50));
+        assertEquals(50, Canada.getArmySize());
+        assertEquals(51, Usa.getArmySize());
     }
 
     @Test
