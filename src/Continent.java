@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -28,5 +29,18 @@ public class Continent {
         return countries.get(name);
     }
 
+    public int getBonusArmy() {
+        return bonusArmy;
+    }
 
+    public Player getContinentOwner(){
+        ArrayList<Country> countryArrayList = (ArrayList<Country>) countries.values();
+        Player player = countryArrayList.get(0).getPlayer();
+        for(Country c: countryArrayList){
+            if(c.getPlayer() != player){
+                return null;
+            }
+        }
+        return player;
+    }
 }
