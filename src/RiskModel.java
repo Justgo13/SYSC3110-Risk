@@ -148,6 +148,7 @@ public class RiskModel {
         return reinforceCountry;
     }
 
+    // TODO Probably dont need these two functions
     public ArrayList<Country> getConnectedCountries(Country country){
         ArrayList<Country> adjacentCountries = new ArrayList();
         countryRecurse(adjacentCountries, country);
