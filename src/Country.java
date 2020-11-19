@@ -66,4 +66,14 @@ public class Country {
         return countries;
     }
 
+    public ArrayList<Country> getPossibleReinforce() {
+        ArrayList<Country> reinforceCountry = new ArrayList<>();
+        for (Country c : adjacentCountries) {
+            if (c.getPlayer().equals(this.player)) {
+                reinforceCountry.add(c);
+            }
+        }
+        return reinforceCountry;
+    }
+
 }

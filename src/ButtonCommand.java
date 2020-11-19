@@ -1,5 +1,5 @@
 public enum ButtonCommand {
-    REINFORCE("Reinforce"), ATTACK("Attack"), ENDTURN("EndTurn"), COUNTRY("Country");
+    REINFORCE("Reinforce"), ATTACK("Attack"), ENDPHASE("EndPhase"), COUNTRY("Country");
     private String value;
 
     ButtonCommand(String value) {

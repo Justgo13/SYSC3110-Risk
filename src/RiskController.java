@@ -17,10 +17,12 @@ public class RiskController implements ActionListener{
         if(e.getActionCommand().equals(ButtonCommand.COUNTRY.toString())) {
             CountryButton countryButton = (CountryButton) e.getSource();
             riskModel.countryClicked(countryButton.getCountry());
-        } else if (e.getActionCommand().equals(ButtonCommand.ENDTURN.toString())){
-            riskModel.endTurnPhase();
+        } else if (e.getActionCommand().equals(ButtonCommand.ENDPHASE.toString())){
+            riskModel.endPhaseClicked();
         } else if (e.getActionCommand().equals(ButtonCommand.ATTACK.toString())){
             riskModel.attackClicked();
+        } else if (e.getActionCommand().equals(ButtonCommand.REINFORCE.toString())) {
+            riskModel.reinforceClicked();
         }
     }
 }

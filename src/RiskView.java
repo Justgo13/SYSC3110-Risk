@@ -8,4 +8,10 @@ public interface RiskView {
     void handleShowDefendingCountry(Country country);
     void handleCountryAttack(Country country);
     void handleShowAttackingCountry();
+    void handleShowReinforceCountry();
+    void handleShowReinforceAdjacents(Country country);
+    void handleReinforce(Country reinforceCountry);
+    void handleReinforceResultEvent(ReinforceResultEvent reinforceResultEvent);
+    void handleReinforceEvent(ReinforceEvent reinforceEvent);
+    void handleEndAttack(int playerID);
 }

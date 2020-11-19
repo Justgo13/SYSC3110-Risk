@@ -5,9 +5,12 @@ public class RiskModel {
     private int turnIndex;
     private Boolean gameOver;
     private List<RiskView> views;
-    private AttackState state;
+    private GameState state;
+    private GameState.EndPhase endPhaseState;
     private Country attackingCountry;
     private Country defendingCountry;
+    private Country reinforceCountry;
+    private Country countryToReinforce;
     private int attackingTroops;
     /**
      * Creates an instance of the Risk game
@@ -19,8 +22,11 @@ public class RiskModel {
         views = new ArrayList<>();
         gameOver = false;
         state = null;
+        endPhaseState = null;
         attackingCountry = null;
         defendingCountry = null;
+        reinforceCountry = null;
+        countryToReinforce = null;
         attackingTroops = 0;
     }
 
@@ -127,30 +133,22 @@ public class RiskModel {
         return attackerDice;
     }
 
-    /**
-     * Will move troops from one country to another assuming they are connected and owned by the same player
-     * @param donor
-     * @param reinforced
-     * @param numTroops
-     * @return
-     */
-    public Boolean reinforceCountry(Country donor, Country reinforced, int numTroops){
-        // checks for validity, connectedCountries doesn't need to check for donor as it will always be in the list of countries
-        if(numTroops >= donor.getArmySize() || !getConnectedCountries(donor).contains(reinforced)) return false;
-
-        //if it is a valid request make the changes
-        reinforced.setArmySize(reinforced.getArmySize() + numTroops);
-        donor.setArmySize(donor.getArmySize() - numTroops);
-        return true;
+    // Countries you can reinforce with
+    public ArrayList<Country> getReinforceCountries() {
+        Player player = board.getPlayers().get(turnIndex);
+        ArrayList<Country> reinforceCountry = new ArrayList<>();
+        for (Country c : player.getCountriesOwned()) {
+            for (Country adj : c.getAdjacentCountries()) {
+                if (adj.getPlayer().equals(player)) {
+                    reinforceCountry.add(c);
+                    break;
+                }
+            }
+        }
+        return reinforceCountry;
     }
 
-
-    /**
-     * returns all of a players connected countries given a single country
-     * @param country the country to start from
-     * @return a list of countries that are connected and owned by that player
-     */
-    protected ArrayList<Country> getConnectedCountries(Country country){
+    public ArrayList<Country> getConnectedCountries(Country country){
         ArrayList<Country> adjacentCountries = new ArrayList();
         countryRecurse(adjacentCountries, country);
         return adjacentCountries;
@@ -221,38 +219,77 @@ public class RiskModel {
 
     }
 
-    /**
-     * Returns a boolean stating whether or not a turn can end
-     * @return True if a end turn command can be done, false otherwise
-     */
-    private boolean canEndTurn() {
-        return state == AttackState.SHOW_DEFENDING_COUNTRIES || state == null;
+    public void reinforce(Country reinforceCountry, Country countryToReinforce, int attackingTroops) {
+        reinforceCountry.setArmySize(reinforceCountry.getArmySize() - attackingTroops);
+        countryToReinforce.setArmySize(countryToReinforce.getArmySize() + attackingTroops);
+        updateMoveResult(reinforceCountry, countryToReinforce, attackingTroops);
+        updateReinforceView(reinforceCountry, countryToReinforce);
     }
 
 
     public void countryClicked(Country country) {
-        if (state.equals(AttackState.SHOW_DEFENDING_COUNTRIES)) {
+        if (state.equals(GameState.SHOW_DEFENDING_COUNTRIES)) {
             attackingCountry = country;
             for (RiskView v : views) {
                 v.handleShowDefendingCountry(country);
             }
             updateNextState();
-        } else if (state.equals(AttackState.COMMENCE_ATTACK)) {
+        } else if (state.equals(GameState.COMMENCE_ATTACK)) {
             defendingCountry = country;
             attack(attackingCountry, defendingCountry, attackingTroops);
             for (RiskView v : views) {
                 v.handleCountryAttack(attackingCountry);
             }
-            updatePrevState();
+        } else if (state.equals(GameState.CHOOSE_REINFORCE)) {
+            reinforceCountry = country;
+            for (RiskView v : views) {
+                v.handleShowReinforceAdjacents(country);
+            }
+            updateNextState();
+        } else if (state.equals(GameState.COMMENCE_REINFORCE)) {
+            countryToReinforce = country;
+            reinforce(reinforceCountry, countryToReinforce, attackingTroops);
+            for (RiskView v : views) {
+                v.handleReinforce(reinforceCountry);
+            }
         }
     }
 
     public void attackClicked() {
-        state = AttackState.SHOW_PLAYER_COUNTRIES;
+        state = GameState.SHOW_PLAYER_COUNTRIES;
+        endPhaseState = GameState.EndPhase.ATTACK_PHASE;
         for (RiskView v : views) {
             v.handleShowAttackingCountry();
         }
         updateNextState();
+    }
+
+    public void reinforceClicked() {
+        state = GameState.SHOW_REINFORCE_COUNTRIES;
+        for (RiskView v : views) {
+            v.handleShowReinforceCountry();
+        }
+        updateNextState();
+    }
+
+    /**
+     * Notifies the view that a turn has ended
+     * @author Albara'a
+     */
+    public void endPhaseClicked(){
+        updateEndPhaseState();
+        if (endPhaseState.equals(GameState.EndPhase.REINFORCE_PHASE)) {
+            int playerID = board.getPlayers().get(turnIndex).getId();
+            for (RiskView v : views) {
+                v.handleEndAttack(playerID);
+            }
+        } else if (endPhaseState.equals(GameState.EndPhase.END_PHASE)) {
+            incrementTurnIndex();
+            int playerID = board.getPlayers().get(turnIndex).getId();
+            for (RiskView v : views) {
+                v.handleEndTurn(playerID);
+            }
+        }
     }
 
     /**
@@ -337,17 +374,15 @@ public class RiskModel {
         }
     }
 
-    /**
-     * Notifies the view that a turn has ended
-     * @author Albara'a
-     */
-    public void endTurnPhase(){
-        if (canEndTurn()) {
-            incrementTurnIndex();
-            int playerID = board.getPlayers().get(turnIndex).getId();
-            for (RiskView v : views) {
-                v.handleEndTurn(playerID);
-            }
+    private void updateMoveResult(Country reinforceCountry, Country countrytoReinforce, int countryToReinforceArmy) {
+        for(RiskView v : views){
+            v.handleReinforceResultEvent(new ReinforceResultEvent(this,reinforceCountry,countryToReinforceArmy, countrytoReinforce));
+        }
+    }
+
+    private void updateReinforceView(Country reinforceCountry, Country countryToReinforce) {
+        for (RiskView v : views){
+            v.handleReinforceEvent(new ReinforceEvent(this,reinforceCountry,countryToReinforce));
         }
     }
 
@@ -401,5 +436,13 @@ public class RiskModel {
 
     public void updatePrevState() {
         state = state.previous();
+    }
+
+    public void updateEndPhaseState() {
+        endPhaseState = endPhaseState.next();
+    }
+
+    public void updatePrevEndPhaseState() {
+        endPhaseState = endPhaseState.previous();
     }
 }
