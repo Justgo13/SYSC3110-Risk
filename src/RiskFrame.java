@@ -18,7 +18,8 @@ public class RiskFrame extends JFrame implements RiskView{
     private ArrayList<JButton> diceJButtons;
     private ArrayList<Image> diceIcons;
     private JButton attack;
-    private JButton endTurn;
+    private JButton endPhase;
+    private JButton reinforce;
     public RiskFrame() {
         super(PlayGame.GAMETITLE.toString());
         setLayout(new GridBagLayout());
@@ -571,7 +572,7 @@ public class RiskFrame extends JFrame implements RiskView{
         controlPanelConstraints.gridx = 0;
         controlPanelConstraints.gridy = 1;
         controlPanelConstraints.gridwidth = 1;
-        JButton reinforce = new JButton(ButtonText.REINFORCE.toString());
+        reinforce = new JButton(ButtonText.REINFORCE.toString());
         reinforce.setEnabled(false);
         panel.add(reinforce, controlPanelConstraints);
 
@@ -583,9 +584,9 @@ public class RiskFrame extends JFrame implements RiskView{
 
         controlPanelConstraints.gridx = 2;
         controlPanelConstraints.gridy = 1;
-        endTurn = new JButton(ButtonText.ENDTURN.toString());
-        endTurn.setEnabled(true);
-        panel.add(endTurn, controlPanelConstraints);
+        endPhase = new JButton(ButtonText.ENDTURN.toString());
+        endPhase.setEnabled(false);
+        panel.add(endPhase, controlPanelConstraints);
 
         add(panel, frameConstraint);
 
@@ -594,9 +595,11 @@ public class RiskFrame extends JFrame implements RiskView{
         attack.addActionListener(riskController);
         attack.setActionCommand(ButtonCommand.ATTACK.toString());
 
-        endTurn.addActionListener(riskController);
-        endTurn.setActionCommand(ButtonCommand.ENDTURN.toString());
-        //riskController.addActionListener(reinforce);
+        endPhase.addActionListener(riskController);
+        endPhase.setActionCommand(ButtonCommand.ENDPHASE.toString());
+
+        reinforce.addActionListener(riskController);
+        reinforce.setActionCommand(ButtonCommand.REINFORCE.toString());
 
 
         // Add all country J Buttons to the controller
@@ -720,6 +723,7 @@ public class RiskFrame extends JFrame implements RiskView{
             }
         }
         attack.setEnabled(false);
+        endPhase.setEnabled(false);
     }
 
     /**
@@ -733,8 +737,46 @@ public class RiskFrame extends JFrame implements RiskView{
         ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(attackingCountry.getAdjacentCountries());
         countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
         countryButtons.forEach(countryButton -> countryButton.setBorder(null));
+        endPhase.setEnabled(true);
+        attack.setEnabled(true);
+    }
 
-        handleShowAttackingCountry(); // re-enable the user to choose countries for continuous attacking
+    @Override
+    public void handleShowReinforceCountry() {
+        ArrayList<CountryButton> reinforceCountries = convertCountryToCountryButtons(model.getReinforceCountries());
+        for (CountryButton cb : reinforceCountries){
+            if (cb.getCountry().getArmySize() >= 2) {
+                cb.setEnabled(true);
+                cb.setBorder(BorderFactory.createLineBorder(Color.yellow, 3));
+            }
+        }
+        reinforce.setEnabled(false);
+    }
+
+    @Override
+    public void handleShowReinforceAdjacents(Country reinforceCountry) {
+        // disables all reinforce countries from being pressed
+        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getReinforceCountries());
+        countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
+        countryButtons.forEach(countryButton -> countryButton.setBorder(null));
+
+        // converts all countries that the reinforce country can reinforce into their respective country button instance in the view and stores in a list
+        ArrayList<CountryButton> reinforceCountries = convertCountryToCountryButtons(reinforceCountry.getPossibleReinforce());
+        reinforceCountries.forEach(countryButton -> countryButton.setEnabled(true)); // enable all possible countries to reinforce
+        reinforceCountries.forEach(countryButton -> countryButton.setBorder(BorderFactory.createLineBorder(Color.yellow, 3)));
+
+        // asks for number of troops to attack with
+        getAttackingTroopCount(reinforceCountry); // number of troops to reinforce with
+    }
+
+    @Override
+    public void handleReinforce(Country reinforceCountry) {
+        // disable all countries that reinforce country can reinforce
+        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(reinforceCountry.getAdjacentCountries());
+        countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
+        countryButtons.forEach(countryButton -> countryButton.setBorder(null));
+
+        handleShowReinforceCountry(); // re-enable the user to choose countries for continuous reinforce
     }
 
     /**
@@ -771,6 +813,24 @@ public class RiskFrame extends JFrame implements RiskView{
                 "Defending country troops remaining: " + bre.getDefendingArmySize() +"\n\n");
     }
 
+    public void handleReinforceResultEvent(ReinforceResultEvent rre) {
+        textArea.append(rre.getReinforceCountry() + " has moved " + rre.getReinforceArmy() + " troops to " + rre.getCountryToReinforce() + "\n");
+    }
+
+    public void handleReinforceEvent(ReinforceEvent re) {
+        Country reinforceCountry = re.getReinforceCountry();
+        Country countryToReinforce = re.getCountryToReinforce();
+
+        for (CountryButton cb : countryButtons.values()) {
+            if (cb.getName().equals(reinforceCountry.getName())){
+                countryButtons.get(reinforceCountry.getName()).update();
+            }
+            else if(cb.getName().equals(countryToReinforce.getName())){
+                countryButtons.get(countryToReinforce.getName()).update();
+            }
+        }
+    }
+
     /**
      * Handles an EndTurnEvent by printing the information to the text area console
      * @author Albara'a
@@ -783,6 +843,13 @@ public class RiskFrame extends JFrame implements RiskView{
         textArea.setText("");
         textArea.append("It is Player "+playerId+"'s turn\n");
         attack.setEnabled(true);
+    }
+
+    public void handleEndAttack(int playerID) {
+        textArea.setText("");
+        textArea.append("It is Player "+playerID+"'s reinforce phase");
+        attack.setEnabled(false);
+        reinforce.setEnabled(true);
     }
 
     /**
@@ -865,7 +932,7 @@ public class RiskFrame extends JFrame implements RiskView{
     @Override
     public void handleShowDefendingCountry(Country attackingCountry) {
         // converts all countries that the attacking country can attack into their respective country button instance in the view and stores in a list
-        ArrayList<CountryButton> defendingCountries = convertCountryToCountryButtons(attackingCountry.getAdjacentCountries());
+        ArrayList<CountryButton> defendingCountries = convertCountryToCountryButtons(attackingCountry.getPossibleAttacks());
         defendingCountries.forEach(countryButton -> countryButton.setEnabled(true)); // enable all possible countries to attack
         defendingCountries.forEach(countryButton -> countryButton.setBorder(BorderFactory.createLineBorder(Color.yellow, 3)));
         // disables all attacking countries from being pressed
