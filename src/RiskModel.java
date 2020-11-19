@@ -148,7 +148,7 @@ public class RiskModel {
         return reinforceCountry;
     }
 
-    public ArrayList<Country> getPlayersAdjacentCountries(Country country){
+    public ArrayList<Country> getConnectedCountries(Country country){
         ArrayList<Country> adjacentCountries = new ArrayList();
         countryRecurse(adjacentCountries, country);
         return adjacentCountries;
