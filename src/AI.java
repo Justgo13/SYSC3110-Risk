@@ -56,7 +56,40 @@ public class AI {
 
     public int evaluateGameState(ArrayList<Country> countriesOwned){
 
-        return 1;
+        // give points for having a percentage of a continent
+        // higher percentage of of continent owned, the greater the points
+        // y= x^4
+        int score = 0;
+
+        score += gameStateContinents(countriesOwned);
+
+        score += countriesOwned.size();
+
+        return score;
+    }
+
+    public int gameStateContinents(ArrayList<Country> countriesOwned){
+        ArrayList<Continent> continents = (ArrayList<Continent>) board.getContinents().values();
+        int score = 0;
+
+        for (Continent continent: continents){
+            ArrayList<Country> inContinent = continent.getCountries();
+            inContinent.removeAll(countriesOwned);
+
+
+            int numOfCountriesInContinent= continent.getCountries().size();
+
+            int numOfOwnedCountriesInContinent = numOfCountriesInContinent - inContinent.size();
+            double percentOwned = numOfOwnedCountriesInContinent / numOfCountriesInContinent;
+
+            // y=x^4
+            //x = the percentage of the continent owned
+            double y = Math.pow(percentOwned, 4);
+
+            score += y * 100;
+
+        }
+        return score;
     }
 
 

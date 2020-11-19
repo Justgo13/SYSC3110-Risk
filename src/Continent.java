@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -27,6 +26,10 @@ public class Continent {
 
     public Country getCountry(String name){
         return countries.get(name);
+    }
+
+    public ArrayList<Country> getCountries(){
+        return (ArrayList<Country>) countries.values();
     }
 
     public int getBonusArmy() {
