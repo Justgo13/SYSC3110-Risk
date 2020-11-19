@@ -184,11 +184,11 @@ public class RiskModelTest {
         India.setPlayer(player2);
         Usa.setPlayer(player1);
 
-        assertFalse(rm.reinforceCountry(Canada, India, 30));
-        assertFalse(rm.reinforceCountry(Usa, Canada, 5));
-        assertTrue(rm.reinforceCountry(Canada, Usa, 50));
-        assertEquals(50, Canada.getArmySize());
+        rm.reinforce(Canada, India, 30);
+        rm.reinforce(Canada, Usa, 50);
+        assertEquals(20, Canada.getArmySize());
         assertEquals(51, Usa.getArmySize());
+        assertEquals(31, India.getArmySize());
     }
 
     @Test

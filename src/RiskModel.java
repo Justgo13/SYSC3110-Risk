@@ -219,7 +219,7 @@ public class RiskModel {
 
     }
 
-    private void reinforce(Country reinforceCountry, Country countryToReinforce, int attackingTroops) {
+    public void reinforce(Country reinforceCountry, Country countryToReinforce, int attackingTroops) {
         reinforceCountry.setArmySize(reinforceCountry.getArmySize() - attackingTroops);
         countryToReinforce.setArmySize(countryToReinforce.getArmySize() + attackingTroops);
         updateMoveResult(reinforceCountry, countryToReinforce, attackingTroops);
