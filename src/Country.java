@@ -36,6 +36,8 @@ public class Country {
         this.armySize--;
     }
 
+    public void addArmy(){this.armySize++;}
+
     public Player getPlayer(){ return player;}
 
     public int getArmySize() {
