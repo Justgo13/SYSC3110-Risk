@@ -222,16 +222,8 @@ public class RiskModel {
     private void reinforce(Country reinforceCountry, Country countryToReinforce, int attackingTroops) {
         reinforceCountry.setArmySize(reinforceCountry.getArmySize() - attackingTroops);
         countryToReinforce.setArmySize(countryToReinforce.getArmySize() + attackingTroops);
-        updateMoveResult(reinforceCountry, countryToReinforce, countryToReinforce.getArmySize(), reinforceCountry.getArmySize());
+        updateMoveResult(reinforceCountry, countryToReinforce, attackingTroops);
         updateReinforceView(reinforceCountry, countryToReinforce);
-    }
-
-    /**
-     * Returns a boolean stating whether or not a turn can end
-     * @return True if a end turn command can be done, false otherwise
-     */
-    private boolean canEndTurn() {
-        return state == GameState.SHOW_DEFENDING_COUNTRIES || state == null;
     }
 
 
@@ -291,14 +283,13 @@ public class RiskModel {
             for (RiskView v : views) {
                 v.handleEndAttack(playerID);
             }
+        } else if (endPhaseState.equals(GameState.EndPhase.END_PHASE)) {
+            incrementTurnIndex();
+            int playerID = board.getPlayers().get(turnIndex).getId();
+            for (RiskView v : views) {
+                v.handleEndTurn(playerID);
+            }
         }
-//        if (canEndTurn()) {
-//            incrementTurnIndex();
-//            int playerID = board.getPlayers().get(turnIndex).getId();
-//            for (RiskView v : views) {
-//                v.handleEndTurn(playerID);
-//            }
-//        }
     }
 
     /**
@@ -383,9 +374,9 @@ public class RiskModel {
         }
     }
 
-    private void updateMoveResult(Country reinforceCountry, Country countrytoReinforce, int countryToReinforceArmy, int reinforceArmy) {
+    private void updateMoveResult(Country reinforceCountry, Country countrytoReinforce, int countryToReinforceArmy) {
         for(RiskView v : views){
-            v.handleReinforceResultEvent(new ReinforceResultEvent(this,reinforceCountry, reinforceArmy, countrytoReinforce));
+            v.handleReinforceResultEvent(new ReinforceResultEvent(this,reinforceCountry,countryToReinforceArmy, countrytoReinforce));
         }
     }
 

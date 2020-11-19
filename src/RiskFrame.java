@@ -750,6 +750,7 @@ public class RiskFrame extends JFrame implements RiskView{
                 cb.setBorder(BorderFactory.createLineBorder(Color.yellow, 3));
             }
         }
+        endPhase.setEnabled(false);
         reinforce.setEnabled(false);
     }
 
@@ -776,7 +777,8 @@ public class RiskFrame extends JFrame implements RiskView{
         countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
         countryButtons.forEach(countryButton -> countryButton.setBorder(null));
 
-        handleShowReinforceCountry(); // re-enable the user to choose countries for continuous reinforce
+        endPhase.setEnabled(true);
+        reinforce.setEnabled(true);
     }
 
     /**
@@ -814,7 +816,7 @@ public class RiskFrame extends JFrame implements RiskView{
     }
 
     public void handleReinforceResultEvent(ReinforceResultEvent rre) {
-        textArea.append(rre.getReinforceCountry() + " has moved " + rre.getReinforceArmy() + " troops to " + rre.getCountryToReinforce() + "\n");
+        textArea.append(rre.getReinforceCountry().getName() + " has moved " + rre.getReinforceArmy() + " troops to " + rre.getCountryToReinforce().getName() + "\n");
     }
 
     public void handleReinforceEvent(ReinforceEvent re) {
@@ -841,14 +843,17 @@ public class RiskFrame extends JFrame implements RiskView{
         ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getEndTurnPlayer().getCountriesOwned());
         countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
         textArea.setText("");
-        textArea.append("It is Player "+playerId+"'s turn\n");
+        textArea.append("It is Player "+playerId+"'s attack phase\n");
+        reinforce.setEnabled(false);
         attack.setEnabled(true);
+        endPhase.setEnabled(false);
     }
 
     public void handleEndAttack(int playerID) {
         textArea.setText("");
-        textArea.append("It is Player "+playerID+"'s reinforce phase");
+        textArea.append("It is Player "+playerID+"'s reinforce phase\n");
         attack.setEnabled(false);
+        endPhase.setEnabled(false);
         reinforce.setEnabled(true);
     }
 
