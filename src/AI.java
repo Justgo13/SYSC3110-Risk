@@ -8,17 +8,24 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class AI {
-
+    private RiskModel model;
     private Player player;
     private Board board;
     private int [][] probabilities;
 
-    public AI(Player player, Board board){
+    public AI(RiskModel model, Player player, Board board){
+        this.model=model;
         this.player = player;
         this.board = board;
         this.probabilities = new int[10][10];
         setupProbabilities();
 
+    }
+
+    public void playTurn(){
+        placeTroops(model.bonusTroopCalculation(player));
+        attack();
+        reinforce();
     }
 
     public void setupProbabilities(){
@@ -55,34 +62,37 @@ public class AI {
 
     public void attack(){
 
-        ArrayList<PossibleAIAttack> allPossibleAttacks = getAllPossibleAIAttacks();
+        while(true) {
 
-        if (allPossibleAttacks.size() == 0){
-            return;
-        }
+            ArrayList<PossibleAIAttack> allPossibleAttacks = getAllPossibleAIAttacks();
 
-        boolean willAttack= false;
-        PossibleAIAttack bestAttack = allPossibleAttacks.get(0);
-
-        for (PossibleAIAttack attack: allPossibleAttacks){
-            if(attack.getProbability() > 0.5){
-                willAttack=true;
+            if (allPossibleAttacks.size() == 0) {
+                return;
             }
 
-            if (attack.getRelativeScoreIncrease() > bestAttack.getRelativeScoreIncrease()){
-                bestAttack= attack;
+            boolean willAttack = false;
+            PossibleAIAttack bestAttack = allPossibleAttacks.get(0);
+
+            for (PossibleAIAttack attack : allPossibleAttacks) {
+                if (attack.getProbability() > 0.5) {
+                    willAttack = true;
+                }
+
+                if (attack.getRelativeScoreIncrease() > bestAttack.getRelativeScoreIncrease()) {
+                    bestAttack = attack;
+                }
+
             }
 
+            if (!willAttack) { // will continue to attack until there is not a good attack (>50% win chance)
+                return;
+            }
+
+            Country attackingCountry = bestAttack.getAttackingCountry();
+            Country defendingCountry = bestAttack.getDefendingCountry();
+
+            model.attack(attackingCountry, defendingCountry, attackingCountry.getArmySize() - 1);
         }
-
-        if (!willAttack){
-            return;
-        }
-
-        Country attackingCountry = bestAttack.getAttackingCountry();
-        Country defendingCountry = bestAttack.getDefendingCountry();
-
-        // attack(attackingCountry,defendingCountry, attackingCountry.getArmySize()-1);
 
     }
 
@@ -123,7 +133,7 @@ public class AI {
 
         // give points for having a percentage of a continent
         // higher percentage of of continent owned, the greater the points
-        // y= x^4
+        // y= x^3
         int score = 0;
 
         score += gameStateContinents(countriesOwned);
@@ -149,9 +159,9 @@ public class AI {
             int numOfOwnedCountriesInContinent = numOfCountriesInContinent - inContinent.size();
             double percentOwned = numOfOwnedCountriesInContinent / numOfCountriesInContinent;
 
-            // y=x^4
+            // y=x^3
             //x = the percentage of the continent owned
-            double y = Math.pow(percentOwned, 4);
+            double y = Math.pow(percentOwned, 3);
 
             // * 100 is arbitrary
             score += y * 100;
@@ -179,9 +189,10 @@ public class AI {
             int index = rand.nextInt(countriesTouchingEnemies.size());
             countriesTouchingEnemies.get(index).addArmy();
         }
+        // TODO When bonus troop update event happens update the troop count
     }
 
-    public void moveTroops(){
+    public void reinforce(){
         Random rand = new Random();
         ArrayList<Country> isolatedCountries = player.getCountriesOwned();
         ArrayList<Country> countriesTouchingEnemies = getCountriesTouchingEnemies();
@@ -195,7 +206,7 @@ public class AI {
         for (Country country: isolatedCountries){
             if (country.getArmySize() > 2){
                 int index = rand.nextInt(isolatedCountries.size());
-                // moveTroops(country, countriesTouchingEnemies.get(index), country.getArmySize()-1);
+                model.reinforce(country, countriesTouchingEnemies.get(index), country.getArmySize()-1);
             }
         }
 
@@ -219,9 +230,10 @@ public class AI {
 
 
     public static void main(String[] args) {
+        RiskModel model = new RiskModel();
         Board board = new Board();
         Player player = new Player("hi",0,1);
-        AI ai = new AI(player,board);
+        AI ai = new AI(model,player,board);
         ai.printProbabilities();
         System.out.println();
         System.out.println(ai.probabilities[4-1][2-1]);
