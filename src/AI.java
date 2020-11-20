@@ -66,8 +66,9 @@ public class AI extends Player{
 
 
     public void attack(){
-        boolean willAttack = false;
-        while (!willAttack) {
+        boolean willAttack;
+        for (int i =0; i < 3; i++){
+            willAttack = false;
             ArrayList<PossibleAIAttack> allPossibleAttacks = getAllPossibleAIAttacks();
 
             if (allPossibleAttacks.size() == 0) {
@@ -78,7 +79,7 @@ public class AI extends Player{
             PossibleAIAttack bestAttack = allPossibleAttacks.get(0);
 
             for (PossibleAIAttack attack : allPossibleAttacks) {
-                if (attack.getProbability() > 0.5) {
+                if (attack.getProbability() > 0.75) {
                     willAttack = true;
                 }
 
@@ -96,6 +97,12 @@ public class AI extends Player{
             Country defendingCountry = bestAttack.getDefendingCountry();
 
             model.attack(attackingCountry, defendingCountry, attackingCountry.getArmySize() - 1);
+            try{
+                Thread.sleep(1000);
+            }catch(Exception e){
+                System.out.println(e);
+            }
+
         }
     }
 
@@ -189,7 +196,7 @@ public class AI extends Player{
 
     public void placeTroops(int troopNum) {
         Random rand = new Random();
-        ArrayList<Country> countriesTouchingEnemies = getCountriesTouchingEnemies();
+        ArrayList<Country> countriesTouchingEnemies = getAllCountriesTouchingEnemies();
         for (int i = 0; i < troopNum; i ++){
             int index = rand.nextInt(countriesTouchingEnemies.size());
             countriesTouchingEnemies.get(index).addArmy();
@@ -199,23 +206,21 @@ public class AI extends Player{
 
     public void reinforce(){
         Random rand = new Random();
-        ArrayList<Country> isolatedCountries = this.getCountriesOwned();
-        ArrayList<Country> countriesTouchingEnemies = getCountriesTouchingEnemies();
 
-        isolatedCountries.removeAll(countriesTouchingEnemies); // left with only countries that do not touch enemies
 
-        if (isolatedCountries.size() == 0){
-            return;
-        }
+        for (Country country: this.getCountriesOwned()){
 
-        for (Country country: isolatedCountries){
-            if (country.getArmySize() > 2){
-                int index = rand.nextInt(isolatedCountries.size());
-                model.reinforce(country, countriesTouchingEnemies.get(index), country.getArmySize()-1);
+            if (!checkIfCountryTouchesEnemy(country)) { // if country does not touch enemies
+                ArrayList<Country> connectedCountries = model.getConnectedCountries(country); // find all allied connected countries
+                ArrayList<Country> connectedCountriesTouchingEnemies = getCountriesTouchingEnemies(connectedCountries);
+
+                if (country.getArmySize()>= 2){
+                    int index = rand.nextInt(connectedCountriesTouchingEnemies.size());
+                    model.reinforce(country,connectedCountriesTouchingEnemies.get(index), country.getArmySize()-1);
+                }
             }
+
         }
-
-
     }
 
     public void endTurn() {
@@ -224,18 +229,43 @@ public class AI extends Player{
         model.endTurn(playerID);
     }
 
-    private ArrayList<Country> getCountriesTouchingEnemies(){
+    private ArrayList<Country> getAllCountriesTouchingEnemies(){
 
         ArrayList<Country> countriesTouchingEnemies = new ArrayList<>();
         for (Country country: this.getCountriesOwned()){
             for (Country adjacentCountry: country.getAdjacentCountries()){
                 if (adjacentCountry.getPlayer() != this){
                     countriesTouchingEnemies.add(country);
-                    break;
                 }
             }
         }
 
+        return countriesTouchingEnemies;
+    }
+
+
+
+    private boolean checkIfCountryTouchesEnemy(Country country){
+        for (Country adjacentCountry: country.getAdjacentCountries()){
+
+            if (!adjacentCountry.getPlayer().equals(country.getPlayer())){
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+    private ArrayList<Country> getCountriesTouchingEnemies(ArrayList<Country> countries){
+        ArrayList<Country> countriesTouchingEnemies = new ArrayList<>();
+        for (Country country: countries){
+            for (Country adjacentCountry: country.getAdjacentCountries()){
+                if (!adjacentCountry.getPlayer().equals(country.getPlayer())){
+                    countriesTouchingEnemies.add(country);
+                    break;
+                }
+            }
+        }
         return countriesTouchingEnemies;
     }
 

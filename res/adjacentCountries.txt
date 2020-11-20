@@ -38,5 +38,5 @@ Ural, Siberia, China, Afghanistan, Ukraine
 Yakutsk, Kamchatka, Irkutsk, Siberia
 Eastern Australia, New Guinea, Western Australia
 Indonesia, Siam, New Guinea, Western Australia
-New Guinea, Eastern Australia, Indonesia
-Western Australia, Indonesia, Eastern Australia
+New Guinea, Eastern Australia, Indonesia, Western Australia
+Western Australia, Indonesia, Eastern Australia, New Guinea
