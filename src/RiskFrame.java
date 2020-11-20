@@ -756,13 +756,13 @@ public class RiskFrame extends JFrame implements RiskView{
 
     @Override
     public void handleShowReinforceAdjacents(Country reinforceCountry) {
-        // disables all reinforce countries from being pressed
+        // disables all countries you can reinforce from from being pressed
         ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getReinforceCountries());
         countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
         countryButtons.forEach(countryButton -> countryButton.setBorder(null));
 
         // converts all countries that the reinforce country can reinforce into their respective country button instance in the view and stores in a list
-        ArrayList<CountryButton> reinforceCountries = convertCountryToCountryButtons(reinforceCountry.getPossibleReinforce());
+        ArrayList<CountryButton> reinforceCountries = convertCountryToCountryButtons(model.getConnectedCountries(reinforceCountry));
         reinforceCountries.forEach(countryButton -> countryButton.setEnabled(true)); // enable all possible countries to reinforce
         reinforceCountries.forEach(countryButton -> countryButton.setBorder(BorderFactory.createLineBorder(Color.yellow, 3)));
 
@@ -773,7 +773,7 @@ public class RiskFrame extends JFrame implements RiskView{
     @Override
     public void handleReinforce(Country reinforceCountry) {
         // disable all countries that reinforce country can reinforce
-        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(reinforceCountry.getAdjacentCountries());
+        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getReinforceCountries());
         countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
         countryButtons.forEach(countryButton -> countryButton.setBorder(null));
 
