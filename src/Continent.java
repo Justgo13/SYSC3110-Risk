@@ -29,8 +29,8 @@ public class Continent {
         return countries.get(name);
     }
 
-    public ArrayList<Country> getCountries(){
-        return (ArrayList<Country>) countries.values();
+    public Collection<Country> getCountries(){
+        return countries.values();
     }
 
     public int getBonusArmy() {

@@ -1,6 +1,7 @@
 public enum PlayGame {
-    OK_CANCEL_OPTION("OK","CANCEL"), PLAYERS("2","3","4","5","6"), LABEL("Select the number of players:"),
-    TITLE("Choose Players"), DEFAULTPLAYER("2"), GAMETITLE("RISK!");
+    OK_CANCEL_OPTION("OK","CANCEL"), PLAYERS("1","2","3","4","5","6"), LABEL("Select the number of players:"),
+    TITLE("Choose Players"), DEFAULTPLAYER("1"), GAMETITLE("RISK!"),
+    AILABEL("Select the number of AI: "), AIPLAYERS("0","1","2","3","4","5"), DEFAULTAI("0");
     private String text;
     private String[] options;
 

@@ -99,7 +99,7 @@ public class Board {
     *
     */
     public boolean checkEliminated(){
-        for (Player player: players){
+        for (Player player : players){
             if (player.getCountriesOwned().isEmpty()){
                 System.out.println("Player" + player.getId() + "was eliminated, sorry to see you go :(" );
                 return players.remove(player);
@@ -114,15 +114,22 @@ public class Board {
      *
      * @author Harjap Gill
      * @param numPlayers number of players in the game
+     * @param aiPlayers
      */
-    public void setupBoard(int numPlayers){
-        setNumOfPlayers(numPlayers);
+    public void setupBoard(int numPlayers, List<AI> aiPlayers){
+        setNumOfPlayers(numPlayers+aiPlayers.size());
+        int totalPlayers = numPlayers + aiPlayers.size();
         for (int i = 0; i < numPlayers; i++) {
-            addPlayer(new Player("", armySize[numPlayers-2], i+1)); // creates players for the game
+            addPlayer(new HumanPlayer(armySize[totalPlayers-2], i+1)); // creates players for the game
         }
         randomizePlayers(); // randomizes player order
+        for (int i = numPlayers; i < totalPlayers; i++) {
+            aiPlayers.get(i-numPlayers).setInitArmySize(armySize[totalPlayers-2]);
+            aiPlayers.get(i-numPlayers).setId(i+1);
+            addPlayer(aiPlayers.get(i-numPlayers));
+        }
         buildMap(); // adds all countries to map
-        placePlayers(numPlayers); // place players randomly on the map
+        placePlayers(totalPlayers); // place players randomly on the map
         setAdjacentCountries();
     }
 

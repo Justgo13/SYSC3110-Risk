@@ -24,11 +24,13 @@ public class RiskFrame extends JFrame implements RiskView{
         super(PlayGame.GAMETITLE.toString());
         setLayout(new GridBagLayout());
         // ask for player number
-        int numPlayer = invokePlayerPopup();
+        int[] getPlayerList = invokePlayerPopup();
+        int numPlayer = getPlayerList[0];
+        int aiPlayer = getPlayerList[1];
 
         //Instantiating the model
         model = new RiskModel();
-        model.playGame(numPlayer);
+        model.playGame(numPlayer, aiPlayer);
         model.addRiskView(this); // Adds the view to the model
 
         // Creates the Controller
@@ -615,24 +617,41 @@ public class RiskFrame extends JFrame implements RiskView{
 
     }
 
-    private int invokePlayerPopup() {
+    private int[] invokePlayerPopup() {
         JPanel panel = new JPanel();
-        JLabel label = new JLabel(PlayGame.LABEL.toString());
-        JComboBox comboBox = new JComboBox(PlayGame.PLAYERS.getArray());
-        comboBox.setSelectedIndex(0);
-        panel.add(label);
-        panel.add(comboBox);
+        JLabel playerLabel = new JLabel(PlayGame.LABEL.toString());
+        JLabel aiLabel = new JLabel(PlayGame.AILABEL.toString());
+        JComboBox playerComboBox = new JComboBox(PlayGame.PLAYERS.getArray());
+        JComboBox aiComboBox = new JComboBox(PlayGame.AIPLAYERS.getArray());
+        playerComboBox.setSelectedIndex(0);
+        aiComboBox.setSelectedIndex(0);
+        panel.add(playerLabel);
+        panel.add(playerComboBox);
+        panel.add(aiLabel);
+        panel.add(aiComboBox);
+
         int numPlayers = JOptionPane.showOptionDialog(null, panel, PlayGame.TITLE.toString(), JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE,
                 null, PlayGame.OK_CANCEL_OPTION.getArray(), PlayGame.OK_CANCEL_OPTION.getArray()[0]);
-        String result = PlayGame.DEFAULTPLAYER.toString();
+
+        String aiResult;
+        String result;
+
         while (numPlayers != 0) {
             numPlayers = JOptionPane.showOptionDialog(null, panel, PlayGame.TITLE.toString(), JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE,
                     null, PlayGame.OK_CANCEL_OPTION.getArray(), PlayGame.OK_CANCEL_OPTION.getArray()[0]);
         }
-        if (numPlayers == 0) {
-            result = comboBox.getSelectedItem().toString();
+        result = playerComboBox.getSelectedItem().toString();
+        aiResult = aiComboBox.getSelectedItem().toString();
+        int totalPlayer = Integer.parseInt(result) + Integer.parseInt(aiResult);
+        while (totalPlayer > 6) {
+            JOptionPane.showOptionDialog(null, panel, PlayGame.TITLE.toString(), JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+                    null, PlayGame.OK_CANCEL_OPTION.getArray(), PlayGame.OK_CANCEL_OPTION.getArray()[0]);
+            totalPlayer = Integer.parseInt(playerComboBox.getSelectedItem().toString()) + Integer.parseInt(aiComboBox.getSelectedItem().toString());
         }
-        return Integer.parseInt(result);
+        result = playerComboBox.getSelectedItem().toString();
+        aiResult = aiComboBox.getSelectedItem().toString();
+        int players[] = {Integer.parseInt(result), Integer.parseInt(aiResult)};
+        return players;
     }
 
     /**
@@ -847,6 +866,12 @@ public class RiskFrame extends JFrame implements RiskView{
         reinforce.setEnabled(false);
         attack.setEnabled(true);
         endPhase.setEnabled(false);
+        int turnIndex = model.getTurnIndex();
+        Player player = model.getBoard().getPlayers().get(turnIndex);
+        if (player instanceof AI) {
+            AI ai = (AI) player;
+            ai.playTurn();
+        }
     }
 
     public void handleEndAttack(int playerID) {

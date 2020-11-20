@@ -2,30 +2,35 @@
 
 
 
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
-public class AI {
+public class AI extends Player{
     private RiskModel model;
-    private Player player;
     private Board board;
-    private int [][] probabilities;
+    private double [][] probabilities;
 
-    public AI(RiskModel model, Player player, Board board){
+    public AI(RiskModel model, Board board, int initArmySize, int id){
+        super(initArmySize,id);
         this.model=model;
-        this.player = player;
         this.board = board;
-        this.probabilities = new int[10][10];
+        this.probabilities = new double[10][10];
         setupProbabilities();
 
     }
 
     public void playTurn(){
-        placeTroops(model.bonusTroopCalculation(player));
+        //placeTroops(model.bonusTroopCalculation(this));
         attack();
+        JOptionPane.showMessageDialog(null, "Attack");
         reinforce();
+        JOptionPane.showMessageDialog(null, "Reinforce");
+        endTurn();
+
     }
 
     public void setupProbabilities(){
@@ -61,20 +66,20 @@ public class AI {
 
 
     public void attack(){
-
-        while(true) {
-
+        boolean willAttack;
+        for (int i =0; i < 3; i++){
+            willAttack = false;
             ArrayList<PossibleAIAttack> allPossibleAttacks = getAllPossibleAIAttacks();
 
             if (allPossibleAttacks.size() == 0) {
                 return;
             }
 
-            boolean willAttack = false;
+
             PossibleAIAttack bestAttack = allPossibleAttacks.get(0);
 
             for (PossibleAIAttack attack : allPossibleAttacks) {
-                if (attack.getProbability() > 0.5) {
+                if (attack.getProbability() > 0.75) {
                     willAttack = true;
                 }
 
@@ -92,13 +97,18 @@ public class AI {
             Country defendingCountry = bestAttack.getDefendingCountry();
 
             model.attack(attackingCountry, defendingCountry, attackingCountry.getArmySize() - 1);
-        }
+            try{
+                Thread.sleep(1000);
+            }catch(Exception e){
+                System.out.println(e);
+            }
 
+        }
     }
 
     public ArrayList<PossibleAIAttack> getAllPossibleAIAttacks(){
 
-        int currentScore = evaluateGameState(player.getCountriesOwned());
+        int currentScore = evaluateGameState(this.getCountriesOwned());
 
         // gets all possible attacks in hashmap form (key= Attacking Country, values=defending Country)
         ArrayList<PossibleAIAttack> allPossibleAttacks = getAllPossibleAttacks();
@@ -109,18 +119,20 @@ public class AI {
             Country defendingCountry = attack.getDefendingCountry();
 
             // get probability of winning the attack
-            double probabilityOfWinningAttack = probabilities[attackingCountry.getArmySize()-2][defendingCountry.getArmySize()-1]/100;
-            attack.setProbability(probabilityOfWinningAttack);
+            if (attackingCountry.getArmySize() > 2) {
+                double probabilityOfWinningAttack = probabilities[attackingCountry.getArmySize() - 2][defendingCountry.getArmySize() - 1] / 100;
+                attack.setProbability(probabilityOfWinningAttack);
 
-            ArrayList<Country> countriesOwned = player.getCountriesOwned();
-            countriesOwned.add(defendingCountry);
+                ArrayList<Country> countriesOwned = this.getCountriesOwned();
+                countriesOwned.add(defendingCountry);
 
-            int score = evaluateGameState(countriesOwned);
+                int score = evaluateGameState(countriesOwned);
 
-            int score_increase = score - currentScore;
-            int relativeScoreIncrease = (int) (score_increase * probabilityOfWinningAttack);
+                int score_increase = score - currentScore;
+                int relativeScoreIncrease = (int) (score_increase * probabilityOfWinningAttack);
 
-            attack.setRelativeScoreIncrease(relativeScoreIncrease);
+                attack.setRelativeScoreIncrease(relativeScoreIncrease);
+            }
         }
         return allPossibleAttacks;
 
@@ -143,20 +155,20 @@ public class AI {
         return score;
     }
 
-    public int gameStateContinents(ArrayList<Country> countriesOwned){
-        ArrayList<Continent> continents = (ArrayList<Continent>) board.getContinents().values();
-        int score = 0;
+    public double gameStateContinents(ArrayList<Country> countriesOwned){
+        Collection<Continent> continents = board.getContinents().values();
+        double score = 0;
 
         for (Continent continent: continents){
-            ArrayList<Country> inContinent = continent.getCountries();
+            Collection<Country> inContinent = continent.getCountries();
 
 
             inContinent.removeAll(countriesOwned);
 
 
-            int numOfCountriesInContinent= continent.getCountries().size();
+            double numOfCountriesInContinent= continent.getCountries().size();
 
-            int numOfOwnedCountriesInContinent = numOfCountriesInContinent - inContinent.size();
+            double numOfOwnedCountriesInContinent = numOfCountriesInContinent - inContinent.size();
             double percentOwned = numOfOwnedCountriesInContinent / numOfCountriesInContinent;
 
             // y=x^3
@@ -173,7 +185,7 @@ public class AI {
     public ArrayList<PossibleAIAttack> getAllPossibleAttacks(){
         ArrayList<PossibleAIAttack> countryAttacks = new ArrayList<>();
 
-        for (Country countryOwned: player.getCountriesOwned()){
+        for (Country countryOwned: this.getCountriesOwned()){
             for(Country countryToAttack: countryOwned.getPossibleAttacks()){
                 countryAttacks.add(new PossibleAIAttack(countryOwned,countryToAttack));
             }
@@ -184,7 +196,7 @@ public class AI {
 
     public void placeTroops(int troopNum) {
         Random rand = new Random();
-        ArrayList<Country> countriesTouchingEnemies = getCountriesTouchingEnemies();
+        ArrayList<Country> countriesTouchingEnemies = getAllCountriesTouchingEnemies();
         for (int i = 0; i < troopNum; i ++){
             int index = rand.nextInt(countriesTouchingEnemies.size());
             countriesTouchingEnemies.get(index).addArmy();
@@ -194,33 +206,36 @@ public class AI {
 
     public void reinforce(){
         Random rand = new Random();
-        ArrayList<Country> isolatedCountries = player.getCountriesOwned();
-        ArrayList<Country> countriesTouchingEnemies = getCountriesTouchingEnemies();
 
-        isolatedCountries.removeAll(countriesTouchingEnemies); // left with only countries that do not touch enemies
 
-        if (isolatedCountries.size() == 0){
-            return;
-        }
+        for (Country country: this.getCountriesOwned()){
 
-        for (Country country: isolatedCountries){
-            if (country.getArmySize() > 2){
-                int index = rand.nextInt(isolatedCountries.size());
-                model.reinforce(country, countriesTouchingEnemies.get(index), country.getArmySize()-1);
+            if (!checkIfCountryTouchesEnemy(country)) { // if country does not touch enemies
+                ArrayList<Country> connectedCountries = model.getConnectedCountries(country); // find all allied connected countries
+                ArrayList<Country> connectedCountriesTouchingEnemies = getCountriesTouchingEnemies(connectedCountries);
+
+                if (country.getArmySize()>= 2){
+                    int index = rand.nextInt(connectedCountriesTouchingEnemies.size());
+                    model.reinforce(country,connectedCountriesTouchingEnemies.get(index), country.getArmySize()-1);
+                }
             }
+
         }
-
-
     }
 
-    private ArrayList<Country> getCountriesTouchingEnemies(){
+    public void endTurn() {
+        model.incrementTurnIndex();
+        int playerID = board.getPlayers().get(model.getTurnIndex()).getId();
+        model.endTurn(playerID);
+    }
+
+    private ArrayList<Country> getAllCountriesTouchingEnemies(){
 
         ArrayList<Country> countriesTouchingEnemies = new ArrayList<>();
-        for (Country country: player.getCountriesOwned()){
+        for (Country country: this.getCountriesOwned()){
             for (Country adjacentCountry: country.getAdjacentCountries()){
-                if (adjacentCountry.getPlayer() != player){
+                if (adjacentCountry.getPlayer() != this){
                     countriesTouchingEnemies.add(country);
-                    break;
                 }
             }
         }
@@ -229,13 +244,40 @@ public class AI {
     }
 
 
-    public static void main(String[] args) {
-        RiskModel model = new RiskModel();
-        Board board = new Board();
-        Player player = new Player("hi",0,1);
-        AI ai = new AI(model,player,board);
-        ai.printProbabilities();
-        System.out.println();
-        System.out.println(ai.probabilities[4-1][2-1]);
+
+    private boolean checkIfCountryTouchesEnemy(Country country){
+        for (Country adjacentCountry: country.getAdjacentCountries()){
+
+            if (!adjacentCountry.getPlayer().equals(country.getPlayer())){
+                return true;
+            }
+
+        }
+        return false;
     }
+
+    private ArrayList<Country> getCountriesTouchingEnemies(ArrayList<Country> countries){
+        ArrayList<Country> countriesTouchingEnemies = new ArrayList<>();
+        for (Country country: countries){
+            for (Country adjacentCountry: country.getAdjacentCountries()){
+                if (!adjacentCountry.getPlayer().equals(country.getPlayer())){
+                    countriesTouchingEnemies.add(country);
+                    break;
+                }
+            }
+        }
+        return countriesTouchingEnemies;
+    }
+
+
+
+//    public static void main(String[] args) {
+//        RiskModel model = new RiskModel();
+//        Board board = new Board();
+//        HumanPlayer humanPlayer = new HumanPlayer("hi",0,1);
+//        AI ai = new AI(model, humanPlayer,board);
+//        ai.printProbabilities();
+//        System.out.println();
+//        System.out.println(ai.probabilities[4-1][2-1]);
+//    }
 }

@@ -12,6 +12,7 @@ public class RiskModel {
     private Country reinforceCountry;
     private Country countryToReinforce;
     private int attackingTroops;
+    private List<AI> aiPlayers;
     /**
      * Creates an instance of the Risk game
      */
@@ -28,14 +29,18 @@ public class RiskModel {
         reinforceCountry = null;
         countryToReinforce = null;
         attackingTroops = 0;
+        aiPlayers = new ArrayList<>();
     }
 
     /**
      * Initial method that is called to start the risk game
      * @author Jason
      */
-    public void playGame(int numPlayers) {
-        board.setupBoard(numPlayers);
+    public void playGame(int numPlayers, int aiPlayers) {
+        for (int i = 0; i < aiPlayers; i++) {
+            this.aiPlayers.add(new AI(this, board, 0,0));
+        }
+        board.setupBoard(numPlayers, this.aiPlayers);
     }
 
     /**
@@ -46,7 +51,6 @@ public class RiskModel {
     public void addRiskView(RiskView view){
         views.add(view);
     }
-
 
     /**
      * The attack method simulates the risk battle between one attacking country and one defending country
@@ -220,10 +224,14 @@ public class RiskModel {
     }
 
     public void reinforce(Country reinforceCountry, Country countryToReinforce, int attackingTroops) {
-        reinforceCountry.setArmySize(reinforceCountry.getArmySize() - attackingTroops);
-        countryToReinforce.setArmySize(countryToReinforce.getArmySize() + attackingTroops);
-        updateMoveResult(reinforceCountry, countryToReinforce, attackingTroops);
-        updateReinforceView(reinforceCountry, countryToReinforce);
+        if (reinforceCountry.getPlayer().equals(countryToReinforce.getPlayer())) {
+            reinforceCountry.setArmySize(reinforceCountry.getArmySize() - attackingTroops);
+            countryToReinforce.setArmySize(countryToReinforce.getArmySize() + attackingTroops);
+            updateMoveResult(reinforceCountry, countryToReinforce, attackingTroops);
+            updateReinforceView(reinforceCountry, countryToReinforce);
+        } else {
+            System.out.println("bad");
+        }
     }
 
 
@@ -286,9 +294,19 @@ public class RiskModel {
         } else if (endPhaseState.equals(GameState.EndPhase.END_PHASE)) {
             incrementTurnIndex();
             int playerID = board.getPlayers().get(turnIndex).getId();
-            for (RiskView v : views) {
-                v.handleEndTurn(playerID);
+            endTurn(playerID);
+            // If a human player just ended their turn
+            Player player = board.getPlayers().get(turnIndex);
+            if (board.getPlayers().get(turnIndex) instanceof AI) {
+                AI ai = (AI) player;
+                ai.playTurn();
             }
+        }
+    }
+
+    public void endTurn(int playerID) {
+        for (RiskView v : views) {
+            v.handleEndTurn(playerID);
         }
     }
 
