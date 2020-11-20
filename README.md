@@ -2,7 +2,7 @@
 Readme file for SYSC3110 Fall 2020 project. 
 The RISK board game has been an exciting game to play with family and friends that involves strategy and bit of luck. This project is designed to replicate
 the game using Java's Graphical User Interface by implementing Object Oriented style programming. 
-The objective of the game is to conquer as many countries and other player's occupied countries by eliminating them. The last player remaining is the victor. 
+The objective of the game is to conquer as many countries and other humanPlayer's occupied countries by eliminating them. The last humanPlayer remaining is the victor. 
 
 # Previous Deliverables
 - Model for the MVC pattern of Risk game
@@ -28,7 +28,7 @@ The objective of the game is to conquer as many countries and other player's occ
 
 # Known issues
 - GUI will sometimes resize the text area and button panel when a country button is clicked
-- Due to map resizing when a country button is clicked, the lines to connect countries across bodies of water could not be drawn leading to some confusion for players when 
+- Due to map resizing when a country button is clicked, the lines to connect countries across bodies of water could not be drawn leading to some confusion for humanPlayers when 
 they attack an adjacent country.
 
 # JUnit version

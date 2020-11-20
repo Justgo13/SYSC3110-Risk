@@ -12,7 +12,7 @@ public class RiskModelTest {
     @Before
     public void setUp() {
         rm = new RiskMockModel();
-        rm.playGame(2);
+        rm.playGame(2,0);
     }
 
     @After
@@ -88,8 +88,8 @@ public class RiskModelTest {
         Country D1 = new Country("Defender");
         A1.setArmySize(5);
         D1.setArmySize(0);
-        Player P1 = new Player("P1", 20, 1);
-        Player P2 = new Player("P2", 20, 2);
+        HumanPlayer P1 = new HumanPlayer( 20, 1);
+        HumanPlayer P2 = new HumanPlayer(20, 2);
         A1.setPlayer(P1);
         D1.setPlayer(P2);
         rm.checkDefenderLostCountry(D1,A1,4);
@@ -103,8 +103,8 @@ public class RiskModelTest {
         Country D1 = new Country("Defender");
         A1.setArmySize(5);
         D1.setArmySize(1);
-        Player P1 = new Player("P1", 20, 1);
-        Player P2 = new Player("P2", 20, 2);
+        HumanPlayer P1 = new HumanPlayer( 20, 1);
+        HumanPlayer P2 = new HumanPlayer( 20, 2);
         A1.setPlayer(P1);
         D1.setPlayer(P2);
         rm.checkDefenderLostCountry(D1,A1,4);
@@ -134,22 +134,22 @@ public class RiskModelTest {
         Usa.setArmySize(1);
 
         //managing countries owned by the players
-        Player player1 = rm.getBoard().getPlayers().get(0);
-        Player player2 = rm.getBoard().getPlayers().get(1);
+        Player humanPlayer1 = rm.getBoard().getPlayers().get(0);
+        Player humanPlayer2 = rm.getBoard().getPlayers().get(1);
 
-        Canada.setPlayer(player1);
-        India.setPlayer(player2);
-        Usa.setPlayer(player2);
+        Canada.setPlayer(humanPlayer1);
+        India.setPlayer(humanPlayer2);
+        Usa.setPlayer(humanPlayer2);
 
         //players have an arraylist of countries that they own so we can overwrite the previous values
-        player1.setCountriesOwned(new ArrayList<>(Collections.singletonList(Canada)));
-        player2.setCountriesOwned(new ArrayList<>(Arrays.asList(India,Usa)));
+        humanPlayer1.setCountriesOwned(new ArrayList<>(Collections.singletonList(Canada)));
+        humanPlayer2.setCountriesOwned(new ArrayList<>(Arrays.asList(India,Usa)));
 
-        assertEquals(player1 ,Canada.getPlayer());
-        assertEquals(player2 ,India.getPlayer());
+        assertEquals(humanPlayer1,Canada.getPlayer());
+        assertEquals(humanPlayer2,India.getPlayer());
         rm.attack(Canada, India,10);
-        assertEquals(player1 ,Canada.getPlayer());
-        assertEquals(player1 ,India.getPlayer());
+        assertEquals(humanPlayer1,Canada.getPlayer());
+        assertEquals(humanPlayer1,India.getPlayer());
     }
 
     @Test
@@ -177,12 +177,12 @@ public class RiskModelTest {
         Usa.setArmySize(1);
 
         //managing countries owned by the players
-        Player player1 = rm.getBoard().getPlayers().get(0);
-        Player player2 = rm.getBoard().getPlayers().get(1);
+        Player humanPlayer1 = rm.getBoard().getPlayers().get(0);
+        Player humanPlayer2 = rm.getBoard().getPlayers().get(1);
 
-        Canada.setPlayer(player1);
-        India.setPlayer(player2);
-        Usa.setPlayer(player1);
+        Canada.setPlayer(humanPlayer1);
+        India.setPlayer(humanPlayer2);
+        Usa.setPlayer(humanPlayer1);
 
         rm.reinforce(Canada, India, 30);
         rm.reinforce(Canada, Usa, 50);
@@ -211,16 +211,16 @@ public class RiskModelTest {
         Usa.setArmySize(1);
 
         //managing countries owned by the players
-        Player player1 = rm.getBoard().getPlayers().get(0);
-        Player player2 = rm.getBoard().getPlayers().get(1);
+        Player humanPlayer1 = rm.getBoard().getPlayers().get(0);
+        Player humanPlayer2 = rm.getBoard().getPlayers().get(1);
 
-        Canada.setPlayer(player1);
-        India.setPlayer(player2);
-        Usa.setPlayer(player1);
+        Canada.setPlayer(humanPlayer1);
+        India.setPlayer(humanPlayer2);
+        Usa.setPlayer(humanPlayer1);
 
-        assertEquals(player1, Usa.getPlayer());
-        assertEquals(player1, Canada.getPlayer());
-        assertEquals(player2, India.getPlayer());
+        assertEquals(humanPlayer1, Usa.getPlayer());
+        assertEquals(humanPlayer1, Canada.getPlayer());
+        assertEquals(humanPlayer2, India.getPlayer());
     }
 
     @Test
@@ -234,17 +234,17 @@ public class RiskModelTest {
         India.addAdjacentCountry(Canada);
 
         //managing countries owned by the players
-        Player player1 = rm.getBoard().getPlayers().get(0);
-        Player player2 = rm.getBoard().getPlayers().get(1);
+        Player humanPlayer1 = rm.getBoard().getPlayers().get(0);
+        Player humanPlayer2 = rm.getBoard().getPlayers().get(1);
 
-        player1.setCountriesOwned(new ArrayList<>(Collections.singletonList(Canada)));
-        player2.setCountriesOwned(new ArrayList<>(Collections.singletonList(India)));
+        humanPlayer1.setCountriesOwned(new ArrayList<>(Collections.singletonList(Canada)));
+        humanPlayer2.setCountriesOwned(new ArrayList<>(Collections.singletonList(India)));
 
-        Canada.setPlayer(player1);
-        India.setPlayer(player2);
+        Canada.setPlayer(humanPlayer1);
+        India.setPlayer(humanPlayer2);
 
-        assertTrue(player1.getCountriesOwned().contains(Canada));
-        assertTrue(player2.getCountriesOwned().contains(India));
+        assertTrue(humanPlayer1.getCountriesOwned().contains(Canada));
+        assertTrue(humanPlayer2.getCountriesOwned().contains(India));
     }
 
     @Test
@@ -259,11 +259,11 @@ public class RiskModelTest {
 
 
         //managing countries owned by the players
-        Player player1 = rm.getBoard().getPlayers().get(0);
-        Player player2 = rm.getBoard().getPlayers().get(1);
+        Player humanPlayer1 = rm.getBoard().getPlayers().get(0);
+        Player humanPlayer2 = rm.getBoard().getPlayers().get(1);
 
-        Canada.setPlayer(player1);
-        Usa.setPlayer(player2);
+        Canada.setPlayer(humanPlayer1);
+        Usa.setPlayer(humanPlayer2);
 
         Canada.setArmySize(100);
         Usa.setArmySize(3);
@@ -335,15 +335,15 @@ public class RiskModelTest {
         India.setArmySize(1);
         Usa.setArmySize(1);
 
-        Player player1 = rm.getBoard().getPlayers().get(0);
-        Player player2 = rm.getBoard().getPlayers().get(1);
+        Player humanPlayer1 = rm.getBoard().getPlayers().get(0);
+        Player humanPlayer2 = rm.getBoard().getPlayers().get(1);
 
-        Canada.setPlayer(player1);
-        India.setPlayer(player2);
-        Usa.setPlayer(player1);
+        Canada.setPlayer(humanPlayer1);
+        India.setPlayer(humanPlayer2);
+        Usa.setPlayer(humanPlayer1);
 
-        player1.setCountriesOwned(new ArrayList<>(Arrays.asList(Canada,Usa)));
-        player2.setCountriesOwned(new ArrayList<>(Arrays.asList(India)));
+        humanPlayer1.setCountriesOwned(new ArrayList<>(Arrays.asList(Canada,Usa)));
+        humanPlayer2.setCountriesOwned(new ArrayList<>(Arrays.asList(India)));
 
         rm.attack(Canada, India,10);
         assertTrue(rm.getGameOver());

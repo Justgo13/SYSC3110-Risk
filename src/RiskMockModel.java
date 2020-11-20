@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class RiskMockModel extends RiskModel {
     public RiskMockModel(){
@@ -28,8 +29,8 @@ public class RiskMockModel extends RiskModel {
         return new ArrayList<Integer>(Arrays.asList(5));
     }
 
-    public void playGame(int players) {
-        super.getBoard().setupBoard(players);
+    public void playGame(int players, List<AI> aiPlayers) {
+        super.getBoard().setupBoard(players, aiPlayers);
     }
 
 
