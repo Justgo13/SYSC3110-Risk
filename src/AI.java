@@ -1,7 +1,10 @@
+
+
+
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class AI {
@@ -52,7 +55,69 @@ public class AI {
 
     public void attack(){
 
+        ArrayList<PossibleAIAttack> allPossibleAttacks = getAllPossibleAIAttacks();
+
+        if (allPossibleAttacks.size() == 0){
+            return;
+        }
+
+        boolean willAttack= false;
+        PossibleAIAttack bestAttack = allPossibleAttacks.get(0);
+
+        for (PossibleAIAttack attack: allPossibleAttacks){
+            if(attack.getProbability() > 0.5){
+                willAttack=true;
+            }
+
+            if (attack.getRelativeScoreIncrease() > bestAttack.getRelativeScoreIncrease()){
+                bestAttack= attack;
+            }
+
+        }
+
+        if (!willAttack){
+            return;
+        }
+
+        Country attackingCountry = bestAttack.getAttackingCountry();
+        Country defendingCountry = bestAttack.getDefendingCountry();
+
+        // attack(attackingCountry,defendingCountry, attackingCountry.getArmySize()-1);
+
     }
+
+    public ArrayList<PossibleAIAttack> getAllPossibleAIAttacks(){
+
+        int currentScore = evaluateGameState(player.getCountriesOwned());
+
+        // gets all possible attacks in hashmap form (key= Attacking Country, values=defending Country)
+        ArrayList<PossibleAIAttack> allPossibleAttacks = getAllPossibleAttacks();
+
+
+        for (PossibleAIAttack attack: allPossibleAttacks){
+            Country attackingCountry = attack.getAttackingCountry();
+            Country defendingCountry = attack.getDefendingCountry();
+
+            // get probability of winning the attack
+            double probabilityOfWinningAttack = probabilities[attackingCountry.getArmySize()-2][defendingCountry.getArmySize()-1]/100;
+            attack.setProbability(probabilityOfWinningAttack);
+
+            ArrayList<Country> countriesOwned = player.getCountriesOwned();
+            countriesOwned.add(defendingCountry);
+
+            int score = evaluateGameState(countriesOwned);
+
+            int score_increase = score - currentScore;
+            int relativeScoreIncrease = (int) (score_increase * probabilityOfWinningAttack);
+
+            attack.setRelativeScoreIncrease(relativeScoreIncrease);
+        }
+        return allPossibleAttacks;
+
+    }
+
+
+
 
     public int evaluateGameState(ArrayList<Country> countriesOwned){
 
@@ -74,6 +139,8 @@ public class AI {
 
         for (Continent continent: continents){
             ArrayList<Country> inContinent = continent.getCountries();
+
+
             inContinent.removeAll(countriesOwned);
 
 
@@ -86,10 +153,22 @@ public class AI {
             //x = the percentage of the continent owned
             double y = Math.pow(percentOwned, 4);
 
+            // * 100 is arbitrary
             score += y * 100;
 
         }
         return score;
+    }
+
+    public ArrayList<PossibleAIAttack> getAllPossibleAttacks(){
+        ArrayList<PossibleAIAttack> countryAttacks = new ArrayList<>();
+
+        for (Country countryOwned: player.getCountriesOwned()){
+            for(Country countryToAttack: countryOwned.getPossibleAttacks()){
+                countryAttacks.add(new PossibleAIAttack(countryOwned,countryToAttack));
+            }
+        }
+        return countryAttacks;
     }
 
 
@@ -144,5 +223,7 @@ public class AI {
         Player player = new Player("hi",0,1);
         AI ai = new AI(player,board);
         ai.printProbabilities();
+        System.out.println();
+        System.out.println(ai.probabilities[4-1][2-1]);
     }
 }
