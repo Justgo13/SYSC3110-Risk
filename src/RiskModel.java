@@ -224,10 +224,14 @@ public class RiskModel {
     }
 
     public void reinforce(Country reinforceCountry, Country countryToReinforce, int attackingTroops) {
-        reinforceCountry.setArmySize(reinforceCountry.getArmySize() - attackingTroops);
-        countryToReinforce.setArmySize(countryToReinforce.getArmySize() + attackingTroops);
-        updateMoveResult(reinforceCountry, countryToReinforce, attackingTroops);
-        updateReinforceView(reinforceCountry, countryToReinforce);
+        if (reinforceCountry.getPlayer().equals(countryToReinforce.getPlayer())) {
+            reinforceCountry.setArmySize(reinforceCountry.getArmySize() - attackingTroops);
+            countryToReinforce.setArmySize(countryToReinforce.getArmySize() + attackingTroops);
+            updateMoveResult(reinforceCountry, countryToReinforce, attackingTroops);
+            updateReinforceView(reinforceCountry, countryToReinforce);
+        } else {
+            System.out.println("bad");
+        }
     }
 
 
