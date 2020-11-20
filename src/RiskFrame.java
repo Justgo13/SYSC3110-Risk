@@ -709,6 +709,23 @@ public class RiskFrame extends JFrame implements RiskView{
         model.setAttackingTroops(Integer.parseInt(result));
     }
 
+    public int getBonusTroopCount(int troopCount) {
+        String[] options = {"OK"};
+        Integer[] troopList = buildTroopDropdownList(troopCount);
+        JPanel panel = new JPanel();
+        JLabel label = new JLabel("Select the number of troops to attack with: ");
+        JComboBox comboBox = new JComboBox(troopList);
+        comboBox.setSelectedIndex(0);
+        panel.add(label);
+        panel.add(comboBox);
+        int selectionObject = JOptionPane.showOptionDialog(this, panel, "Choose Troops", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        String result;
+        while (selectionObject != 0) {
+            selectionObject = JOptionPane.showOptionDialog(this, panel, "Choose Troops", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        }
+        return Integer.parseInt(comboBox.getSelectedItem().toString());
+    }
+
     /**
      * Create a list of Integers with the different amount of troops the player can use to attack with
      * which ranges from 1..n-1
@@ -900,7 +917,6 @@ public class RiskFrame extends JFrame implements RiskView{
         ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getAttackingPlayer().getCountriesOwned());
         countryButtons.forEach(cb -> cb.setEnabled(true));
 
-        getAttackingTroopCount();
 
         placeTroops.setEnabled(false);
         attack.setEnabled(false);
@@ -910,8 +926,11 @@ public class RiskFrame extends JFrame implements RiskView{
 
     @Override
     public void handleTroopPlaced(Country bonusCountry, int troops) {
-        textArea.append(troops + " Troops were placed in " + bonusCountry.getName());
-
+        int selectedTroops = getBonusTroopCount(troops);
+        bonusCountry.setArmySize(bonusCountry.getArmySize() + selectedTroops);
+        textArea.append(selectedTroops + " Troops were placed in " + bonusCountry.getName());
+        countryButtons.get(bonusCountry.getName()).update();
+        placeTroops.setEnabled(true);
 
     }
 

@@ -13,6 +13,7 @@ public class RiskModel {
     private Country countryToReinforce;
     private Country bonusCountry;
     private int attackingTroops;
+    private int bonusTroopsPlaced;
     private List<AI> aiPlayers;
     /**
      * Creates an instance of the Risk game
@@ -31,6 +32,7 @@ public class RiskModel {
         countryToReinforce = null;
         bonusCountry = null;
         attackingTroops = 0;
+        bonusTroopsPlaced = 0;
         aiPlayers = new ArrayList<>();
     }
 
@@ -258,18 +260,16 @@ public class RiskModel {
             }
         } else if (state.equals(GameState.CHOOSE_BONUS)){
             bonusCountry = country;
-            placeBonusTroops(bonusCountry);
+            int previousArmy =bonusCountry.getArmySize();
             for (RiskView v : views) {
-                v.handleTroopPlaced(bonusCountry, );
+                v.handleTroopPlaced(bonusCountry, bonusTroopCalculation(bonusCountry.getPlayer()) - bonusTroopsPlaced);
             }
-
-
+            //adds the difference of the troops placed
+            bonusTroopsPlaced += bonusCountry.getArmySize() - previousArmy;
+            if(bonusTroopsPlaced == bonusTroopCalculation(bonusCountry.getPlayer())) updateNextState();
         }
     }
 
-    public void placeBonusTroops(Country country){
-
-    }
 
     public void placeTroopsClicked() {
         state = GameState.BONUS_PHASE;
