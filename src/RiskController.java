@@ -23,6 +23,8 @@ public class RiskController implements ActionListener{
             riskModel.attackClicked();
         } else if (e.getActionCommand().equals(ButtonCommand.REINFORCE.toString())) {
             riskModel.reinforceClicked();
+        } else if (e.getActionCommand().equals(ButtonCommand.PLACETROOPS.toString())){
+            riskModel.placeTroopsClicked();
         }
     }
 }

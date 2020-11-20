@@ -20,6 +20,7 @@ public class RiskFrame extends JFrame implements RiskView{
     private JButton attack;
     private JButton endPhase;
     private JButton reinforce;
+    private JButton placeTroops;
     public RiskFrame() {
         super(PlayGame.GAMETITLE.toString());
         setLayout(new GridBagLayout());
@@ -571,7 +572,7 @@ public class RiskFrame extends JFrame implements RiskView{
         controlPanelConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
         controlPanelConstraints.fill = GridBagConstraints.BOTH;
 
-        controlPanelConstraints.gridx = 0;
+        controlPanelConstraints.gridx = 2;
         controlPanelConstraints.gridy = 1;
         controlPanelConstraints.gridwidth = 1;
         reinforce = new JButton(ButtonText.REINFORCE.toString());
@@ -581,14 +582,20 @@ public class RiskFrame extends JFrame implements RiskView{
         controlPanelConstraints.gridx = 1;
         controlPanelConstraints.gridy = 1;
         attack = new JButton(ButtonText.ATTACK.toString());
-        attack.setEnabled(true);
+        attack.setEnabled(false);
         panel.add(attack, controlPanelConstraints);
 
-        controlPanelConstraints.gridx = 2;
+        controlPanelConstraints.gridx = 3;
         controlPanelConstraints.gridy = 1;
         endPhase = new JButton(ButtonText.ENDTURN.toString());
         endPhase.setEnabled(false);
         panel.add(endPhase, controlPanelConstraints);
+
+        controlPanelConstraints.gridx = 0;
+        controlPanelConstraints.gridy = 1;
+        placeTroops = new JButton(ButtonText.PLACETROOPS.toString());
+        placeTroops.setEnabled(true);
+        panel.add(placeTroops, controlPanelConstraints);
 
         add(panel, frameConstraint);
 
@@ -603,6 +610,10 @@ public class RiskFrame extends JFrame implements RiskView{
         reinforce.addActionListener(riskController);
         reinforce.setActionCommand(ButtonCommand.REINFORCE.toString());
 
+        placeTroops.addActionListener(riskController);
+        placeTroops.setActionCommand(ButtonCommand.PLACETROOPS.toString());
+
+        //Starting the first turn of the game
 
         // Add all country J Buttons to the controller
         for (CountryButton cb : getCountryButtons().values()){
@@ -880,6 +891,28 @@ public class RiskFrame extends JFrame implements RiskView{
         attack.setEnabled(false);
         endPhase.setEnabled(false);
         reinforce.setEnabled(true);
+    }
+
+    @Override
+    public void handleShowTroopPlacementCountry() {
+        // get all the Country Buttons that the current player owns
+
+        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getAttackingPlayer().getCountriesOwned());
+        countryButtons.forEach(cb -> cb.setEnabled(true));
+
+        getAttackingTroopCount();
+
+        placeTroops.setEnabled(false);
+        attack.setEnabled(false);
+        endPhase.setEnabled(false);
+        reinforce.setEnabled(false);
+    }
+
+    @Override
+    public void handleTroopPlaced(Country bonusCountry, int troops) {
+        textArea.append(troops + " Troops were placed in " + bonusCountry.getName());
+
+
     }
 
     /**

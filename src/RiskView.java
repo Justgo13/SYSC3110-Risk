@@ -14,4 +14,6 @@ public interface RiskView {
     void handleReinforceResultEvent(ReinforceResultEvent reinforceResultEvent);
     void handleReinforceEvent(ReinforceEvent reinforceEvent);
     void handleEndAttack(int playerID);
+    void handleShowTroopPlacementCountry();
+    void handleTroopPlaced(Country bonusCountry, int troops);
 }

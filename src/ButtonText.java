@@ -1,5 +1,5 @@
 public enum ButtonText {
-    REINFORCE("REINFORCE"), ATTACK("ATTACK"), ENDTURN("END PHASE");
+    REINFORCE("REINFORCE"), ATTACK("ATTACK"), ENDTURN("END PHASE"), PLACETROOPS("PLACE TROOPS");
     private String value;
 
     ButtonText(String value) {
