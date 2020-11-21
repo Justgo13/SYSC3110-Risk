@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Player {
     private int armiesToPlace;
@@ -27,6 +28,18 @@ public class Player {
 
     public ArrayList<Country> getCountriesOwned() {
         return countriesOwned;
+    }
+
+    public ArrayList<Country> copyofCountriesOwned() {
+        ArrayList<Country> countriesValue = new ArrayList<>();
+        // pass countries by value by recreating country objects
+        Iterator iterator = countriesOwned.iterator();
+        while (iterator.hasNext()) {
+            Country country = (Country) iterator.next();
+            Country newCountry = new Country(country.getName());
+            countriesValue.add(newCountry);
+        }
+        return countriesValue;
     }
 
     public int getId() {

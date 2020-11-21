@@ -30,7 +30,11 @@ public class Continent {
         return countries.get(name);
     }
 
-    public ArrayList<Country> getCountries(){
+    public Collection<Country> getCountries(){
+        return countries.values();
+    }
+
+    public ArrayList<Country> getCountriesCopy() {
         ArrayList<Country> countriesValue = new ArrayList<>();
         // pass countries by value by recreating country objects
         Iterator iterator = countries.values().iterator();

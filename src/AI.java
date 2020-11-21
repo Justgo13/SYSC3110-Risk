@@ -97,18 +97,12 @@ public class AI extends Player{
             Country defendingCountry = bestAttack.getDefendingCountry();
 
             model.attack(attackingCountry, defendingCountry, attackingCountry.getArmySize() - 1);
-            try{
-                Thread.sleep(1000);
-            }catch(Exception e){
-                System.out.println(e);
-            }
-
         }
     }
 
     public ArrayList<PossibleAIAttack> getAllPossibleAIAttacks(){
 
-        int currentScore = evaluateGameState(this.getCountriesOwned());
+        int currentScore = evaluateGameState(this.copyofCountriesOwned());
 
         // gets all possible attacks in hashmap form (key= Attacking Country, values=defending Country)
         ArrayList<PossibleAIAttack> allPossibleAttacks = getAllPossibleAttacks();
@@ -122,7 +116,12 @@ public class AI extends Player{
             if (attackingCountry.getArmySize() > 2) {
                 int attackArmy = attackingCountry.getArmySize();
                 int defendingArmy = defendingCountry.getArmySize();
-                if (attackArmy >= 10 || defendingArmy >= 10) {attackArmy = 10; defendingArmy = 10;}
+                if (attackArmy >= 10) {
+                    attackArmy = 10;
+                }
+                if (defendingArmy >= 10) {
+                    defendingArmy = 10;
+                }
                 double probabilityOfWinningAttack = probabilities[attackArmy - 2][defendingArmy - 1] / 100;
                 attack.setProbability(probabilityOfWinningAttack);
 
@@ -163,13 +162,13 @@ public class AI extends Player{
         double score = 0;
 
         for (Continent continent: continents){
-            Collection<Country> inContinent = continent.getCountries();
+            Collection<Country> inContinent = continent.getCountriesCopy();
 
 
             inContinent.removeAll(countriesOwned);
 
 
-            double numOfCountriesInContinent= continent.getCountries().size();
+            double numOfCountriesInContinent= continent.getCountriesCopy().size();
 
             double numOfOwnedCountriesInContinent = numOfCountriesInContinent - inContinent.size();
             double percentOwned = numOfOwnedCountriesInContinent / numOfCountriesInContinent;
@@ -188,7 +187,7 @@ public class AI extends Player{
     public ArrayList<PossibleAIAttack> getAllPossibleAttacks(){
         ArrayList<PossibleAIAttack> countryAttacks = new ArrayList<>();
 
-        for (Country countryOwned: this.getCountriesOwned()){
+        for (Country countryOwned: this.copyofCountriesOwned()){
             for(Country countryToAttack: countryOwned.getPossibleAttacks()){
                 countryAttacks.add(new PossibleAIAttack(countryOwned,countryToAttack));
             }
