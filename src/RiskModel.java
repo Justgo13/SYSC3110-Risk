@@ -11,7 +11,9 @@ public class RiskModel {
     private Country defendingCountry;
     private Country reinforceCountry;
     private Country countryToReinforce;
+    private Country bonusCountry;
     private int attackingTroops;
+    private int bonusTroopsPlaced;
     private List<AI> aiPlayers;
     /**
      * Creates an instance of the Risk game
@@ -28,7 +30,9 @@ public class RiskModel {
         defendingCountry = null;
         reinforceCountry = null;
         countryToReinforce = null;
+        bonusCountry = null;
         attackingTroops = 0;
+        bonusTroopsPlaced = 0;
         aiPlayers = new ArrayList<>();
     }
 
@@ -152,6 +156,13 @@ public class RiskModel {
         return reinforceCountry;
     }
 
+    public void reinforce(Country reinforceCountry, Country countryToReinforce, int attackingTroops) {
+        reinforceCountry.setArmySize(reinforceCountry.getArmySize() - attackingTroops);
+        countryToReinforce.setArmySize(countryToReinforce.getArmySize() + attackingTroops);
+        updateMoveResult(reinforceCountry, countryToReinforce, attackingTroops);
+        updateReinforceView(reinforceCountry, countryToReinforce);
+    }
+
     public ArrayList<Country> getConnectedCountries(Country country){
         ArrayList<Country> adjacentCountries = new ArrayList();
         countryRecurse(adjacentCountries, country);
@@ -220,20 +231,7 @@ public class RiskModel {
             attackingCountry.setArmySize(attackersStayed); // removes attackers from original country
             board.checkEliminated();
         }
-
     }
-
-    public void reinforce(Country reinforceCountry, Country countryToReinforce, int attackingTroops) {
-        if (reinforceCountry.getPlayer().equals(countryToReinforce.getPlayer())) {
-            reinforceCountry.setArmySize(reinforceCountry.getArmySize() - attackingTroops);
-            countryToReinforce.setArmySize(countryToReinforce.getArmySize() + attackingTroops);
-            updateMoveResult(reinforceCountry, countryToReinforce, attackingTroops);
-            updateReinforceView(reinforceCountry, countryToReinforce);
-        } else {
-            System.out.println("bad");
-        }
-    }
-
 
     public void countryClicked(Country country) {
         if (state.equals(GameState.SHOW_DEFENDING_COUNTRIES)) {
@@ -260,7 +258,32 @@ public class RiskModel {
             for (RiskView v : views) {
                 v.handleReinforce(reinforceCountry);
             }
+        } else if (state.equals(GameState.CHOOSE_BONUS)){
+            bonusCountry = country;
+            int previousArmy =bonusCountry.getArmySize();
+            for (RiskView v : views) {
+                v.handleTroopPlaced(bonusCountry, bonusTroopCalculation(bonusCountry.getPlayer()) - bonusTroopsPlaced);
+            }
+            //adds the difference of the troops placed
+            bonusTroopsPlaced += bonusCountry.getArmySize() - previousArmy;
+            if(bonusTroopsPlaced == bonusTroopCalculation(bonusCountry.getPlayer())){
+                updateNextState();
+                //Making sure the bonus troops placed so far for the next player are 0
+                bonusTroopsPlaced = 0;
+                for (RiskView v : views) {
+                    v.troopBonusComplete();
+                }
+            }
         }
+    }
+
+
+    public void placeTroopsClicked() {
+        state = GameState.BONUS_PHASE;
+        for (RiskView v : views) {
+            v.handleShowTroopPlacementCountry();
+        }
+        updateNextState();
     }
 
     public void attackClicked() {

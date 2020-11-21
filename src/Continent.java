@@ -38,7 +38,7 @@ public class Continent {
     }
 
     public Player getContinentOwner(){
-        ArrayList<Country> countryArrayList = (ArrayList<Country>) countries.values();
+        ArrayList<Country> countryArrayList = new ArrayList<>(countries.values());
         Player player = countryArrayList.get(0).getPlayer();
         for(Country c: countryArrayList){
             if(c.getPlayer() != player){
