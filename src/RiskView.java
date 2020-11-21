@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public interface RiskView {
     void handleAttackEvent(AttackEvent ae);
     void handleResultEvent(BattleResultEvent bre);
@@ -15,6 +17,8 @@ public interface RiskView {
     void handleReinforceEvent(ReinforceEvent reinforceEvent);
     void handleEndAttack(int playerID);
     void handleShowTroopPlacementCountry();
-    void handleTroopPlaced(Country bonusCountry, int troops);
+    void handleTroopPlaced(BonusTroopEvent bte);
     void troopBonusComplete();
+
+    void handleEndBonus(int playerID);
 }

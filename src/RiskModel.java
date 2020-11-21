@@ -261,9 +261,7 @@ public class RiskModel {
         } else if (state.equals(GameState.CHOOSE_BONUS)){
             bonusCountry = country;
             int previousArmy =bonusCountry.getArmySize();
-            for (RiskView v : views) {
-                v.handleTroopPlaced(bonusCountry, bonusTroopCalculation(bonusCountry.getPlayer()) - bonusTroopsPlaced);
-            }
+            bonusTroopEvent(bonusCountry, bonusTroopCalculation(bonusCountry.getPlayer()) - bonusTroopsPlaced);
             //adds the difference of the troops placed
             bonusTroopsPlaced += bonusCountry.getArmySize() - previousArmy;
             if(bonusTroopsPlaced == bonusTroopCalculation(bonusCountry.getPlayer())){
@@ -277,9 +275,15 @@ public class RiskModel {
         }
     }
 
+    public void bonusTroopEvent(Country bonusCountry, int bonusTroopsPlaced) {
+        for (RiskView v : views) {
+            v.handleTroopPlaced(new BonusTroopEvent(this, bonusCountry, bonusTroopsPlaced));
+        }
+    }
 
     public void placeTroopsClicked() {
         state = GameState.BONUS_PHASE;
+        endPhaseState = GameState.EndPhase.BONUS_PHASE;
         for (RiskView v : views) {
             v.handleShowTroopPlacementCountry();
         }
@@ -297,6 +301,7 @@ public class RiskModel {
 
     public void reinforceClicked() {
         state = GameState.SHOW_REINFORCE_COUNTRIES;
+        endPhaseState = GameState.EndPhase.REINFORCE_PHASE;
         for (RiskView v : views) {
             v.handleShowReinforceCountry();
         }
@@ -309,7 +314,12 @@ public class RiskModel {
      */
     public void endPhaseClicked(){
         updateEndPhaseState();
-        if (endPhaseState.equals(GameState.EndPhase.REINFORCE_PHASE)) {
+        if (endPhaseState.equals(GameState.EndPhase.ATTACK_PHASE)) {
+            int playerID = board.getPlayers().get(turnIndex).getId();
+            for (RiskView v : views) {
+                v.handleEndBonus(playerID);
+            }
+        } else if (endPhaseState.equals(GameState.EndPhase.REINFORCE_PHASE)) {
             int playerID = board.getPlayers().get(turnIndex).getId();
             for (RiskView v : views) {
                 v.handleEndAttack(playerID);
