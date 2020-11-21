@@ -12,7 +12,7 @@ public class Board {
     private ArrayList<String> continentNames;
 
 
-    private  ArrayList<List> continentCountries;
+    private  ArrayList<ArrayList<String>> continentCountries;
     private  ArrayList<Integer> continentBonusArmies;
 
     /**
@@ -25,44 +25,11 @@ public class Board {
         countries = new HashMap<>();
         continents = new HashMap<>();
         continentCountries = new ArrayList<>();
-        countryNames = new ArrayList<>(Arrays.asList(
-                "Alaska", "Alberta", "Central America", "Eastern United States", "Greenland", "Northwest Territory", "Ontario",
-                "Quebec", "Western United States", "Argentina", "Brazil", "Peru", "Venezuela", "Great Britain", "Iceland",
-                "Northern Europe", "Scandinavia", "Southern Europe", "Ukraine", "Western Europe", "Congo", "East Africa", "Egypt",
-                "Madagascar", "North Africa", "South Africa", "Afghanistan", "China", "India", "Irkutsk", "Japan", "Kamchatka",
-                "Middle East", "Mongolia", "Siam", "Siberia", "Ural", "Yakutsk", "Eastern Australia", "Indonesia", "New Guinea",
-                "Western Australia"
-        ));
+        countryNames = new ArrayList<>();
 
         continentBonusArmies = new ArrayList<>(Arrays.asList(5,2,5,3,7,2));
 
-        continentNames = new ArrayList<>(Arrays.asList(
-                "North America", "South America", "Europe", "Africa", "Asia", "Australia"
-        ));
-
-
-        //Adding North America
-        continentCountries.add(Arrays.asList(
-                "Alaska", "Alberta", "Central America", "Eastern United States", "Greenland",
-                "Northwest Territory", "Ontario", "Quebec", "Western United States"));
-        //Adding South America
-        continentCountries.add(Arrays.asList(
-                "Argentina", "Brazil", "Peru", "Venezuela"));
-        //Adding Europe
-        continentCountries.add(Arrays.asList(
-                "Great Britain", "Iceland", "Northern Europe", "Scandinavia",
-                "Southern Europe", "Ukraine", "Western Europe"));
-        //Adding Africa
-        continentCountries.add(Arrays.asList(
-                "Congo", "East Africa", "Egypt", "Madagascar",
-                "North Africa", "South Africa"));
-        //Adding Asia
-        continentCountries.add(Arrays.asList(
-                "Afghanistan", "China", "India", "Irkutsk", "Japan", "Kamchatka",
-                "Middle East", "Mongolia", "Siam", "Siberia", "Ural", "Yakutsk"));
-        //Adding Australia
-        continentCountries.add(Arrays.asList(
-                "Eastern Australia", "Indonesia", "New Guinea", "Western Australia"));
+        continentNames = new ArrayList<>();
         //added buildMap so that countries map will be populated when used (testing for countrybutton)
     }
 
@@ -128,6 +95,9 @@ public class Board {
             aiPlayers.get(i-numPlayers).setId(i+1);
             addPlayer(aiPlayers.get(i-numPlayers));
         }
+        buildContinentNames();
+        buildCountryNames();
+        buildContinent();
         buildMap(); // adds all countries to map
         placePlayers(totalPlayers); // place players randomly on the map
         setAdjacentCountries();
@@ -211,8 +181,58 @@ public class Board {
         }
     }
 
+    private void buildContinent() {
+        try {
+            InputStream inputStream = this.getClass().getResourceAsStream("continentCountries.txt");
+            // buffered reader to read the file
+            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
 
-    /**
+            String line;
+            while ((line = br.readLine()) != null) {
+
+                ArrayList<String> continentCountry = new ArrayList<>();
+                String[] countries = line.split(", ");
+                for (int i = 0; i < countries.length; i++) {
+                    continentCountry.add(countries[i]);
+                }
+                continentCountries.add(continentCountry);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void buildCountryNames() {
+        try {
+            InputStream inputStream = this.getClass().getResourceAsStream("countryNames.txt");
+            // buffered reader to read the file
+            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+
+            String line;
+            while ((line = br.readLine()) != null) {
+                countryNames.add(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void buildContinentNames() {
+        try {
+            InputStream inputStream = this.getClass().getResourceAsStream("continentNames.txt");
+            // buffered reader to read the file
+            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+
+            String line;
+            while ((line = br.readLine()) != null) {
+                continentNames.add(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+        /**
      * For every country in the game, read a .txt file to determine all of the adjacent countries to it. Add all
      * adjacent countries to the corresponding country
      *
