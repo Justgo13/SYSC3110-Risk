@@ -810,8 +810,15 @@ public class RiskFrame extends JFrame implements RiskView{
 
         // converts all countries that the reinforce country can reinforce into their respective country button instance in the view and stores in a list
         ArrayList<CountryButton> reinforceCountries = convertCountryToCountryButtons(model.getConnectedCountries(reinforceCountry));
-        reinforceCountries.forEach(countryButton -> countryButton.setEnabled(true)); // enable all possible countries to reinforce
-        reinforceCountries.forEach(countryButton -> countryButton.setBorder(BorderFactory.createLineBorder(Color.yellow, 3)));
+        reinforceCountries.forEach(countryButton -> {
+            if (countryButton.getCountry().equals(reinforceCountry)) {
+                countryButton.setEnabled(false);
+                countryButton.setBorder(BorderFactory.createLineBorder(null));
+            } else {
+                countryButton.setEnabled(true);
+                countryButton.setBorder(BorderFactory.createLineBorder(Color.yellow, 3));
+            }
+        });
 
         // asks for number of troops to attack with
         getAttackingTroopCount(reinforceCountry); // number of troops to reinforce with

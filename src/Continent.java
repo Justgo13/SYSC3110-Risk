@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Creates a continent object for holding countries and assigning bonus army to players
@@ -29,8 +30,16 @@ public class Continent {
         return countries.get(name);
     }
 
-    public Collection<Country> getCountries(){
-        return countries.values();
+    public ArrayList<Country> getCountries(){
+        ArrayList<Country> countriesValue = new ArrayList<>();
+        // pass countries by value by recreating country objects
+        Iterator iterator = countries.values().iterator();
+        while (iterator.hasNext()) {
+            Country country = (Country) iterator.next();
+            Country newCountry = new Country(country.getName());
+            countriesValue.add(newCountry);
+        }
+        return countriesValue;
     }
 
     public int getBonusArmy() {
