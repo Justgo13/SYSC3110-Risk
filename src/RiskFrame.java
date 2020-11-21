@@ -810,8 +810,15 @@ public class RiskFrame extends JFrame implements RiskView{
 
         // converts all countries that the reinforce country can reinforce into their respective country button instance in the view and stores in a list
         ArrayList<CountryButton> reinforceCountries = convertCountryToCountryButtons(model.getConnectedCountries(reinforceCountry));
-        reinforceCountries.forEach(countryButton -> countryButton.setEnabled(true)); // enable all possible countries to reinforce
-        reinforceCountries.forEach(countryButton -> countryButton.setBorder(BorderFactory.createLineBorder(Color.yellow, 3)));
+        reinforceCountries.forEach(countryButton -> {
+            if (countryButton.getCountry().equals(reinforceCountry)) {
+                countryButton.setEnabled(false);
+                countryButton.setBorder(BorderFactory.createLineBorder(null));
+            } else {
+                countryButton.setEnabled(true);
+                countryButton.setBorder(BorderFactory.createLineBorder(Color.yellow, 3));
+            }
+        });
 
         // asks for number of troops to attack with
         getAttackingTroopCount(reinforceCountry); // number of troops to reinforce with
@@ -891,8 +898,9 @@ public class RiskFrame extends JFrame implements RiskView{
         countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
         textArea.setText("");
         textArea.append("It is Player "+playerId+"'s attack phase\n");
+        placeTroops.setEnabled(true);
         reinforce.setEnabled(false);
-        attack.setEnabled(true);
+        attack.setEnabled(false);
         endPhase.setEnabled(false);
         int turnIndex = model.getTurnIndex();
         Player player = model.getBoard().getPlayers().get(turnIndex);
@@ -910,6 +918,14 @@ public class RiskFrame extends JFrame implements RiskView{
         reinforce.setEnabled(true);
     }
 
+    public void handleEndBonus(int playerID) {
+        textArea.setText("");
+        textArea.append("It is Player "+playerID+"'s attack phase\n");
+        attack.setEnabled(true);
+        endPhase.setEnabled(false);
+        reinforce.setEnabled(false);
+    }
+
     @Override
     public void handleShowTroopPlacementCountry() {
         // get all the Country Buttons that the current player owns
@@ -925,11 +941,19 @@ public class RiskFrame extends JFrame implements RiskView{
     }
 
     @Override
-    public void handleTroopPlaced(Country bonusCountry, int troops) {
-        int selectedTroops = getBonusTroopCount(troops);
-        bonusCountry.setArmySize(bonusCountry.getArmySize() + selectedTroops);
-        textArea.append(selectedTroops + " Troops were placed in " + bonusCountry.getName());
-        countryButtons.get(bonusCountry.getName()).update();
+    public void handleTroopPlaced(BonusTroopEvent bte) {
+        int turnIndex = bte.getModel().getTurnIndex();
+        Player player = bte.getModel().getBoard().getPlayers().get(turnIndex);
+        int selectedTroops;
+        if (player instanceof HumanPlayer) {
+            selectedTroops = getBonusTroopCount(bte.getRemainingTroops());
+        } else {
+            selectedTroops = bte.getRemainingTroops();
+
+        }
+        bte.getBonusCountry().setArmySize(bte.getBonusCountry().getArmySize() + selectedTroops);
+        textArea.append(selectedTroops + " Troops were placed in " + bte.getBonusCountry().getName());
+        countryButtons.get(bte.getBonusCountry().getName()).update();
         placeTroops.setEnabled(true);
 
         ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getAttackingPlayer().getCountriesOwned());

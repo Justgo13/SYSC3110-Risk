@@ -24,7 +24,7 @@ public class AI extends Player{
     }
 
     public void playTurn(){
-        //placeTroops(model.bonusTroopCalculation(this));
+        placeTroops(model.bonusTroopCalculation(this));
         attack();
         JOptionPane.showMessageDialog(null, "Attack");
         reinforce();
@@ -120,7 +120,10 @@ public class AI extends Player{
 
             // get probability of winning the attack
             if (attackingCountry.getArmySize() > 2) {
-                double probabilityOfWinningAttack = probabilities[attackingCountry.getArmySize() - 2][defendingCountry.getArmySize() - 1] / 100;
+                int attackArmy = attackingCountry.getArmySize();
+                int defendingArmy = defendingCountry.getArmySize();
+                if (attackArmy >= 10 || defendingArmy >= 10) {attackArmy = 10; defendingArmy = 10;}
+                double probabilityOfWinningAttack = probabilities[attackArmy - 2][defendingArmy - 1] / 100;
                 attack.setProbability(probabilityOfWinningAttack);
 
                 ArrayList<Country> countriesOwned = this.getCountriesOwned();
@@ -200,8 +203,9 @@ public class AI extends Player{
         for (int i = 0; i < troopNum; i ++){
             int index = rand.nextInt(countriesTouchingEnemies.size());
             countriesTouchingEnemies.get(index).addArmy();
+            model.bonusTroopEvent(countriesTouchingEnemies.get(index), 1);
         }
-        // TODO When bonus troop update event happens update the troop count
+
     }
 
     public void reinforce(){
