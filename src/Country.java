@@ -48,6 +48,8 @@ public class Country {
         adjacentCountries.add(country);
     }
 
+    public void setAdjacentCountries(ArrayList<Country> adjacentCountries) {this.adjacentCountries = adjacentCountries; }
+
     public ArrayList<Country> getAdjacentCountries(){return adjacentCountries;}
 
 

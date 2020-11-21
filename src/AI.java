@@ -26,9 +26,7 @@ public class AI extends Player{
     public void playTurn(){
         placeTroops(model.bonusTroopCalculation(this));
         attack();
-        JOptionPane.showMessageDialog(null, "Attack");
         reinforce();
-        JOptionPane.showMessageDialog(null, "Reinforce");
         endTurn();
 
     }
