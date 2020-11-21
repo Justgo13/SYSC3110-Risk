@@ -266,7 +266,14 @@ public class RiskModel {
             }
             //adds the difference of the troops placed
             bonusTroopsPlaced += bonusCountry.getArmySize() - previousArmy;
-            if(bonusTroopsPlaced == bonusTroopCalculation(bonusCountry.getPlayer())) updateNextState();
+            if(bonusTroopsPlaced == bonusTroopCalculation(bonusCountry.getPlayer())){
+                updateNextState();
+                //Making sure the bonus troops placed so far for the next player are 0
+                bonusTroopsPlaced = 0;
+                for (RiskView v : views) {
+                    v.troopBonusComplete();
+                }
+            }
         }
     }
 

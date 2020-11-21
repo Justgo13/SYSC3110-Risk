@@ -932,6 +932,17 @@ public class RiskFrame extends JFrame implements RiskView{
         countryButtons.get(bonusCountry.getName()).update();
         placeTroops.setEnabled(true);
 
+        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getAttackingPlayer().getCountriesOwned());
+        countryButtons.forEach(cb -> cb.setEnabled(false));
+    }
+
+    @Override
+    public void troopBonusComplete() {
+        placeTroops.setEnabled(false);
+        attack.setEnabled(true);
+        endPhase.setEnabled(false);
+        reinforce.setEnabled(false);
+
     }
 
     /**

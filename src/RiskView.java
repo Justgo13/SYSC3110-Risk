@@ -16,4 +16,5 @@ public interface RiskView {
     void handleEndAttack(int playerID);
     void handleShowTroopPlacementCountry();
     void handleTroopPlaced(Country bonusCountry, int troops);
+    void troopBonusComplete();
 }
