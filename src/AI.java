@@ -26,9 +26,7 @@ public class AI extends Player{
     public void playTurn(){
         placeTroops(model.bonusTroopCalculation(this));
         attack();
-        JOptionPane.showMessageDialog(null, "Attack");
         reinforce();
-        JOptionPane.showMessageDialog(null, "Reinforce");
         endTurn();
 
     }
@@ -79,7 +77,7 @@ public class AI extends Player{
             PossibleAIAttack bestAttack = allPossibleAttacks.get(0);
 
             for (PossibleAIAttack attack : allPossibleAttacks) {
-                if (attack.getProbability() > 0.75) {
+                if (attack.getProbability() > 0.6) {
                     willAttack = true;
                 }
 

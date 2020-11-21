@@ -37,6 +37,10 @@ public class Player {
         while (iterator.hasNext()) {
             Country country = (Country) iterator.next();
             Country newCountry = new Country(country.getName());
+            newCountry.setContinent(country.getContinent());
+            newCountry.setAdjacentCountries(country.getAdjacentCountries());
+            newCountry.setPlayer(country.getPlayer());
+            newCountry.setArmySize(country.getArmySize());
             countriesValue.add(newCountry);
         }
         return countriesValue;

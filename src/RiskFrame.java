@@ -502,7 +502,7 @@ public class RiskFrame extends JFrame implements RiskView{
         textArea = new JTextArea();
         JScrollPane scroll = new JScrollPane(textArea);
         scroll.setPreferredSize(textArea.getPreferredSize());
-        textArea.append("It is Player "+ model.getBoard().getPlayers().get(model.getTurnIndex()).getId() +"'s turn\n");
+        textArea.append("It is Player "+ model.getBoard().getPlayers().get(model.getTurnIndex()).getId() +"'s bonus troop phase \n");
         textArea.setEditable(false);
         gamePanel.add(scroll, gamePanelConstraints);
 
@@ -654,7 +654,7 @@ public class RiskFrame extends JFrame implements RiskView{
         result = playerComboBox.getSelectedItem().toString();
         aiResult = aiComboBox.getSelectedItem().toString();
         int totalPlayer = Integer.parseInt(result) + Integer.parseInt(aiResult);
-        while (totalPlayer > 6) {
+        while (totalPlayer > 6 || totalPlayer == 1) {
             JOptionPane.showOptionDialog(null, panel, PlayGame.TITLE.toString(), JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE,
                     null, PlayGame.OK_CANCEL_OPTION.getArray(), PlayGame.OK_CANCEL_OPTION.getArray()[0]);
             totalPlayer = Integer.parseInt(playerComboBox.getSelectedItem().toString()) + Integer.parseInt(aiComboBox.getSelectedItem().toString());
@@ -827,7 +827,7 @@ public class RiskFrame extends JFrame implements RiskView{
     @Override
     public void handleReinforce(Country reinforceCountry) {
         // disable all countries that reinforce country can reinforce
-        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getReinforceCountries());
+        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getConnectedCountries(reinforceCountry));
         countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
         countryButtons.forEach(countryButton -> countryButton.setBorder(null));
 
@@ -867,6 +867,9 @@ public class RiskFrame extends JFrame implements RiskView{
         textArea.append("Here is the results of the battle: \n" +
                 "Your country troops remaining: " + bre.getAttackingArmySize() +"\n"+
                 "Defending country troops remaining: " + bre.getDefendingArmySize() +"\n\n");
+        if (bre.getPlayer() instanceof AI) {
+            JOptionPane.showMessageDialog(null, textArea.getText());
+        }
     }
 
     public void handleReinforceResultEvent(ReinforceResultEvent rre) {
@@ -897,7 +900,7 @@ public class RiskFrame extends JFrame implements RiskView{
         ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getEndTurnPlayer().getCountriesOwned());
         countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
         textArea.setText("");
-        textArea.append("It is Player "+playerId+"'s attack phase\n");
+        textArea.append("It is Player "+playerId+"'s bonus troop phase\n");
         placeTroops.setEnabled(true);
         reinforce.setEnabled(false);
         attack.setEnabled(false);
@@ -947,12 +950,12 @@ public class RiskFrame extends JFrame implements RiskView{
         int selectedTroops;
         if (player instanceof HumanPlayer) {
             selectedTroops = getBonusTroopCount(bte.getRemainingTroops());
+            textArea.append(selectedTroops + " Troops were placed in " + bte.getBonusCountry().getName() + "\n");
         } else {
             selectedTroops = bte.getRemainingTroops();
-
+            textArea.setText("");
         }
         bte.getBonusCountry().setArmySize(bte.getBonusCountry().getArmySize() + selectedTroops);
-        textArea.append(selectedTroops + " Troops were placed in " + bte.getBonusCountry().getName());
         countryButtons.get(bte.getBonusCountry().getName()).update();
         placeTroops.setEnabled(true);
 
@@ -963,8 +966,8 @@ public class RiskFrame extends JFrame implements RiskView{
     @Override
     public void troopBonusComplete() {
         placeTroops.setEnabled(false);
-        attack.setEnabled(true);
-        endPhase.setEnabled(false);
+        attack.setEnabled(false);
+        endPhase.setEnabled(true);
         reinforce.setEnabled(false);
 
     }
@@ -1028,7 +1031,7 @@ public class RiskFrame extends JFrame implements RiskView{
             textArea.append("Player " + cle.getAttackingPlayerIndex() + ", you have taken " + cle.getDefendingCountry().getName()
                     + " from Player " + cle.getDefendingCountry().getPlayer().getId()+"\n");
         }else{
-            textArea.append("You have failed to conquer "+ cle.getDefendingCountry().getName()+"\n");
+            textArea.append("You attacked from " + cle.getAttackingCountry().getName() + " and failed to conquer "+ cle.getDefendingCountry().getName()+"\n");
         }
     }
 

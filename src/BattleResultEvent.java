@@ -7,8 +7,10 @@ import java.util.EventObject;
 public class BattleResultEvent extends EventObject {
     private int attackingArmySize;
     private int defendingArmySize;
-    public BattleResultEvent(RiskModel riskModel, int attackingArmySize, int defendingArmySize) {
+    private Player player;
+    public BattleResultEvent(RiskModel riskModel, Player player, int attackingArmySize, int defendingArmySize) {
         super(riskModel);
+        this.player = player;
         this.attackingArmySize = attackingArmySize;
         this.defendingArmySize = defendingArmySize;
     }
@@ -20,4 +22,6 @@ public class BattleResultEvent extends EventObject {
     public int getDefendingArmySize() {
         return defendingArmySize;
     }
+
+    public Player getPlayer() {return player;}
 }

@@ -7,7 +7,7 @@ public class BonusTroopEvent extends EventObject {
     /**
      * Constructs a prototypical Event.
      *
-     * @param source the object on which the Event initially occurred
+     * @param model the object on which the Event initially occurred
      * @throws IllegalArgumentException if source is null
      */
     public BonusTroopEvent(RiskModel model, Country bonusCountry, int remainingTroops) {

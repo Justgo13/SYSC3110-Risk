@@ -89,7 +89,7 @@ public class RiskModel {
 
         checkDefenderLostCountry(defendingCountry, attackingCountry, numOfAttackers);
 
-        updateBattleResults(defendingCountry.getArmySize(), attackingCountry.getArmySize());
+        updateBattleResults(attackingCountry.getPlayer(), defendingCountry.getArmySize(), attackingCountry.getArmySize());
 
         if(board.checkWinner()){
             updateGameOver(board.getPlayers().get(0).getId());
@@ -147,7 +147,7 @@ public class RiskModel {
         ArrayList<Country> reinforceCountry = new ArrayList<>();
         for (Country c : player.getCountriesOwned()) {
             for (Country adj : c.getAdjacentCountries()) {
-                if (adj.getPlayer().equals(player)) {
+                if (adj.getPlayer().equals(player) && !reinforceCountry.contains(c)) {
                     reinforceCountry.add(c);
                     break;
                 }
@@ -221,7 +221,7 @@ public class RiskModel {
      * @param numOfAttackers the size of the attacking army
      */
     protected void checkDefenderLostCountry(Country defendingCountry, Country attackingCountry, int numOfAttackers){
-        updateCountryLost(defendingCountry, board.getPlayers().get(turnIndex).getId());
+        updateCountryLost(attackingCountry, defendingCountry, board.getPlayers().get(turnIndex).getId());
         if (defendingCountry.getArmySize() == 0) {
             defendingCountry.getPlayer().removeCountry(defendingCountry); // removes the lost country from the defending player
             defendingCountry.setPlayer(attackingCountry.getPlayer()); // assigns country to the dominating player
@@ -378,12 +378,13 @@ public class RiskModel {
     /**
      * Notifies the view that a battle result event needs to be printed
      * @author Albara'a
+     * @param player
      * @param defendingArmySize The defending country army size
      * @param attackingArmySize The attacking coutnry army size
      */
-    public void updateBattleResults(int defendingArmySize, int attackingArmySize){
+    public void updateBattleResults(Player player, int defendingArmySize, int attackingArmySize){
         for(RiskView v : views){
-            v.handleResultEvent(new BattleResultEvent(this,attackingArmySize, defendingArmySize));
+            v.handleResultEvent(new BattleResultEvent(this, player, attackingArmySize, defendingArmySize));
         }
     }
 
@@ -403,12 +404,13 @@ public class RiskModel {
     /**
      * Notifies the view to handle a country being taken over event
      * @author Albara'a
+     * @param attackingCountry
      * @param defendingCountry The defending country that was taken
      * @param attackingPlayerIndex The player who took the country
      */
-    public void updateCountryLost(Country defendingCountry, int attackingPlayerIndex){
+    public void updateCountryLost(Country attackingCountry, Country defendingCountry, int attackingPlayerIndex){
         for(RiskView v: views){
-            v.handleDefendingCountryLost(new CountryLostEvent(this, defendingCountry, attackingPlayerIndex));
+            v.handleDefendingCountryLost(new CountryLostEvent(this, attackingCountry, defendingCountry, attackingPlayerIndex));
         }
 
     }
