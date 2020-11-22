@@ -141,45 +141,6 @@ public class RiskModel {
         return attackerDice;
     }
 
-    // Countries you can reinforce with
-    public ArrayList<Country> getReinforceCountries() {
-        Player player = board.getPlayers().get(turnIndex);
-        ArrayList<Country> reinforceCountry = new ArrayList<>();
-        for (Country c : player.getCountriesOwned()) {
-            for (Country adj : c.getAdjacentCountries()) {
-                if (adj.getPlayer().equals(player) && !reinforceCountry.contains(c)) {
-                    reinforceCountry.add(c);
-                    break;
-                }
-            }
-        }
-        return reinforceCountry;
-    }
-
-    public void reinforce(Country reinforceCountry, Country countryToReinforce, int attackingTroops) {
-        reinforceCountry.setArmySize(reinforceCountry.getArmySize() - attackingTroops);
-        countryToReinforce.setArmySize(countryToReinforce.getArmySize() + attackingTroops);
-        updateMoveResult(reinforceCountry, countryToReinforce, attackingTroops);
-        updateReinforceView(reinforceCountry, countryToReinforce);
-    }
-
-    public ArrayList<Country> getConnectedCountries(Country country){
-        ArrayList<Country> adjacentCountries = new ArrayList();
-        countryRecurse(adjacentCountries, country);
-        return adjacentCountries;
-
-    }
-
-    private void countryRecurse(ArrayList playerCountries, Country country){
-        playerCountries.add(country);
-        for (Country adjacent: country.getAdjacentCountries()){
-            //if owned by same player and not in list already add it(get 0 is the first country that was passed into the function)
-            if(adjacent.getPlayer() == ((Country) playerCountries.get(0)).getPlayer() && !playerCountries.contains(adjacent)) {
-                countryRecurse(playerCountries, adjacent);
-            }
-        }
-    }
-
     /**
      * Performs the attack between the attacking country and defending country and will remove troops from their
      * respective countries based on the result of the dice rolls.
@@ -229,8 +190,50 @@ public class RiskModel {
             int attackersStayed = attackingCountry.getArmySize() - numOfAttackers;
             defendingCountry.setArmySize(numOfAttackers); // moves remaining attackers to conquered country
             attackingCountry.setArmySize(attackersStayed); // removes attackers from original country
-            board.checkEliminated();
+            int playerID = board.checkEliminated();
+            if (playerID > 0) {
+                updatePlayerEliminated(playerID);
+            }
         }
+    }
+
+    // Countries you can reinforce with
+    public ArrayList<Country> getReinforceCountries() {
+        Player player = board.getPlayers().get(turnIndex);
+        ArrayList<Country> reinforceCountry = new ArrayList<>();
+        for (Country c : player.getCountriesOwned()) {
+            for (Country adj : c.getAdjacentCountries()) {
+                if (adj.getPlayer().equals(player) && !reinforceCountry.contains(c)) {
+                    reinforceCountry.add(c);
+                    break;
+                }
+            }
+        }
+        return reinforceCountry;
+    }
+
+    public ArrayList<Country> getConnectedCountries(Country country){
+        ArrayList<Country> adjacentCountries = new ArrayList();
+        countryRecurse(adjacentCountries, country);
+        return adjacentCountries;
+
+    }
+
+    private void countryRecurse(ArrayList playerCountries, Country country){
+        playerCountries.add(country);
+        for (Country adjacent: country.getAdjacentCountries()){
+            //if owned by same player and not in list already add it(get 0 is the first country that was passed into the function)
+            if(adjacent.getPlayer() == ((Country) playerCountries.get(0)).getPlayer() && !playerCountries.contains(adjacent)) {
+                countryRecurse(playerCountries, adjacent);
+            }
+        }
+    }
+
+    public void reinforce(Country reinforceCountry, Country countryToReinforce, int attackingTroops) {
+        reinforceCountry.setArmySize(reinforceCountry.getArmySize() - attackingTroops);
+        countryToReinforce.setArmySize(countryToReinforce.getArmySize() + attackingTroops);
+        updateMoveResult(reinforceCountry, countryToReinforce, attackingTroops);
+        updateReinforceView(reinforceCountry, countryToReinforce);
     }
 
     public void countryClicked(Country country) {
@@ -420,10 +423,15 @@ public class RiskModel {
      * @author Jason
      * @param
      */
-
     public void updateGameOver(int playerID) {
         for (RiskView v : views) {
             v.handleGameOver(playerID);
+        }
+    }
+
+    public void updatePlayerEliminated(int playerID) {
+        for (RiskView v : views) {
+            v.handlePlayerEliminated(playerID);
         }
     }
 
@@ -474,7 +482,6 @@ public class RiskModel {
         this.turnIndex = (1+turnIndex) % board.getNumOfPlayers();
     }
 
-
     public HashMap<String,Country> getCountries(){
         return board.getCountries();
     }
@@ -487,15 +494,7 @@ public class RiskModel {
         state = state.next();
     }
 
-    public void updatePrevState() {
-        state = state.previous();
-    }
-
     public void updateEndPhaseState() {
         endPhaseState = endPhaseState.next();
-    }
-
-    public void updatePrevEndPhaseState() {
-        endPhaseState = endPhaseState.previous();
     }
 }
