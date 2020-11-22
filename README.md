@@ -2,21 +2,22 @@
 Readme file for SYSC3110 Fall 2020 project. 
 The RISK board game has been an exciting game to play with family and friends that involves strategy and bit of luck. This project is designed to replicate
 the game using Java's Graphical User Interface by implementing Object Oriented style programming. 
-The objective of the game is to conquer as many countries and other humanPlayer's occupied countries by eliminating them. The last humanPlayer remaining is the victor. 
+The objective of the game is to conquer as many countries and other player's occupied countries by eliminating them. The last player remaining is the victor. 
 
 # Previous Deliverables
 - Model for the MVC pattern of Risk game
+- View and Controller of MVC pattern
 - Code for the text-based Risk game 
 - UML diagrams, sequence diagrams
+- GUI based version of the game
+- JUnit test
 
 # Current Deliverables
-- GUI based version of the game
-- View and Controller of the MVC pattern
-- Documentation of UML change from milestone 1
+- Bonus troop placement and reinforce troop placement
+- AI player
 - JUnit test
 
 # Road map
-- Additional features of Risk game such as bonus army, troup placement, AI, and reinforcements
 - Save / Load features
 - Custom maps
 
@@ -28,8 +29,6 @@ The objective of the game is to conquer as many countries and other humanPlayer'
 
 # Known issues
 - GUI will sometimes resize the text area and button panel when a country button is clicked
-- Due to map resizing when a country button is clicked, the lines to connect countries across bodies of water could not be drawn leading to some confusion for humanPlayers when 
-they attack an adjacent country.
 
 # JUnit version
 JUnit4
@@ -37,14 +36,24 @@ JUnit4
 # How to play
 The text area on the right hand side will say whose turn it is and will report battle results
 
+To add bonus troops:
+1. Click bonus troops button
+2. Click a country to add troops
+3. Choose from the dropdown the number of troop to add
+
 To attack:
 1. Click attack button
 2. Click one of your owned countries
 3. Select from the dropdown how many troops to attack with
 4. Choose an adjacent country to attack
-5. Continue attacking or end turn
+
+To reinforce: 
+1. Click the reinforce button
+2. Choose a country to reinforce from
+3. Choose from the dropdown how many troops to reinforce with
+4. Choose a highlighted country to reinforce
 
 # Authors
-Harjap Gill, Jason Gao, Shashaank Srivastava, Albara'a Salem
+Jason Gao, Harjap Gill, Shashaank Srivastava, Albara'a Salem
 
 
