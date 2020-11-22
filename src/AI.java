@@ -101,8 +101,6 @@ public class AI extends Player{
             Country defendingCountry = bestAttack.getDefendingCountry();
             Country actualAttackingCountry = board.getCountries().get(attackingCountry.getName());
             Country actualDefendingCountry = board.getCountries().get(defendingCountry.getName());
-            System.out.println(bestAttack.getProbability());
-            System.out.println(bestAttack.getRelativeScoreIncrease());
             // tell the Model, to do the best attack
             if (actualAttackingCountry.getArmySize()-1 > 0) {
                 model.attack(actualAttackingCountry, actualDefendingCountry, actualAttackingCountry.getArmySize() - 1);
