@@ -197,7 +197,11 @@ public class RiskModel {
         }
     }
 
-    // Countries you can reinforce with
+    /**
+     * Get all the countries you can reinforce with
+     * @author Jason
+     * @return List of countries that the player can reinforce with
+     */
     public ArrayList<Country> getReinforceCountries() {
         Player player = board.getPlayers().get(turnIndex);
         ArrayList<Country> reinforceCountry = new ArrayList<>();
@@ -212,6 +216,12 @@ public class RiskModel {
         return reinforceCountry;
     }
 
+    /**
+     * Gets a list of countries linked to the passed in country as an adjacency path
+     * @author Shashaank
+     * @param country The country reinforcing from
+     * @return A list of all countries the passed in country can reinforce
+     */
     public ArrayList<Country> getConnectedCountries(Country country){
         ArrayList<Country> adjacentCountries = new ArrayList();
         countryRecurse(adjacentCountries, country);
@@ -219,6 +229,12 @@ public class RiskModel {
 
     }
 
+    /**
+     * Recursively looks through the player's countries and build an adjacency path to the passed in country
+     * @author Shashaank
+     * @param playerCountries A list of the player's countries
+     * @param country The country that we reinforce from
+     */
     private void countryRecurse(ArrayList playerCountries, Country country){
         playerCountries.add(country);
         for (Country adjacent: country.getAdjacentCountries()){
@@ -229,13 +245,25 @@ public class RiskModel {
         }
     }
 
-    public void reinforce(Country reinforceCountry, Country countryToReinforce, int attackingTroops) {
-        reinforceCountry.setArmySize(reinforceCountry.getArmySize() - attackingTroops);
-        countryToReinforce.setArmySize(countryToReinforce.getArmySize() + attackingTroops);
-        updateMoveResult(reinforceCountry, countryToReinforce, attackingTroops);
+    /**
+     * Reinforces the designated country with specific troops and updates the view
+     * @author Jason
+     * @param reinforceCountry The country to reinforce from
+     * @param countryToReinforce The country to reinforce
+     * @param reinforceTroops The number of troops being moved
+     */
+    public void reinforce(Country reinforceCountry, Country countryToReinforce, int reinforceTroops) {
+        reinforceCountry.setArmySize(reinforceCountry.getArmySize() - reinforceTroops);
+        countryToReinforce.setArmySize(countryToReinforce.getArmySize() + reinforceTroops);
+        updateMoveResult(reinforceCountry, countryToReinforce, reinforceTroops);
         updateReinforceView(reinforceCountry, countryToReinforce);
     }
 
+    /**
+     * A handler to delegate button clicks from the controller and invoke the correct view methods
+     * based on the current state of the game. The state is then updated after the view is updated.
+     * @param country The country that was clicked
+     */
     public void countryClicked(Country country) {
         if (state.equals(GameState.SHOW_DEFENDING_COUNTRIES)) {
             attackingTroops = 0;
@@ -294,12 +322,21 @@ public class RiskModel {
         }
     }
 
+    /**
+     * Handles the bonus troop placement event
+     * @author Shashaank
+     * @param bonusCountry The country to add troops to
+     * @param bonusTroopsPlaced The number of bonus troops
+     */
     public void bonusTroopEvent(Country bonusCountry, int bonusTroopsPlaced) {
         for (RiskView v : views) {
             v.handleTroopPlaced(new BonusTroopEvent(this, bonusCountry, bonusTroopsPlaced));
         }
     }
 
+    /**
+     * Handles the place troops button being clicked and updates the view accordingly
+     */
     public void placeTroopsClicked() {
         state = GameState.BONUS_PHASE;
         endPhaseState = GameState.EndPhase.BONUS_PHASE;
@@ -309,6 +346,9 @@ public class RiskModel {
         updateNextState();
     }
 
+    /**
+     * Handles the attack button being clicked and updates the view accordingly
+     */
     public void attackClicked() {
         state = GameState.SHOW_PLAYER_COUNTRIES;
         endPhaseState = GameState.EndPhase.ATTACK_PHASE;
@@ -318,6 +358,9 @@ public class RiskModel {
         updateNextState();
     }
 
+    /**
+     * Handles the reinforce button being clicked and updates the view accordingly
+     */
     public void reinforceClicked() {
         state = GameState.SHOW_REINFORCE_COUNTRIES;
         endPhaseState = GameState.EndPhase.REINFORCE_PHASE;
@@ -328,8 +371,9 @@ public class RiskModel {
     }
 
     /**
-     * Notifies the view that a turn has ended
-     * @author Albara'a
+     * Handles the end phase being clicked and based on the current end phase state,
+     * it will handle the view accordingly
+     * @author Jason
      */
     public void endPhaseClicked(){
         updateEndPhaseState();
@@ -356,6 +400,9 @@ public class RiskModel {
         }
     }
 
+    /**
+     * Handles the end turn event and updates the view accordingly
+     */
     public void endTurn(int playerID) {
         for (RiskView v : views) {
             v.handleEndTurn(playerID);
@@ -366,10 +413,10 @@ public class RiskModel {
      * According how many countries or continents the player owns,
      * they will receive a specific troop bonus at the beginning
      * of their turn with a minimum of 3.
-     * @param player
-     * @return bonus troop
+     * @author Albara'a
+     * @param player The player who is getting bonus troops
+     * @return int number of bonus troops
      */
-
     public int bonusTroopCalculation(Player player){
         int troops = 3;
         troops += player.getCountriesOwned().size() / 3;
@@ -445,18 +492,33 @@ public class RiskModel {
         }
     }
 
+    /**
+     * Handles the event when a player is eliminated
+     * @param playerID The player ID of the player who was eliminated
+     */
     public void updatePlayerEliminated(int playerID) {
         for (RiskView v : views) {
             v.handlePlayerEliminated(playerID);
         }
     }
 
-    private void updateMoveResult(Country reinforceCountry, Country countrytoReinforce, int countryToReinforceArmy) {
+    /**
+     * Handles the reinforce result by updating the text area accordingly
+     * @param reinforceCountry The country to reinforce from
+     * @param countryToReinforce The country being reinforced
+     * @param countryToReinforceArmy The reinforcing troops
+     */
+    private void updateMoveResult(Country reinforceCountry, Country countryToReinforce, int countryToReinforceArmy) {
         for(RiskView v : views){
-            v.handleReinforceResultEvent(new ReinforceResultEvent(this,reinforceCountry,countryToReinforceArmy, countrytoReinforce));
+            v.handleReinforceResultEvent(new ReinforceResultEvent(this,reinforceCountry,countryToReinforceArmy, countryToReinforce));
         }
     }
 
+    /**
+     * Handles the reinforce event by updating the view accordingly
+     * @param reinforceCountry The country to reinforce from
+     * @param countryToReinforce The country being reinforced
+     */
     private void updateReinforceView(Country reinforceCountry, Country countryToReinforce) {
         for (RiskView v : views){
             v.handleReinforceEvent(new ReinforceEvent(this,reinforceCountry,countryToReinforce));

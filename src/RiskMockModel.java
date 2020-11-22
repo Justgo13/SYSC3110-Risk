@@ -22,18 +22,10 @@ public class RiskMockModel extends RiskModel {
     @Override
     protected ArrayList<Integer> attackingDiceInitialization(int numOfAttackers) {
         if (numOfAttackers >= 3) {
-            return new ArrayList<Integer>(Arrays.asList(5,4,6));
+            return new ArrayList<>(Arrays.asList(5,4,6));
         } else if (numOfAttackers == 2) {
-            return new ArrayList<Integer>(Arrays.asList(5,4));
+            return new ArrayList<>(Arrays.asList(5,4));
         }
-        return new ArrayList<Integer>(Arrays.asList(5));
+        return new ArrayList<>(Arrays.asList(5));
     }
-
-    public void playGame(int players, List<AI> aiPlayers) {
-        super.getBoard().setupBoard(players, aiPlayers);
-    }
-
-
-
-
 }

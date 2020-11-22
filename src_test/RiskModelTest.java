@@ -113,7 +113,6 @@ public class RiskModelTest {
     }
     //end of unit style tests and more Functional style testing is below
 
-
     @Test
     public void testDefenderLostCountry(){
 
@@ -315,6 +314,50 @@ public class RiskModelTest {
         assertTrue(actual.contains("Egypt"));
         assertTrue(actual.contains("Western Australia"));
         assertEquals(42,actual.size());
+    }
+
+    @Test
+    public void testBonusTroopCalculationNoCountries() {
+        Player p1 = new Player(0,1);
+        assertEquals(3,rm.bonusTroopCalculation(p1));
+    }
+
+    @Test
+    public void testBonusTroopCalculationCountriesNoCotinent() {
+        Player p1 = new Player(0,1);
+        Country bonusCountry1 = new Country("");
+        Country bonusCountry2 = new Country("");
+        Country bonusCountry3 = new Country("");
+        p1.addCountry(bonusCountry1);
+        p1.addCountry(bonusCountry2);
+        p1.addCountry(bonusCountry3);
+        assertEquals(4,rm.bonusTroopCalculation(p1));
+    }
+
+    @Test
+    public void testBonusTroopCalculationOneContinent() {
+        Collection<Continent> continents = rm.getBoard().getContinents().values();
+        Continent bonusContinent = (Continent) continents.toArray()[0];
+        bonusContinent.getCountries().clear();
+
+        Player p1 = new Player(0,1);
+        Country bonusCountry1 = new Country("");
+        Country bonusCountry2 = new Country("");
+        Country bonusCountry3 = new Country("");
+        bonusCountry1.setPlayer(p1);
+        bonusCountry2.setPlayer(p1);
+        bonusCountry3.setPlayer(p1);
+        bonusCountry1.setContinent(bonusContinent.getName());
+        bonusCountry2.setContinent(bonusContinent.getName());
+        bonusCountry3.setContinent(bonusContinent.getName());
+
+        bonusContinent.addCountry("country1",bonusCountry1);
+        bonusContinent.addCountry("country2",bonusCountry2);
+        bonusContinent.addCountry("country3",bonusCountry3);
+        p1.addCountry(bonusCountry1);
+        p1.addCountry(bonusCountry2);
+        p1.addCountry(bonusCountry3);
+        assertEquals(6,rm.bonusTroopCalculation(p1));
     }
 
     @Test
