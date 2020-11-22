@@ -1,4 +1,9 @@
-public class PossibleAIAttack {
+/**
+ * Object to hold information about a possible AI attack. Holds information such as countries involved in attack,
+ * probability of attacker winning attack and the expected relative score increase of the attack.
+ * This object is used to help determine the best attack for the AI to make
+ */
+ class PossibleAIAttack {
     private Country attackingCountry;
     private Country defendingCountry;
     private double probability;

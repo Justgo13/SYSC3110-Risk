@@ -3,6 +3,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 
+/**
+ *This AI class extends the Player class. Rather than a human player making the attacks, an AI will try to make the
+ * best attacks, best reinforces and best troop placements.
+ *
+ */
 public class AI extends Player{
     private RiskModel model;
     private Board board;
@@ -17,13 +22,24 @@ public class AI extends Player{
 
     }
 
+    /**
+     * playTurn method for the AI player to make their turn
+     *
+     */
+
     public void playTurn(){
+        // The AI will first place troops, then attack and then reinforce
         placeTroops(model.bonusTroopCalculation(this));
         attack();
         reinforce();
         endTurn();
 
     }
+
+    /**
+     * We are importing in dice roll probabilities from a txt file to help the AI make smart decisions. They are stored
+     * in a 2d array to be easily accessed in the future
+     */
 
     public void setupProbabilities(){
         try{
@@ -46,20 +62,26 @@ public class AI extends Player{
 
     }
 
+    /**
+     * The attack method to allow the AI to make attacks. The AI uses a utility function and the dice probabilities
+     * to estimate which move will result in the best outcome
+     */
     public void attack(){
         boolean willAttack;
         // attempts to attack 3 times every turn
         for (int i =0; i < 3; i++){
             willAttack = false;
-            ArrayList<PossibleAIAttack> allPossibleAttacks = getAllPossibleAIAttacks(); // gets a list of all possible attacking pairs
+            // all the possible attacks will be calculated
+            ArrayList<PossibleAIAttack> allPossibleAttacks = getAllPossibleAIAttacks();
 
-            if (allPossibleAttacks.size() == 0) {
+            if (allPossibleAttacks.size() == 0) { // if no attacks are possible, end attack phase
                 return;
             }
 
 
             PossibleAIAttack bestAttack = allPossibleAttacks.get(0);
 
+            // iterate over all possible attacks and find the attack that results in the highest utility function output
             for (PossibleAIAttack attack : allPossibleAttacks) {
                 if (attack.getProbability() > 0.75) {
                     willAttack = true;
@@ -71,26 +93,36 @@ public class AI extends Player{
 
             }
 
-            if (!willAttack) { // will continue to attack until there is not a good attack (>50% win chance)
+            if (!willAttack) { // will continue to attack until there is not a good attack (>70% win chance)
                 return;
             }
 
             Country attackingCountry = bestAttack.getAttackingCountry();
             Country defendingCountry = bestAttack.getDefendingCountry();
 
-            model.attack(attackingCountry, defendingCountry, attackingCountry.getArmySize() - 1);
+
+            // tell the Model, to do the best attack
+            if (attackingCountry.getArmySize()-1 > 0) {
+                model.attack(attackingCountry, defendingCountry, attackingCountry.getArmySize() - 1);
+            }
         }
     }
 
+    /**
+     * Function to find all possible attacks that can be done.
+     *
+     * @return An arraylist of all possible attacks
+     */
     public ArrayList<PossibleAIAttack> getAllPossibleAIAttacks(){
 
+        // finds the utility score of the AI's current position
         int currentScore = evaluateGameState(this.copyofCountriesOwned());
 
-        // gets all possible attacks in hashmap form (key= Attacking Country, values=defending Country)
+        // gets all possible attacks
         ArrayList<PossibleAIAttack> allPossibleAttacks = getAllPossibleAttacks();
 
 
-        for (PossibleAIAttack attack: allPossibleAttacks){
+        for (PossibleAIAttack attack: allPossibleAttacks){ // iterate over all attacks
             Country attackingCountry = attack.getAttackingCountry();
             Country defendingCountry = attack.getDefendingCountry();
 
@@ -104,6 +136,7 @@ public class AI extends Player{
                 if (defendingArmy >= 10) {
                     defendingArmy = 10;
                 }
+                // for each attack possibility, determines the probability of winning
                 double probabilityOfWinningAttack = probabilities[attackArmy - 2][defendingArmy - 1] / 100;
                 attack.setProbability(probabilityOfWinningAttack);
 
@@ -112,9 +145,11 @@ public class AI extends Player{
 
                 int score = evaluateGameState(countriesOwned);
 
+                // find the increase in utility score expected by doing this attack
                 int score_increase = score - currentScore;
                 int relativeScoreIncrease = (int) (score_increase * probabilityOfWinningAttack);
 
+                // add this expected utility score increase to the PossibleAIAttack object
                 attack.setRelativeScoreIncrease(relativeScoreIncrease);
             }
         }
@@ -123,8 +158,12 @@ public class AI extends Player{
     }
 
 
-
-
+    /**
+     * Takes a list of countries that may be owned and determines the utility score of owning those countries
+     *
+     * @param countriesOwned ArrayList of countries that could be owned
+     * @return integer utility score evaluating how good those countries are
+     */
     public int evaluateGameState(ArrayList<Country> countriesOwned){
 
         // give points for having a percentage of a continent
@@ -132,31 +171,43 @@ public class AI extends Player{
         // y= x^3
         int score = 0;
 
+        // increase the score based on continents owned
         score += gameStateContinents(countriesOwned);
 
+        // increase the score based on countries owned
         score += countriesOwned.size();
 
         return score;
     }
 
+    /**
+     * Given a list of countries, determines how valuable it's continents owned are
+     *
+     * @param countriesOwned list of countries that could be owned
+     * @return the double of how much to increase utility score
+     */
     public double gameStateContinents(ArrayList<Country> countriesOwned){
+        // finds all the continents in the game
         Collection<Continent> continents = board.getContinents().values();
         double score = 0;
+
 
         for (Continent continent: continents){
             Collection<Country> inContinent = continent.getCountriesCopy();
 
 
-            inContinent.removeAll(countriesOwned);
+            inContinent.removeAll(countriesOwned); // find how many countries of a continent the player owns
 
 
             double numOfCountriesInContinent= continent.getCountriesCopy().size();
 
             double numOfOwnedCountriesInContinent = numOfCountriesInContinent - inContinent.size();
+
+            // find the percentage (0 to 1) of a continent the player owns
             double percentOwned = numOfOwnedCountriesInContinent / numOfCountriesInContinent;
 
-            // y=x^3
-            //x = the percentage of the continent owned
+            // Curves the percentage of continent owned to incentivize owning a higher percentage of a continent
+            // curve is set to y=x^3
             double y = Math.pow(percentOwned, 3);
 
             // * 100 is arbitrary
@@ -166,6 +217,11 @@ public class AI extends Player{
         return score;
     }
 
+    /**
+     * Find all possible attacks that can be done
+     *
+     * @return an arraylist of all possible attacks
+     */
     public ArrayList<PossibleAIAttack> getAllPossibleAttacks(){
         ArrayList<PossibleAIAttack> countryAttacks = new ArrayList<>();
 
@@ -177,7 +233,11 @@ public class AI extends Player{
         return countryAttacks;
     }
 
-
+    /**
+     * Places troops on countries that are touching enemy countries
+     *
+     * @param troopNum Number of troops to place
+     */
     public void placeTroops(int troopNum) {
         Random rand = new Random();
         ArrayList<Country> countriesTouchingEnemies = getAllCountriesTouchingEnemies();
@@ -189,6 +249,11 @@ public class AI extends Player{
 
     }
 
+    /**
+     * After attacking, moves troops around if necessary. If a country has more than 1 troop and it is not touching
+     * any enemy countries, it will move those troops to countries touching enemies
+     *
+     */
     public void reinforce(){
         Random rand = new Random();
 
@@ -201,6 +266,7 @@ public class AI extends Player{
 
                 if (country.getArmySize()>= 2){
                     int index = rand.nextInt(connectedCountriesTouchingEnemies.size());
+                    // adds troop to random country touching enemy
                     model.reinforce(country,connectedCountriesTouchingEnemies.get(index), country.getArmySize()-1);
                 }
             }
@@ -208,12 +274,20 @@ public class AI extends Player{
         }
     }
 
+    /**
+     * End AI player's turn
+     */
     public void endTurn() {
         model.incrementTurnIndex();
         int playerID = board.getPlayers().get(model.getTurnIndex()).getId();
         model.endTurn(playerID);
     }
 
+    /**
+     * Find all countries player owns that touch enemy countries
+     *
+     * @return Arraylist of countries that touch enemy countries
+     */
     private ArrayList<Country> getAllCountriesTouchingEnemies(){
 
         ArrayList<Country> countriesTouchingEnemies = new ArrayList<>();
@@ -229,7 +303,12 @@ public class AI extends Player{
     }
 
 
-
+    /**
+     * Check if specified country is touching a enemy country
+     *
+     * @param country Country to check if touches enemy
+     * @return boolean to say true if touches enemy, false otherwise
+     */
     private boolean checkIfCountryTouchesEnemy(Country country){
         for (Country adjacentCountry: country.getAdjacentCountries()){
 
@@ -241,6 +320,12 @@ public class AI extends Player{
         return false;
     }
 
+    /**
+     * Get Countries touching enemies with country list passed in
+     *
+     * @param countries Countries to check which ones touch enemies
+     * @return arraylist of countries that are touching enemies
+     */
     private ArrayList<Country> getCountriesTouchingEnemies(ArrayList<Country> countries){
         ArrayList<Country> countriesTouchingEnemies = new ArrayList<>();
         for (Country country: countries){
