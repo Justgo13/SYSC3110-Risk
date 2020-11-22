@@ -99,11 +99,13 @@ public class AI extends Player{
 
             Country attackingCountry = bestAttack.getAttackingCountry();
             Country defendingCountry = bestAttack.getDefendingCountry();
-
-
+            Country actualAttackingCountry = board.getCountries().get(attackingCountry.getName());
+            Country actualDefendingCountry = board.getCountries().get(defendingCountry.getName());
+            System.out.println(bestAttack.getProbability());
+            System.out.println(bestAttack.getRelativeScoreIncrease());
             // tell the Model, to do the best attack
-            if (attackingCountry.getArmySize()-1 > 0) {
-                model.attack(attackingCountry, defendingCountry, attackingCountry.getArmySize() - 1);
+            if (actualAttackingCountry.getArmySize()-1 > 0) {
+                model.attack(actualAttackingCountry, actualDefendingCountry, actualAttackingCountry.getArmySize() - 1);
             }
         }
     }
@@ -195,16 +197,21 @@ public class AI extends Player{
         for (Continent continent: continents){
             Collection<Country> inContinent = continent.getCountriesCopy();
 
-
-            inContinent.removeAll(countriesOwned); // find how many countries of a continent the player owns
+            int numberCountriesOwnedInContinent = 0;
+            for (Country c : inContinent) {
+                for (Country c1 : countriesOwned) {
+                    if (c.getName().equals(c1.getName())) {
+                        numberCountriesOwnedInContinent++;
+                        break;// find how many countries of a continent the player owns
+                    }
+                }
+            }
 
 
             double numOfCountriesInContinent= continent.getCountriesCopy().size();
 
-            double numOfOwnedCountriesInContinent = numOfCountriesInContinent - inContinent.size();
-
             // find the percentage (0 to 1) of a continent the player owns
-            double percentOwned = numOfOwnedCountriesInContinent / numOfCountriesInContinent;
+            double percentOwned = numberCountriesOwnedInContinent / numOfCountriesInContinent;
 
             // Curves the percentage of continent owned to incentivize owning a higher percentage of a continent
             // curve is set to y=x^3
