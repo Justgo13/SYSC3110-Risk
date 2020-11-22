@@ -628,6 +628,10 @@ public class RiskFrame extends JFrame implements RiskView{
 
     }
 
+    /**
+     * A popup box that asks the user for the number of human and AI players in the game
+     * @return A list containing the number of human and ai players
+     */
     private int[] invokePlayerPopup() {
         JPanel panel = new JPanel();
         JLabel playerLabel = new JLabel(PlayGame.LABEL.toString());
@@ -710,6 +714,11 @@ public class RiskFrame extends JFrame implements RiskView{
         }
     }
 
+    /**
+     * Creates a dialog box with a dropdown list asking the user for the number of bonus troops that can be moved
+     * @author Jason
+     * @param troopCount The number of bonus troops available to move
+     */
     public int getBonusTroopCount(int troopCount) {
         String[] options = {"OK"};
         Integer[] troopList = buildTroopDropdownList(troopCount);
@@ -720,7 +729,6 @@ public class RiskFrame extends JFrame implements RiskView{
         panel.add(label);
         panel.add(comboBox);
         int selectionObject = JOptionPane.showOptionDialog(this, panel, "Choose Troops", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-        String result;
         while (selectionObject != 0) {
             selectionObject = JOptionPane.showOptionDialog(this, panel, "Choose Troops", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         }
@@ -757,6 +765,9 @@ public class RiskFrame extends JFrame implements RiskView{
 
     }
 
+    /**
+     * shows all the countries that the player can add bonus troops to
+     */
     @Override
     public void handleShowTroopPlacementCountry() {
         // get all the Country Buttons that the current player owns
@@ -771,6 +782,10 @@ public class RiskFrame extends JFrame implements RiskView{
         reinforce.setEnabled(false);
     }
 
+    /**
+     * updates the text area with the number of bonus troops places and updates the country button text
+     * @param bte BonusTroopsEvent contains information about the bonus troop phase
+     */
     @Override
     public void handleTroopPlaced(BonusTroopEvent bte) {
         int turnIndex = bte.getModel().getTurnIndex();
@@ -792,6 +807,9 @@ public class RiskFrame extends JFrame implements RiskView{
         countryButtons.forEach(cb -> cb.setBorder(null));
     }
 
+    /**
+     * Updates text area to show that all bonus troops have been allocated
+     */
     @Override
     public void troopBonusComplete() {
         textArea.append("All troops have been allocated move to the next phase");
@@ -802,6 +820,10 @@ public class RiskFrame extends JFrame implements RiskView{
 
     }
 
+    /**
+     * Updates the view in case the attack is cancelled by user
+     * @param attackingCountry The attacking country of the user
+     */
     public void handleAttackCancelled(Country attackingCountry) {
         ArrayList<CountryButton> defendingCountries = convertCountryToCountryButtons(attackingCountry.getPossibleAttacks());
         defendingCountries.forEach(countryButton -> countryButton.setEnabled(false));
@@ -932,6 +954,10 @@ public class RiskFrame extends JFrame implements RiskView{
         JOptionPane.showMessageDialog(this, "Player" + playerID + "was eliminated, sorry to see you go :(" );
     }
 
+    /**
+     * Updates the view when a reinforce event is cancelled
+     * @param reinforceCountry The country to reinforce from
+     */
     public void handleReinforceCancelled(Country reinforceCountry) {
         ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getReinforceCountries());
         countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
@@ -944,6 +970,9 @@ public class RiskFrame extends JFrame implements RiskView{
         endPhase.setEnabled(true);
     }
 
+    /**
+     * Update view to show all the countries that the player can reinforce from
+     */
     @Override
     public void handleShowReinforceCountry() {
         ArrayList<CountryButton> reinforceCountries = convertCountryToCountryButtons(model.getReinforceCountries());
@@ -957,6 +986,10 @@ public class RiskFrame extends JFrame implements RiskView{
         reinforce.setEnabled(false);
     }
 
+    /**
+     * Update the view to show all countries the player can reinforce into
+     * @param reinforceCountry The country to reinforce from
+     */
     @Override
     public void handleShowReinforceAdjacents(Country reinforceCountry) {
         // disables all countries you can reinforce from from being pressed
@@ -980,6 +1013,10 @@ public class RiskFrame extends JFrame implements RiskView{
         getAttackingTroopCount(reinforceCountry); // number of troops to reinforce with
     }
 
+    /**
+     * Updates the view to show all the adjacency path that a player can use to reinforce countries
+     * @param reinforceCountry The country being reinforced from
+     */
     @Override
     public void handleReinforce(Country reinforceCountry) {
         // disable all countries that reinforce country can reinforce
@@ -991,10 +1028,18 @@ public class RiskFrame extends JFrame implements RiskView{
         reinforce.setEnabled(true);
     }
 
+    /**
+     * Update the text area with the result of the reinforcement
+     * @param rre ReinforceResultEvent contains information about a reinforcement event
+     */
     public void handleReinforceResultEvent(ReinforceResultEvent rre) {
         textArea.append(rre.getReinforceCountry().getName() + " has moved " + rre.getReinforceArmy() + " troops to " + rre.getCountryToReinforce().getName() + "\n");
     }
 
+    /**
+     * Updates the buttons afters a reinforce event
+     * @param re ReinforceEvent contains information about a reinforcement event
+     */
     public void handleReinforceEvent(ReinforceEvent re) {
         Country reinforceCountry = re.getReinforceCountry();
         Country countryToReinforce = re.getCountryToReinforce();
@@ -1009,6 +1054,10 @@ public class RiskFrame extends JFrame implements RiskView{
         }
     }
 
+    /**
+     * Updates the text area with bonus event result
+     * @param playerID the player id who just added bonus troop
+     */
     public void handleEndBonus(int playerID) {
         textArea.setText("");
         textArea.append("It is Player "+playerID+"'s attack phase\n");
@@ -1017,6 +1066,10 @@ public class RiskFrame extends JFrame implements RiskView{
         reinforce.setEnabled(false);
     }
 
+    /**
+     * Updates the view when the attack phase is over
+     * @param playerID the player id who ended their attack phase
+     */
     public void handleEndAttack(int playerID) {
         textArea.setText("");
         textArea.append("It is Player "+playerID+"'s reinforce phase\n");

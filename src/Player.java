@@ -2,14 +2,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class Player {
-    private int armiesToPlace;
     private int initArmySize;
     private ArrayList<Country> countriesOwned;
     private int id;
 
     public Player(int initArmySize, int id) {
         this.id = id;
-        this.armiesToPlace = 3;
         this.initArmySize = initArmySize;
         countriesOwned = new ArrayList<>();
     }

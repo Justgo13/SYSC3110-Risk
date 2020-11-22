@@ -48,9 +48,10 @@ public class AI extends Player{
 
     public void attack(){
         boolean willAttack;
+        // attempts to attack 3 times every turn
         for (int i =0; i < 3; i++){
             willAttack = false;
-            ArrayList<PossibleAIAttack> allPossibleAttacks = getAllPossibleAIAttacks();
+            ArrayList<PossibleAIAttack> allPossibleAttacks = getAllPossibleAIAttacks(); // gets a list of all possible attacking pairs
 
             if (allPossibleAttacks.size() == 0) {
                 return;
