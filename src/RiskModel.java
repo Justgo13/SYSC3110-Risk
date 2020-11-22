@@ -6,7 +6,7 @@ public class RiskModel {
     private Boolean gameOver;
     private List<RiskView> views;
     private GameState state;
-    private GameState.EndPhase endPhaseState;
+    private EndPhase endPhaseState;
     private Country attackingCountry;
     private Country defendingCountry;
     private Country reinforceCountry;
@@ -339,7 +339,7 @@ public class RiskModel {
      */
     public void placeTroopsClicked() {
         state = GameState.BONUS_PHASE;
-        endPhaseState = GameState.EndPhase.BONUS_PHASE;
+        endPhaseState = EndPhase.BONUS_PHASE;
         for (RiskView v : views) {
             v.handleShowTroopPlacementCountry();
         }
@@ -351,7 +351,7 @@ public class RiskModel {
      */
     public void attackClicked() {
         state = GameState.SHOW_PLAYER_COUNTRIES;
-        endPhaseState = GameState.EndPhase.ATTACK_PHASE;
+        endPhaseState = EndPhase.ATTACK_PHASE;
         for (RiskView v : views) {
             v.handleShowAttackingCountry();
         }
@@ -363,7 +363,7 @@ public class RiskModel {
      */
     public void reinforceClicked() {
         state = GameState.SHOW_REINFORCE_COUNTRIES;
-        endPhaseState = GameState.EndPhase.REINFORCE_PHASE;
+        endPhaseState = EndPhase.REINFORCE_PHASE;
         for (RiskView v : views) {
             v.handleShowReinforceCountry();
         }
@@ -377,17 +377,17 @@ public class RiskModel {
      */
     public void endPhaseClicked(){
         updateEndPhaseState();
-        if (endPhaseState.equals(GameState.EndPhase.ATTACK_PHASE)) {
+        if (endPhaseState.equals(EndPhase.ATTACK_PHASE)) {
             int playerID = board.getPlayers().get(turnIndex).getId();
             for (RiskView v : views) {
                 v.handleEndBonus(playerID);
             }
-        } else if (endPhaseState.equals(GameState.EndPhase.REINFORCE_PHASE)) {
+        } else if (endPhaseState.equals(EndPhase.REINFORCE_PHASE)) {
             int playerID = board.getPlayers().get(turnIndex).getId();
             for (RiskView v : views) {
                 v.handleEndAttack(playerID);
             }
-        } else if (endPhaseState.equals(GameState.EndPhase.END_PHASE)) {
+        } else if (endPhaseState.equals(EndPhase.END_PHASE)) {
             incrementTurnIndex();
             int playerID = board.getPlayers().get(turnIndex).getId();
             endTurn(playerID);
