@@ -691,7 +691,7 @@ public class RiskFrame extends JFrame implements RiskView{
      * @param attackingCountry The country the player is attacking from
      */
     public void getAttackingTroopCount(Country attackingCountry) {
-        String[] options = {"OK"};
+        String[] options = {"OK", "CANCEL"};
         int troopCount = attackingCountry.getArmySize()-1;
         Integer[] troopList = buildTroopDropdownList(troopCount);
         JPanel panel = new JPanel();
@@ -702,18 +702,19 @@ public class RiskFrame extends JFrame implements RiskView{
         panel.add(comboBox);
         int selectionObject = JOptionPane.showOptionDialog(this, panel, "Choose Troops", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         String result;
-        while (selectionObject != 0) {
-            selectionObject = JOptionPane.showOptionDialog(this, panel, "Choose Troops", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        if (selectionObject == 0) {
+            result = comboBox.getSelectedItem().toString();
+            model.setAttackingTroops(Integer.parseInt(result));
+        } else {
+            return;
         }
-        result = comboBox.getSelectedItem().toString();
-        model.setAttackingTroops(Integer.parseInt(result));
     }
 
     public int getBonusTroopCount(int troopCount) {
         String[] options = {"OK"};
         Integer[] troopList = buildTroopDropdownList(troopCount);
         JPanel panel = new JPanel();
-        JLabel label = new JLabel("Select the number of troops to attack with: ");
+        JLabel label = new JLabel("Select the number of troops to move: ");
         JComboBox comboBox = new JComboBox(troopList);
         comboBox.setSelectedIndex(0);
         panel.add(label);
@@ -801,6 +802,14 @@ public class RiskFrame extends JFrame implements RiskView{
 
     }
 
+    public void handleAttackCancelled(Country attackingCountry) {
+        ArrayList<CountryButton> defendingCountries = convertCountryToCountryButtons(attackingCountry.getPossibleAttacks());
+        defendingCountries.forEach(countryButton -> countryButton.setEnabled(false));
+        defendingCountries.forEach(countryButton -> countryButton.setBorder(null));
+        attack.setEnabled(true);
+        endPhase.setEnabled(true);
+    }
+
     /**
      * Enables the attacking players CountryButton so that they may choose a country to attack from
      * @author Jason
@@ -817,6 +826,27 @@ public class RiskFrame extends JFrame implements RiskView{
         }
         attack.setEnabled(false);
         endPhase.setEnabled(false);
+    }
+
+    /**
+     * Highlights all the countries the attacking player can attack from by creating a border around it
+     * @author Jason
+     * @param attackingCountry The attacking country
+     * @return The number of troops that the player chose to use in attacking the country
+     */
+    @Override
+    public void handleShowDefendingCountry(Country attackingCountry) {
+        // converts all countries that the attacking country can attack into their respective country button instance in the view and stores in a list
+        ArrayList<CountryButton> defendingCountries = convertCountryToCountryButtons(attackingCountry.getPossibleAttacks());
+        defendingCountries.forEach(countryButton -> countryButton.setEnabled(true)); // enable all possible countries to attack
+        defendingCountries.forEach(countryButton -> countryButton.setBorder(BorderFactory.createLineBorder(Color.yellow, 3)));
+        // disables all attacking countries from being pressed
+        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getAttackingPlayer().getCountriesOwned());
+        countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
+        countryButtons.forEach(countryButton -> countryButton.setBorder(null));
+
+        // asks for number of troops to attack with
+        getAttackingTroopCount(attackingCountry); // number of troops to attack with
     }
 
     /**
@@ -902,6 +932,18 @@ public class RiskFrame extends JFrame implements RiskView{
         JOptionPane.showMessageDialog(this, "Player" + playerID + "was eliminated, sorry to see you go :(" );
     }
 
+    public void handleReinforceCancelled(Country reinforceCountry) {
+        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getReinforceCountries());
+        countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
+        countryButtons.forEach(countryButton -> countryButton.setBorder(null));
+
+        ArrayList<CountryButton> reinforceCountries = convertCountryToCountryButtons(model.getConnectedCountries(reinforceCountry));
+        reinforceCountries.forEach(countryButton -> countryButton.setEnabled(false));
+        reinforceCountries.forEach(countryButton -> countryButton.setBorder(null));
+        reinforce.setEnabled(true);
+        endPhase.setEnabled(true);
+    }
+
     @Override
     public void handleShowReinforceCountry() {
         ArrayList<CountryButton> reinforceCountries = convertCountryToCountryButtons(model.getReinforceCountries());
@@ -938,27 +980,6 @@ public class RiskFrame extends JFrame implements RiskView{
         getAttackingTroopCount(reinforceCountry); // number of troops to reinforce with
     }
 
-    /**
-     * Highlights all the countries the attacking player can attack from by creating a border around it
-     * @author Jason
-     * @param attackingCountry The attacking country
-     * @return The number of troops that the player chose to use in attacking the country
-     */
-    @Override
-    public void handleShowDefendingCountry(Country attackingCountry) {
-        // converts all countries that the attacking country can attack into their respective country button instance in the view and stores in a list
-        ArrayList<CountryButton> defendingCountries = convertCountryToCountryButtons(attackingCountry.getPossibleAttacks());
-        defendingCountries.forEach(countryButton -> countryButton.setEnabled(true)); // enable all possible countries to attack
-        defendingCountries.forEach(countryButton -> countryButton.setBorder(BorderFactory.createLineBorder(Color.yellow, 3)));
-        // disables all attacking countries from being pressed
-        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getAttackingPlayer().getCountriesOwned());
-        countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
-        countryButtons.forEach(countryButton -> countryButton.setBorder(null));
-
-        // asks for number of troops to attack with
-        getAttackingTroopCount(attackingCountry); // number of troops to attack with
-    }
-
     @Override
     public void handleReinforce(Country reinforceCountry) {
         // disable all countries that reinforce country can reinforce
@@ -992,7 +1013,7 @@ public class RiskFrame extends JFrame implements RiskView{
         textArea.setText("");
         textArea.append("It is Player "+playerID+"'s attack phase\n");
         attack.setEnabled(true);
-        endPhase.setEnabled(false);
+        endPhase.setEnabled(true);
         reinforce.setEnabled(false);
     }
 
@@ -1000,7 +1021,7 @@ public class RiskFrame extends JFrame implements RiskView{
         textArea.setText("");
         textArea.append("It is Player "+playerID+"'s reinforce phase\n");
         attack.setEnabled(false);
-        endPhase.setEnabled(false);
+        endPhase.setEnabled(true);
         reinforce.setEnabled(true);
     }
 

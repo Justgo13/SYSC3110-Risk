@@ -238,11 +238,19 @@ public class RiskModel {
 
     public void countryClicked(Country country) {
         if (state.equals(GameState.SHOW_DEFENDING_COUNTRIES)) {
+            attackingTroops = 0;
             attackingCountry = country;
             for (RiskView v : views) {
                 v.handleShowDefendingCountry(country);
             }
-            updateNextState();
+            if (attackingTroops == 0) {
+                for (RiskView v : views) {
+                    v.handleAttackCancelled(country);
+                }
+                updatePrevState();
+            } else {
+                updateNextState();
+            }
         } else if (state.equals(GameState.COMMENCE_ATTACK)) {
             defendingCountry = country;
             attack(attackingCountry, defendingCountry, attackingTroops);
@@ -250,11 +258,19 @@ public class RiskModel {
                 v.handleCountryAttack(attackingCountry);
             }
         } else if (state.equals(GameState.CHOOSE_REINFORCE)) {
+            attackingTroops = 0;
             reinforceCountry = country;
             for (RiskView v : views) {
                 v.handleShowReinforceAdjacents(country);
             }
-            updateNextState();
+            if (attackingTroops == 0) {
+                for (RiskView v : views) {
+                    v.handleReinforceCancelled(country);
+                }
+                updatePrevState();
+            } else {
+                updateNextState();
+            }
         } else if (state.equals(GameState.COMMENCE_REINFORCE)) {
             countryToReinforce = country;
             reinforce(reinforceCountry, countryToReinforce, attackingTroops);
@@ -492,6 +508,10 @@ public class RiskModel {
 
     public void updateNextState() {
         state = state.next();
+    }
+
+    public void updatePrevState() {
+        state = state.prev();
     }
 
     public void updateEndPhaseState() {

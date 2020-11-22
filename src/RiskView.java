@@ -19,4 +19,6 @@ public interface RiskView {
     void troopBonusComplete();
     void handleEndBonus(int playerID);
     void handlePlayerEliminated(int playerID);
+    void handleAttackCancelled(Country country);
+    void handleReinforceCancelled(Country country);
 }
