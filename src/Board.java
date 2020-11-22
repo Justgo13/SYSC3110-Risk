@@ -65,15 +65,16 @@ public class Board {
     * @author Shashaank
     *
     */
-    public boolean checkEliminated(){
+    public int checkEliminated(){
         for (Player player : players){
             if (player.getCountriesOwned().isEmpty()){
-                System.out.println("Player" + player.getId() + "was eliminated, sorry to see you go :(" );
-                return players.remove(player);
+                int playerID = player.getId();
+                players.remove(player);
+                return playerID;
                 //only 1 player can be removed for every call of attack()
             }
         }
-        return false;
+        return -1;
     }
 
     /**

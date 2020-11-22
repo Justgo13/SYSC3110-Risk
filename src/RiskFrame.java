@@ -691,7 +691,7 @@ public class RiskFrame extends JFrame implements RiskView{
      * @param attackingCountry The country the player is attacking from
      */
     public void getAttackingTroopCount(Country attackingCountry) {
-        String[] options = {"OK"};
+        String[] options = {"OK", "CANCEL"};
         int troopCount = attackingCountry.getArmySize()-1;
         Integer[] troopList = buildTroopDropdownList(troopCount);
         JPanel panel = new JPanel();
@@ -702,18 +702,19 @@ public class RiskFrame extends JFrame implements RiskView{
         panel.add(comboBox);
         int selectionObject = JOptionPane.showOptionDialog(this, panel, "Choose Troops", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         String result;
-        while (selectionObject != 0) {
-            selectionObject = JOptionPane.showOptionDialog(this, panel, "Choose Troops", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        if (selectionObject == 0) {
+            result = comboBox.getSelectedItem().toString();
+            model.setAttackingTroops(Integer.parseInt(result));
+        } else {
+            return;
         }
-        result = comboBox.getSelectedItem().toString();
-        model.setAttackingTroops(Integer.parseInt(result));
     }
 
     public int getBonusTroopCount(int troopCount) {
         String[] options = {"OK"};
         Integer[] troopList = buildTroopDropdownList(troopCount);
         JPanel panel = new JPanel();
-        JLabel label = new JLabel("Select the number of troops to attack with: ");
+        JLabel label = new JLabel("Select the number of troops to move: ");
         JComboBox comboBox = new JComboBox(troopList);
         comboBox.setSelectedIndex(0);
         panel.add(label);
@@ -756,6 +757,59 @@ public class RiskFrame extends JFrame implements RiskView{
 
     }
 
+    @Override
+    public void handleShowTroopPlacementCountry() {
+        // get all the Country Buttons that the current player owns
+
+        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getAttackingPlayer().getCountriesOwned());
+        countryButtons.forEach(cb -> cb.setEnabled(true));
+        countryButtons.forEach(cb -> cb.setBorder(BorderFactory.createLineBorder(Color.YELLOW, 3)));
+
+        placeTroops.setEnabled(false);
+        attack.setEnabled(false);
+        endPhase.setEnabled(false);
+        reinforce.setEnabled(false);
+    }
+
+    @Override
+    public void handleTroopPlaced(BonusTroopEvent bte) {
+        int turnIndex = bte.getModel().getTurnIndex();
+        Player player = bte.getModel().getBoard().getPlayers().get(turnIndex);
+        int selectedTroops;
+        if (player instanceof HumanPlayer) {
+            selectedTroops = getBonusTroopCount(bte.getRemainingTroops());
+            textArea.append(selectedTroops + " Troops were placed in " + bte.getBonusCountry().getName() + "\n");
+        } else {
+            selectedTroops = bte.getRemainingTroops();
+            textArea.setText("");
+        }
+        bte.getBonusCountry().setArmySize(bte.getBonusCountry().getArmySize() + selectedTroops);
+        countryButtons.get(bte.getBonusCountry().getName()).update();
+        placeTroops.setEnabled(true);
+
+        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getAttackingPlayer().getCountriesOwned());
+        countryButtons.forEach(cb -> cb.setEnabled(false));
+        countryButtons.forEach(cb -> cb.setBorder(null));
+    }
+
+    @Override
+    public void troopBonusComplete() {
+        textArea.append("All troops have been allocated move to the next phase");
+        placeTroops.setEnabled(false);
+        attack.setEnabled(false);
+        endPhase.setEnabled(true);
+        reinforce.setEnabled(false);
+
+    }
+
+    public void handleAttackCancelled(Country attackingCountry) {
+        ArrayList<CountryButton> defendingCountries = convertCountryToCountryButtons(attackingCountry.getPossibleAttacks());
+        defendingCountries.forEach(countryButton -> countryButton.setEnabled(false));
+        defendingCountries.forEach(countryButton -> countryButton.setBorder(null));
+        attack.setEnabled(true);
+        endPhase.setEnabled(true);
+    }
+
     /**
      * Enables the attacking players CountryButton so that they may choose a country to attack from
      * @author Jason
@@ -767,10 +821,32 @@ public class RiskFrame extends JFrame implements RiskView{
         for (CountryButton cb : countryButtons){
             if (cb.getCountry().getPossibleAttacks().size() != 0 && cb.getCountry().getArmySize() >= 2) {
                 cb.setEnabled(true);
+                cb.setBorder(BorderFactory.createLineBorder(Color.YELLOW, 3));
             }
         }
         attack.setEnabled(false);
         endPhase.setEnabled(false);
+    }
+
+    /**
+     * Highlights all the countries the attacking player can attack from by creating a border around it
+     * @author Jason
+     * @param attackingCountry The attacking country
+     * @return The number of troops that the player chose to use in attacking the country
+     */
+    @Override
+    public void handleShowDefendingCountry(Country attackingCountry) {
+        // converts all countries that the attacking country can attack into their respective country button instance in the view and stores in a list
+        ArrayList<CountryButton> defendingCountries = convertCountryToCountryButtons(attackingCountry.getPossibleAttacks());
+        defendingCountries.forEach(countryButton -> countryButton.setEnabled(true)); // enable all possible countries to attack
+        defendingCountries.forEach(countryButton -> countryButton.setBorder(BorderFactory.createLineBorder(Color.yellow, 3)));
+        // disables all attacking countries from being pressed
+        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getAttackingPlayer().getCountriesOwned());
+        countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
+        countryButtons.forEach(countryButton -> countryButton.setBorder(null));
+
+        // asks for number of troops to attack with
+        getAttackingTroopCount(attackingCountry); // number of troops to attack with
     }
 
     /**
@@ -786,6 +862,86 @@ public class RiskFrame extends JFrame implements RiskView{
         countryButtons.forEach(countryButton -> countryButton.setBorder(null));
         endPhase.setEnabled(true);
         attack.setEnabled(true);
+    }
+
+    /**
+     * Handles an AttackEvent by telling the respective countries to update their visuals which include
+     * color and button text
+     * @author Albara'a
+     * @param ae The AttackEvent which contains information about a completed attack
+     */
+    public void handleAttackEvent(AttackEvent ae){
+        Country attackingCountry = ae.getAttackingCountry();
+        Country defendingCountry = ae.getDefendingCountry();
+
+
+        for (JButton j : countryButtons.values()){
+            if (j.getName().equals(attackingCountry.getName())){
+                countryButtons.get(attackingCountry.getName()).update();
+            }
+            else if(j.getName().equals(defendingCountry.getName())){
+                countryButtons.get(defendingCountry.getName()).update();
+            }
+        }
+
+
+    }
+
+    /**
+     * Handles a BattleResultEvent by printing the information to the text area console
+     * @author Albara'a
+     * @param bre The BattleResultEvent containing information about the battle results
+     */
+    public void handleResultEvent(BattleResultEvent bre) {
+        textArea.append("Here is the results of the battle: \n" +
+                "Your country troops remaining: " + bre.getAttackingArmySize() +"\n"+
+                "Defending country troops remaining: " + bre.getDefendingArmySize() +"\n\n");
+        if (bre.getPlayer() instanceof AI) {
+            JOptionPane.showMessageDialog(null, textArea.getText());
+        }
+    }
+
+    /**
+     * Handles a CountryLostEvent by printing whether or not the player conquered the defending
+     * country or not.
+     * @author Albara'a
+     * @param cle The CountryLostEvent that contains information about a country being taken
+     */
+    public void handleDefendingCountryLost(CountryLostEvent cle) {
+        if(cle.getDefendingCountry().getArmySize() == 0){
+            textArea.append("Player " + cle.getAttackingPlayerIndex() + ", you have taken " + cle.getDefendingCountry().getName()
+                    + " from Player " + cle.getDefendingCountry().getPlayer().getId()+"\n");
+        }else{
+            textArea.append("You attacked from " + cle.getAttackingCountry().getName() + " and failed to conquer "+ cle.getDefendingCountry().getName()+"\n");
+        }
+    }
+
+    /**
+     * Handles the game over event and creates a OptionPane for the player to see who won
+     * @param playerID ID of the player who won
+     */
+    public void handleGameOver(int playerID) {
+        JOptionPane.showMessageDialog(this, "Congratulations Player " + playerID + " you won Risk!");
+    }
+
+    /**
+     * Handles the player eliminated event and creates a OptionPane to let user know who got eliminated
+     * @param playerID The player ID of the player who was eliminated
+     */
+    public void handlePlayerEliminated(int playerID) {
+        JOptionPane.showMessageDialog(this, "Player" + playerID + "was eliminated, sorry to see you go :(" );
+    }
+
+    public void handleReinforceCancelled(Country reinforceCountry) {
+        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getReinforceCountries());
+        countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
+        countryButtons.forEach(countryButton -> countryButton.setBorder(null));
+
+        ArrayList<CountryButton> reinforceCountries = convertCountryToCountryButtons(model.getConnectedCountries(reinforceCountry));
+        reinforceCountries.forEach(countryButton -> countryButton.setEnabled(false));
+        reinforceCountries.forEach(countryButton -> countryButton.setBorder(null));
+        reinforce.setEnabled(true);
+        endPhase.setEnabled(true);
     }
 
     @Override
@@ -835,43 +991,6 @@ public class RiskFrame extends JFrame implements RiskView{
         reinforce.setEnabled(true);
     }
 
-    /**
-     * Handles an AttackEvent by telling the respective countries to update their visuals which include
-     * color and button text
-     * @author Albara'a
-     * @param ae The AttackEvent which contains information about a completed attack
-     */
-    public void handleAttackEvent(AttackEvent ae){
-        Country attackingCountry = ae.getAttackingCountry();
-        Country defendingCountry = ae.getDefendingCountry();
-
-
-        for (JButton j : countryButtons.values()){
-            if (j.getName().equals(attackingCountry.getName())){
-                countryButtons.get(attackingCountry.getName()).update();
-            }
-            else if(j.getName().equals(defendingCountry.getName())){
-                countryButtons.get(defendingCountry.getName()).update();
-            }
-        }
-
-
-    }
-
-    /**
-     * Handles a BattleResultEvent by printing the information to the text area console
-     * @author Albara'a
-     * @param bre The BattleResultEvent containing information about the battle results
-     */
-    public void handleResultEvent(BattleResultEvent bre) {
-        textArea.append("Here is the results of the battle: \n" +
-                "Your country troops remaining: " + bre.getAttackingArmySize() +"\n"+
-                "Defending country troops remaining: " + bre.getDefendingArmySize() +"\n\n");
-        if (bre.getPlayer() instanceof AI) {
-            JOptionPane.showMessageDialog(null, textArea.getText());
-        }
-    }
-
     public void handleReinforceResultEvent(ReinforceResultEvent rre) {
         textArea.append(rre.getReinforceCountry().getName() + " has moved " + rre.getReinforceArmy() + " troops to " + rre.getCountryToReinforce().getName() + "\n");
     }
@@ -888,6 +1007,22 @@ public class RiskFrame extends JFrame implements RiskView{
                 countryButtons.get(countryToReinforce.getName()).update();
             }
         }
+    }
+
+    public void handleEndBonus(int playerID) {
+        textArea.setText("");
+        textArea.append("It is Player "+playerID+"'s attack phase\n");
+        attack.setEnabled(true);
+        endPhase.setEnabled(true);
+        reinforce.setEnabled(false);
+    }
+
+    public void handleEndAttack(int playerID) {
+        textArea.setText("");
+        textArea.append("It is Player "+playerID+"'s reinforce phase\n");
+        attack.setEnabled(false);
+        endPhase.setEnabled(true);
+        reinforce.setEnabled(true);
     }
 
     /**
@@ -911,65 +1046,6 @@ public class RiskFrame extends JFrame implements RiskView{
             AI ai = (AI) player;
             ai.playTurn();
         }
-    }
-
-    public void handleEndAttack(int playerID) {
-        textArea.setText("");
-        textArea.append("It is Player "+playerID+"'s reinforce phase\n");
-        attack.setEnabled(false);
-        endPhase.setEnabled(false);
-        reinforce.setEnabled(true);
-    }
-
-    public void handleEndBonus(int playerID) {
-        textArea.setText("");
-        textArea.append("It is Player "+playerID+"'s attack phase\n");
-        attack.setEnabled(true);
-        endPhase.setEnabled(false);
-        reinforce.setEnabled(false);
-    }
-
-    @Override
-    public void handleShowTroopPlacementCountry() {
-        // get all the Country Buttons that the current player owns
-
-        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getAttackingPlayer().getCountriesOwned());
-        countryButtons.forEach(cb -> cb.setEnabled(true));
-
-
-        placeTroops.setEnabled(false);
-        attack.setEnabled(false);
-        endPhase.setEnabled(false);
-        reinforce.setEnabled(false);
-    }
-
-    @Override
-    public void handleTroopPlaced(BonusTroopEvent bte) {
-        int turnIndex = bte.getModel().getTurnIndex();
-        Player player = bte.getModel().getBoard().getPlayers().get(turnIndex);
-        int selectedTroops;
-        if (player instanceof HumanPlayer) {
-            selectedTroops = getBonusTroopCount(bte.getRemainingTroops());
-            textArea.append(selectedTroops + " Troops were placed in " + bte.getBonusCountry().getName() + "\n");
-        } else {
-            selectedTroops = bte.getRemainingTroops();
-            textArea.setText("");
-        }
-        bte.getBonusCountry().setArmySize(bte.getBonusCountry().getArmySize() + selectedTroops);
-        countryButtons.get(bte.getBonusCountry().getName()).update();
-        placeTroops.setEnabled(true);
-
-        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getAttackingPlayer().getCountriesOwned());
-        countryButtons.forEach(cb -> cb.setEnabled(false));
-    }
-
-    @Override
-    public void troopBonusComplete() {
-        placeTroops.setEnabled(false);
-        attack.setEnabled(false);
-        endPhase.setEnabled(true);
-        reinforce.setEnabled(false);
-
     }
 
     /**
@@ -1018,50 +1094,6 @@ public class RiskFrame extends JFrame implements RiskView{
                 "Defender rolled: " + defendNums+"\n");
 
 
-    }
-
-    /**
-     * Handles a CountryLostEvent by printing whether or not the player conquered the defending
-     * country or not.
-     * @author Albara'a
-     * @param cle The CountryLostEvent that contains information about a country being taken
-     */
-    public void handleDefendingCountryLost(CountryLostEvent cle) {
-        if(cle.getDefendingCountry().getArmySize() == 0){
-            textArea.append("Player " + cle.getAttackingPlayerIndex() + ", you have taken " + cle.getDefendingCountry().getName()
-                    + " from Player " + cle.getDefendingCountry().getPlayer().getId()+"\n");
-        }else{
-            textArea.append("You attacked from " + cle.getAttackingCountry().getName() + " and failed to conquer "+ cle.getDefendingCountry().getName()+"\n");
-        }
-    }
-
-    /**
-     * Handles the game over event and creates a OptionPane for the player to see who won
-     * @param playerID ID of the player who won
-     */
-    public void handleGameOver(int playerID) {
-        JOptionPane.showMessageDialog(this, "Congratulations Player " + playerID + " you won Risk!");
-    }
-
-    /**
-     * Highlights all the countries the attacking player can attack from by creating a border around it
-     * @author Jason
-     * @param attackingCountry The attacking country
-     * @return The number of troops that the player chose to use in attacking the country
-     */
-    @Override
-    public void handleShowDefendingCountry(Country attackingCountry) {
-        // converts all countries that the attacking country can attack into their respective country button instance in the view and stores in a list
-        ArrayList<CountryButton> defendingCountries = convertCountryToCountryButtons(attackingCountry.getPossibleAttacks());
-        defendingCountries.forEach(countryButton -> countryButton.setEnabled(true)); // enable all possible countries to attack
-        defendingCountries.forEach(countryButton -> countryButton.setBorder(BorderFactory.createLineBorder(Color.yellow, 3)));
-        // disables all attacking countries from being pressed
-        ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getAttackingPlayer().getCountriesOwned());
-        countryButtons.forEach(countryButton -> countryButton.setEnabled(false));
-        countryButtons.forEach(countryButton -> countryButton.setBorder(null));
-
-        // asks for number of troops to attack with
-        getAttackingTroopCount(attackingCountry); // number of troops to attack with
     }
 
     public HashMap<String, CountryButton> getCountryButtons(){

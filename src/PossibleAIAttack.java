@@ -4,13 +4,6 @@ public class PossibleAIAttack {
     private double probability;
     private int relativeScoreIncrease;
 
-    public PossibleAIAttack(double probability, Country attackingCountry, Country defendingCountry){
-        this.probability = probability;
-        this.attackingCountry = attackingCountry;
-        this.defendingCountry= defendingCountry;
-        this.relativeScoreIncrease = 0;
-    }
-
     public PossibleAIAttack(Country attackingCountry, Country defendingCountry){
         this.attackingCountry=attackingCountry;
         this.defendingCountry=defendingCountry;

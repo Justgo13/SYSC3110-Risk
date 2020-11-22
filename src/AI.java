@@ -1,13 +1,7 @@
-
-
-
-
-import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class AI extends Player{
     private RiskModel model;
@@ -51,17 +45,6 @@ public class AI extends Player{
         }
 
     }
-
-    public void printProbabilities(){
-        for (int i = 0; i < probabilities.length; i++) { //this equals to the row in our matrix.
-            for (int j = 0; j < probabilities[i].length; j++) { //this equals to the column in each row.
-                System.out.print(probabilities[i][j] + " ");
-            }
-            System.out.println();
-        }
-    }
-
-
 
     public void attack(){
         boolean willAttack;
@@ -123,7 +106,7 @@ public class AI extends Player{
                 double probabilityOfWinningAttack = probabilities[attackArmy - 2][defendingArmy - 1] / 100;
                 attack.setProbability(probabilityOfWinningAttack);
 
-                ArrayList<Country> countriesOwned = this.getCountriesOwned();
+                ArrayList<Country> countriesOwned = this.copyofCountriesOwned();
                 countriesOwned.add(defendingCountry);
 
                 int score = evaluateGameState(countriesOwned);
@@ -269,16 +252,4 @@ public class AI extends Player{
         }
         return countriesTouchingEnemies;
     }
-
-
-
-//    public static void main(String[] args) {
-//        RiskModel model = new RiskModel();
-//        Board board = new Board();
-//        HumanPlayer humanPlayer = new HumanPlayer("hi",0,1);
-//        AI ai = new AI(model, humanPlayer,board);
-//        ai.printProbabilities();
-//        System.out.println();
-//        System.out.println(ai.probabilities[4-1][2-1]);
-//    }
 }
