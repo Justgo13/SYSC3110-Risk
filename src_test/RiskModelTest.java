@@ -6,7 +6,6 @@ import java.util.*;
 
 import static org.junit.Assert.*;
 
-// TODO Change Arrays.asList to something else
 public class RiskModelTest {
     RiskMockModel rm;
 
