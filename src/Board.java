@@ -27,7 +27,7 @@ public class Board {
         continentCountries = new ArrayList<>();
         countryNames = new ArrayList<>();
 
-        // TODO remove this Arrays.asList for a enum
+        // TODO remove this Arrays.asList for a HashMap <Continent name, int bonus troop>
         continentBonusArmies = new ArrayList<>(Arrays.asList(5,2,5,3,7,2));
 
         continentNames = new ArrayList<>();
