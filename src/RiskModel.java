@@ -15,6 +15,11 @@ public class RiskModel {
     private int attackingTroops;
     private int bonusTroopsPlaced;
     private List<AI> aiPlayers;
+    private static final int ONE_ARMY = 1;
+    private static final int TWO_ARMIES = 2;
+    private static final int THREE_ATTACKERS = 3;
+    private static final int INVALID_PLAYERID = 0;
+    private static final int INITIAL_TROOP_BONUS = 3;
     /**
      * Creates an instance of the Risk game
      */
@@ -110,10 +115,10 @@ public class RiskModel {
         Random random = new Random();
         ArrayList<Integer> defenderDice = new ArrayList<>();
         // TODO Make defendingArmySize checks into a constant
-        if (defendingArmySize >= 2) {
+        if (defendingArmySize >= TWO_ARMIES) {
             defenderDice.add(random.nextInt(6)+1);
             defenderDice.add(random.nextInt(6)+1);
-        } else if (defendingArmySize == 1) {
+        } else if (defendingArmySize == ONE_ARMY) {
             defenderDice.add(random.nextInt(6)+1);
         }
 
@@ -131,7 +136,7 @@ public class RiskModel {
         ArrayList<Integer> attackerDice = new ArrayList<>();
         // If number of attackers exceeds 3, set it to 3
         // TODO Make numOfAttacker checks into a constant
-        if (numOfAttackers > 3){
+        if (numOfAttackers > THREE_ATTACKERS){
             numOfAttackers = 3;
         }
 
@@ -194,7 +199,7 @@ public class RiskModel {
             attackingCountry.setArmySize(attackersStayed); // removes attackers from original country
             int playerID = board.checkEliminated();
             // TODO Make a constant for invalid player id 0
-            if (playerID > 0) {
+            if (playerID > INVALID_PLAYERID) {
                 updatePlayerEliminated(playerID);
             }
         }
@@ -421,7 +426,7 @@ public class RiskModel {
      * @return int number of bonus troops
      */
     public int bonusTroopCalculation(Player player){
-        int troops = 3; // TODO turn into constant
+        int troops = INITIAL_TROOP_BONUS; // TODO turn into constant
         troops += player.getCountriesOwned().size() / 3;
 
         for(Continent c: board.getContinents().values()){
