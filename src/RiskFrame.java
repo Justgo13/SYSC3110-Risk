@@ -11,6 +11,9 @@ import java.util.HashMap;
  * @author Jason
  */
 public class RiskFrame extends JFrame implements RiskView{
+    private static final int MIN_PLAYERS = 1;
+    private static final int MAX_PLAYERS = 6;
+    private static final int THICKNESS = 3;
     private RiskModel model;
     private HashMap<String, CountryButton> countryButtons;
     private HashMap<String, Country> countries;
@@ -659,7 +662,7 @@ public class RiskFrame extends JFrame implements RiskView{
         aiResult = aiComboBox.getSelectedItem().toString();
         int totalPlayer = Integer.parseInt(result) + Integer.parseInt(aiResult);
         // TODO make max and min players a constant
-        while (totalPlayer > 6 || totalPlayer == 1) {
+        while (totalPlayer > MAX_PLAYERS || totalPlayer == MIN_PLAYERS) {
             JOptionPane.showOptionDialog(null, panel, PlayGame.TITLE.toString(), JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE,
                     null, PlayGame.OK_CANCEL_OPTION.getArray(), PlayGame.OK_CANCEL_OPTION.getArray()[0]);
             totalPlayer = Integer.parseInt(playerComboBox.getSelectedItem().toString()) + Integer.parseInt(aiComboBox.getSelectedItem().toString());
@@ -775,7 +778,7 @@ public class RiskFrame extends JFrame implements RiskView{
         // TODO Make line thickness constant
         ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getAttackingPlayer().getCountriesOwned());
         countryButtons.forEach(cb -> cb.setEnabled(true));
-        countryButtons.forEach(cb -> cb.setBorder(BorderFactory.createLineBorder(Color.YELLOW, 3)));
+        countryButtons.forEach(cb -> cb.setBorder(BorderFactory.createLineBorder(Color.YELLOW, THICKNESS)));
 
         placeTroops.setEnabled(false);
         attack.setEnabled(false);

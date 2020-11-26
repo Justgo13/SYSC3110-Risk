@@ -13,7 +13,7 @@ public class Board {
 
 
     private  ArrayList<ArrayList<String>> continentCountries;
-    private  ArrayList<Integer> continentBonusArmies;
+    private  HashMap<String,Integer> continentBonusArmies;
 
     /**
     * @author Jason, Harjap, Shashaank
@@ -28,7 +28,8 @@ public class Board {
         countryNames = new ArrayList<>();
 
         // TODO remove this Arrays.asList for a HashMap <Continent name, int bonus troop>
-        continentBonusArmies = new ArrayList<>(Arrays.asList(5,2,5,3,7,2));
+        continentBonusArmies = new HashMap<>();
+        initializeContinentBonusArmies();
 
         continentNames = new ArrayList<>();
         //added buildMap so that countries map will be populated when used (testing for countrybutton)
@@ -116,7 +117,7 @@ public class Board {
             countries.put(countryName, new Country(countryName));
         }
         for (int i = 0; i<continentNames.size(); i++) {
-            continents.put(continentNames.get(i), new Continent(continentNames.get(i), continentBonusArmies.get(i))); // creates continents objects
+            continents.put(continentNames.get(i), new Continent(continentNames.get(i), continentBonusArmies.get(continentNames.get(i)))); // creates continents objects
 
             //gets all continents and populates them with their specific countries
             //also gives every country the continent it belongs in
@@ -274,6 +275,15 @@ public class Board {
         }
 
 
+    }
+
+    public void initializeContinentBonusArmies(){
+        continentBonusArmies.put("Asia", 7);
+        continentBonusArmies.put("Australia", 2);
+        continentBonusArmies.put("North America", 5);
+        continentBonusArmies.put("Africa", 3);
+        continentBonusArmies.put("South America", 2);
+        continentBonusArmies.put("Europe", 5);
     }
 
     /**
