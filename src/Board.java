@@ -27,7 +27,6 @@ public class Board {
         continentCountries = new ArrayList<>();
         countryNames = new ArrayList<>();
 
-        // TODO remove this Arrays.asList for a HashMap <Continent name, int bonus troop>
         continentBonusArmies = new HashMap<>();
         initializeContinentBonusArmies();
 

@@ -661,7 +661,6 @@ public class RiskFrame extends JFrame implements RiskView{
         result = playerComboBox.getSelectedItem().toString();
         aiResult = aiComboBox.getSelectedItem().toString();
         int totalPlayer = Integer.parseInt(result) + Integer.parseInt(aiResult);
-        // TODO make max and min players a constant
         while (totalPlayer > MAX_PLAYERS || totalPlayer == MIN_PLAYERS) {
             JOptionPane.showOptionDialog(null, panel, PlayGame.TITLE.toString(), JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE,
                     null, PlayGame.OK_CANCEL_OPTION.getArray(), PlayGame.OK_CANCEL_OPTION.getArray()[0]);
@@ -775,7 +774,6 @@ public class RiskFrame extends JFrame implements RiskView{
     @Override
     public void handleShowTroopPlacementCountry() {
         // get all the Country Buttons that the current player owns
-        // TODO Make line thickness constant
         ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getAttackingPlayer().getCountriesOwned());
         countryButtons.forEach(cb -> cb.setEnabled(true));
         countryButtons.forEach(cb -> cb.setBorder(BorderFactory.createLineBorder(Color.YELLOW, THICKNESS)));

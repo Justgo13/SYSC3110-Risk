@@ -114,7 +114,6 @@ public class RiskModel {
     protected ArrayList<Integer> defendingDiceInitialization(int defendingArmySize){
         Random random = new Random();
         ArrayList<Integer> defenderDice = new ArrayList<>();
-        // TODO Make defendingArmySize checks into a constant
         if (defendingArmySize >= TWO_ARMIES) {
             defenderDice.add(random.nextInt(6)+1);
             defenderDice.add(random.nextInt(6)+1);
@@ -135,7 +134,6 @@ public class RiskModel {
         Random random = new Random();
         ArrayList<Integer> attackerDice = new ArrayList<>();
         // If number of attackers exceeds 3, set it to 3
-        // TODO Make numOfAttacker checks into a constant
         if (numOfAttackers > THREE_ATTACKERS){
             numOfAttackers = 3;
         }
@@ -198,7 +196,6 @@ public class RiskModel {
             defendingCountry.setArmySize(numOfAttackers); // moves remaining attackers to conquered country
             attackingCountry.setArmySize(attackersStayed); // removes attackers from original country
             int playerID = board.checkEliminated();
-            // TODO Make a constant for invalid player id 0
             if (playerID > INVALID_PLAYERID) {
                 updatePlayerEliminated(playerID);
             }
@@ -426,7 +423,7 @@ public class RiskModel {
      * @return int number of bonus troops
      */
     public int bonusTroopCalculation(Player player){
-        int troops = INITIAL_TROOP_BONUS; // TODO turn into constant
+        int troops = INITIAL_TROOP_BONUS;
         troops += player.getCountriesOwned().size() / 3;
 
         for(Continent c: board.getContinents().values()){

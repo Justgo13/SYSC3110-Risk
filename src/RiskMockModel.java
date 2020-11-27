@@ -7,8 +7,6 @@ public class RiskMockModel extends RiskModel {
         super();
     }
 
-
-    // TODO Change Arrays.asList to something else
     @Override
     protected ArrayList<Integer> defendingDiceInitialization(int defendingArmySize) {
         if (defendingArmySize >= 2) {
