@@ -14,7 +14,8 @@ public class RiskModel {
     private Country bonusCountry;
     private int attackingTroops;
     private int bonusTroopsPlaced;
-    private List<AI> aiPlayers;
+    private List<AI> aiPlayers; // TODO remove this list and all dependicies in this class
+    // TODO add a List of Player objects that hold both AI and Human players
     private static final int ONE_ARMY = 1;
     private static final int TWO_ARMIES = 2;
     private static final int THREE_ATTACKERS = 3;
@@ -46,9 +47,12 @@ public class RiskModel {
      * @author Jason
      */
     public void playGame(int numPlayers, int aiPlayers) {
+        // TODO Add HumanPlayer and AI instance to players list based on parameter numPlayer and aiPlayer
+        // TODO Make sure that you add Human player then AI player
         for (int i = 0; i < aiPlayers; i++) {
             this.aiPlayers.add(new AI(this, board, 0,0));
         }
+        // TODO Pass players list to setup board and numPlayers which is the number of Human players
         board.setupBoard(numPlayers, this.aiPlayers);
     }
 
@@ -397,6 +401,7 @@ public class RiskModel {
             int playerID = board.getPlayers().get(turnIndex).getId();
             endTurn(playerID);
             // If a human player just ended their turn
+            // TODO remove this part as it is never reached
             Player player = board.getPlayers().get(turnIndex);
             if (board.getPlayers().get(turnIndex) instanceof AI) {
                 AI ai = (AI) player;

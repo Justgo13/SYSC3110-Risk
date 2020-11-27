@@ -86,6 +86,8 @@ public class Board {
      * @param aiPlayers
      */
     public void setupBoard(int numPlayers, List<AI> aiPlayers){
+        // TODO add players from player list parameter to board's player list
+        // TODO Update variables in here as necessary
         setNumOfPlayers(numPlayers+aiPlayers.size());
         int totalPlayers = numPlayers + aiPlayers.size();
         for (int i = 0; i < numPlayers; i++) {
