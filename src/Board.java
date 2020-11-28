@@ -83,21 +83,17 @@ public class Board {
      *
      * @author Harjap Gill
      * @param numPlayers number of players in the game
-     * @param aiPlayers
+     * @param players
      */
-    public void setupBoard(int numPlayers, List<AI> aiPlayers){
-        // TODO add players from player list parameter to board's player list
-        // TODO Update variables in here as necessary
-        setNumOfPlayers(numPlayers+aiPlayers.size());
-        int totalPlayers = numPlayers + aiPlayers.size();
+    public void setupBoard(int numPlayers, List<Player> players){
+        setNumOfPlayers(players.size());
+        int totalPlayers = players.size();
         for (int i = 0; i < numPlayers; i++) {
-            addPlayer(new HumanPlayer(armySize[totalPlayers-2], i+1)); // creates players for the game
+            addPlayer(players.get(i)); // creates players for the game
         }
         randomizePlayers(); // randomizes player order
         for (int i = numPlayers; i < totalPlayers; i++) {
-            aiPlayers.get(i-numPlayers).setInitArmySize(armySize[totalPlayers-2]);
-            aiPlayers.get(i-numPlayers).setId(i+1);
-            addPlayer(aiPlayers.get(i-numPlayers));
+            addPlayer(players.get(i));
         }
         buildContinentNames();
         buildCountryNames();

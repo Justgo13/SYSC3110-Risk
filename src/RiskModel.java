@@ -12,10 +12,20 @@ public class RiskModel {
     private Country reinforceCountry;
     private Country countryToReinforce;
     private Country bonusCountry;
-    private int attackingTroops;
-    private int bonusTroopsPlaced;
-    private List<AI> aiPlayers; // TODO remove this list and all dependicies in this class
-    // TODO add a List of Player objects that hold both AI and Human players
+    private int movedTroops;
+    private List<Player> playersList;
+
+    private enum StartGameTroops {
+        TWO_PLAYER_GAME(50),THREE_PLAYER_GAME(35),FOUR_PLAYER_GAME(30),FIVE_PLAYER_GAME(25),SIX_PLAYER_GAME(20);
+
+        int values;
+        StartGameTroops(int i) {
+            values = i;
+        }
+        public int returnValues(){
+            return values;
+        }
+    }
     private static final int ONE_ARMY = 1;
     private static final int TWO_ARMIES = 2;
     private static final int THREE_ATTACKERS = 3;
@@ -37,23 +47,39 @@ public class RiskModel {
         reinforceCountry = null;
         countryToReinforce = null;
         bonusCountry = null;
-        attackingTroops = 0;
-        bonusTroopsPlaced = 0;
-        aiPlayers = new ArrayList<>();
+        movedTroops = 0;
+        playersList = new ArrayList<>();
     }
 
     /**
      * Initial method that is called to start the risk game
      * @author Jason
      */
-    public void playGame(int numPlayers, int aiPlayers) {
-        // TODO Add HumanPlayer and AI instance to players list based on parameter numPlayer and aiPlayer
-        // TODO Make sure that you add Human player then AI player
-        for (int i = 0; i < aiPlayers; i++) {
-            this.aiPlayers.add(new AI(this, board, 0,0));
+    public void playGame(int numHumanPlayers, int aiPlayers) {
+        int totalPlayers = numHumanPlayers + aiPlayers;
+        for(int i = 0; i< numHumanPlayers; i++) {
+            this.playersList.add(new HumanPlayer(returnArmySize(totalPlayers), i+1));
         }
-        // TODO Pass players list to setup board and numPlayers which is the number of Human players
-        board.setupBoard(numPlayers, this.aiPlayers);
+        for (int i = numHumanPlayers; i < totalPlayers; i++) {
+            this.playersList.add(new AI(this, board,returnArmySize(totalPlayers) ,i+1));
+        }
+        board.setupBoard(numHumanPlayers, this.playersList);
+    }
+
+    public int returnArmySize(int totalNumPlayers){
+        switch(totalNumPlayers){
+            case 2:
+                return StartGameTroops.TWO_PLAYER_GAME.returnValues();
+            case 3:
+                return StartGameTroops.THREE_PLAYER_GAME.returnValues();
+            case 4:
+                return StartGameTroops.FOUR_PLAYER_GAME.returnValues();
+            case 5:
+                return StartGameTroops.FIVE_PLAYER_GAME.returnValues();
+            case 6:
+                return StartGameTroops.SIX_PLAYER_GAME.returnValues();
+        }
+        return -1;
     }
 
     /**
@@ -274,63 +300,70 @@ public class RiskModel {
      * @param country The country that was clicked
      */
     public void countryClicked(Country country) {
+        movedTroops = 0;
         if (state.equals(GameState.SHOW_DEFENDING_COUNTRIES)) {
-            attackingTroops = 0;
             attackingCountry = country;
             for (RiskView v : views) {
                 v.handleShowDefendingCountry(country);
             }
-            if (attackingTroops == 0) {
-                for (RiskView v : views) {
-                    v.handleAttackCancelled(country);
-                }
-                updatePrevState();
-            } else {
-                updateNextState();
-            }
+            phaseCancelHandler(state,country);
         } else if (state.equals(GameState.COMMENCE_ATTACK)) {
             defendingCountry = country;
-            attack(attackingCountry, defendingCountry, attackingTroops);
+            attack(attackingCountry, defendingCountry, movedTroops);
             for (RiskView v : views) {
                 v.handleCountryAttack(attackingCountry);
             }
         } else if (state.equals(GameState.CHOOSE_REINFORCE)) {
-            attackingTroops = 0;
             reinforceCountry = country;
             for (RiskView v : views) {
                 v.handleShowReinforceAdjacents(country);
             }
-            if (attackingTroops == 0) {
-                for (RiskView v : views) {
-                    v.handleReinforceCancelled(country);
-                }
-                updatePrevState();
-            } else {
-                updateNextState();
-            }
+            phaseCancelHandler(state,country);
         } else if (state.equals(GameState.COMMENCE_REINFORCE)) {
             countryToReinforce = country;
-            reinforce(reinforceCountry, countryToReinforce, attackingTroops);
+            reinforce(reinforceCountry, countryToReinforce, movedTroops);
             for (RiskView v : views) {
                 v.handleReinforce(reinforceCountry);
             }
         } else if (state.equals(GameState.CHOOSE_BONUS)){
             bonusCountry = country;
             int previousArmy =bonusCountry.getArmySize();
-            bonusTroopEvent(bonusCountry, bonusTroopCalculation(bonusCountry.getPlayer()) - bonusTroopsPlaced);
+            bonusTroopEvent(bonusCountry, bonusTroopCalculation(bonusCountry.getPlayer()) - movedTroops);
             //adds the difference of the troops placed
-            bonusTroopsPlaced += bonusCountry.getArmySize() - previousArmy;
-            if(bonusTroopsPlaced == bonusTroopCalculation(bonusCountry.getPlayer())){
-                updateNextState();
-                //Making sure the bonus troops placed so far for the next player are 0
-                bonusTroopsPlaced = 0;
-                for (RiskView v : views) {
-                    v.troopBonusComplete();
-                }
-            }
+            movedTroops += bonusCountry.getArmySize() - previousArmy;
+            troopsFinishedHandler();
+
         }
     }
 
+    public void troopsFinishedHandler(){
+        if(movedTroops == bonusTroopCalculation(bonusCountry.getPlayer())) {
+            updateNextState();
+            //Making sure the bonus troops placed so far for the next player are 0
+            movedTroops = 0;
+            for (RiskView v : views) {
+                v.troopBonusComplete();
+            }
+
+        }
+    }
+
+    public void phaseCancelHandler(GameState state,Country country){
+        if (movedTroops == 0 && state.equals(GameState.CHOOSE_REINFORCE)) {
+            for (RiskView v : views) {
+                v.handleReinforceCancelled(country);
+            }
+            updatePrevState();
+        }else if(movedTroops == 0 && state.equals(GameState.SHOW_DEFENDING_COUNTRIES)){
+            for (RiskView v : views) {
+                v.handleAttackCancelled(country);
+            }
+            updatePrevState();
+        }
+        else {
+            updateNextState();
+        }
+    }
     /**
      * Handles the bonus troop placement event
      * @author Shashaank
@@ -400,13 +433,6 @@ public class RiskModel {
             incrementTurnIndex();
             int playerID = board.getPlayers().get(turnIndex).getId();
             endTurn(playerID);
-            // If a human player just ended their turn
-            // TODO remove this part as it is never reached
-            Player player = board.getPlayers().get(turnIndex);
-            if (board.getPlayers().get(turnIndex) instanceof AI) {
-                AI ai = (AI) player;
-                ai.playTurn();
-            }
         }
     }
 
@@ -574,8 +600,8 @@ public class RiskModel {
         return board.getCountries();
     }
 
-    public void setAttackingTroops(int attackingTroops) {
-        this.attackingTroops = attackingTroops;
+    public void setMovedTroops(int movedTroops) {
+        this.movedTroops = movedTroops;
     }
 
     public void updateNextState() {

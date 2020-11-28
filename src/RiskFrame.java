@@ -711,7 +711,7 @@ public class RiskFrame extends JFrame implements RiskView{
         String result;
         if (selectionObject == 0) {
             result = comboBox.getSelectedItem().toString();
-            model.setAttackingTroops(Integer.parseInt(result));
+            model.setMovedTroops(Integer.parseInt(result));
         } else {
             return;
         }
@@ -920,9 +920,8 @@ public class RiskFrame extends JFrame implements RiskView{
         textArea.append("Here is the results of the battle: \n" +
                 "Your country troops remaining: " + bre.getAttackingArmySize() +"\n"+
                 "Defending country troops remaining: " + bre.getDefendingArmySize() +"\n\n");
-        if (bre.getPlayer() instanceof AI) {
-            JOptionPane.showMessageDialog(null, textArea.getText());
-        }
+
+        JOptionPane.showMessageDialog(null, textArea.getText());
     }
 
     /**

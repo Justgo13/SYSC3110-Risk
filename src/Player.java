@@ -1,8 +1,6 @@
 import java.util.ArrayList;
 import java.util.Iterator;
-
-// TODO make player abstract
-public class Player {
+public abstract class Player {
     private int initArmySize;
     private ArrayList<Country> countriesOwned;
     private int id;
