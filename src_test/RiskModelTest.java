@@ -318,13 +318,13 @@ public class RiskModelTest {
 
     @Test
     public void testBonusTroopCalculationNoCountries() {
-        Player p1 = new Player(0,1);
+        Player p1 = new HumanPlayer(0,1);
         assertEquals(3,rm.bonusTroopCalculation(p1));
     }
 
     @Test
     public void testBonusTroopCalculationCountriesNoCotinent() {
-        Player p1 = new Player(0,1);
+        Player p1 = new HumanPlayer(0,1);
         Country bonusCountry1 = new Country("");
         Country bonusCountry2 = new Country("");
         Country bonusCountry3 = new Country("");
@@ -340,7 +340,7 @@ public class RiskModelTest {
         Continent bonusContinent = (Continent) continents.toArray()[0];
         bonusContinent.getCountries().clear();
 
-        Player p1 = new Player(0,1);
+        Player p1 = new HumanPlayer(0,1);
         Country bonusCountry1 = new Country("");
         Country bonusCountry2 = new Country("");
         Country bonusCountry3 = new Country("");

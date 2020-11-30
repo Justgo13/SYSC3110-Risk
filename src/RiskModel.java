@@ -300,7 +300,6 @@ public class RiskModel {
      * @param country The country that was clicked
      */
     public void countryClicked(Country country) {
-        movedTroops = 0;
         if (state.equals(GameState.SHOW_DEFENDING_COUNTRIES)) {
             attackingCountry = country;
             for (RiskView v : views) {
