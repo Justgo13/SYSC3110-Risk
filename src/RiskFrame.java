@@ -713,7 +713,7 @@ public class RiskFrame extends JFrame implements RiskView{
             result = comboBox.getSelectedItem().toString();
             model.setMovedTroops(Integer.parseInt(result));
         } else {
-            return;
+            model.setMovedTroops(0);
         }
     }
 
@@ -735,7 +735,9 @@ public class RiskFrame extends JFrame implements RiskView{
         while (selectionObject != 0) {
             selectionObject = JOptionPane.showOptionDialog(this, panel, "Choose Troops", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         }
-        return Integer.parseInt(comboBox.getSelectedItem().toString());
+        int result = Integer.parseInt(comboBox.getSelectedItem().toString());
+        model.setMovedTroops(result);
+        return result;
     }
 
     /**

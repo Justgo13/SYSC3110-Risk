@@ -329,7 +329,7 @@ public class RiskModel {
             int previousArmy =bonusCountry.getArmySize();
             bonusTroopEvent(bonusCountry, bonusTroopCalculation(bonusCountry.getPlayer()) - movedTroops);
             //adds the difference of the troops placed
-            movedTroops += bonusCountry.getArmySize() - previousArmy;
+            //movedTroops += bonusCountry.getArmySize() - previousArmy;
             troopsFinishedHandler();
 
         }
