@@ -1,0 +1,24 @@
+{
+  "Countries": [
+    { "countryName":  "Alaska",
+      "continentName":  "Canada",
+      "gridbag": {"x": "1", "y": 1},
+      "adjacentCountries": ["Alberta", "Northwest Territory","Kamchatka"]
+      },
+
+    { "countryName":  "Alaska",
+      "continentName":  "Canada",
+      "gridbag": {"x": "0", "y": "0"},
+      "adjacentCountries": ["Alberta", "Northwest Territory","Kamchatka"]
+      }
+  ],
+
+  "Continents": [
+    {"continentName": "Australia", "bonusValue": "2"},
+    {"continentName": "Africa", "troopValue": "3"},
+    {"continentName": "", "troopValue": "4"}
+  ]
+
+
+
+}
