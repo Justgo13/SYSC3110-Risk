@@ -1,6 +1,12 @@
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.io.File;
+import java.io.FileReader;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,11 +35,13 @@ public class RiskFrame extends JFrame implements RiskView{
         setLayout(new GridBagLayout());
         // ask for player number
         int[] getPlayerList = invokePlayerPopup();
+        JSONObject mapJSON = parseFile();
         int numPlayer = getPlayerList[0];
         int aiPlayer = getPlayerList[1];
 
         //Instantiating the model
         model = new RiskModel();
+        model.setJsonObject(mapJSON);
         model.playGame(numPlayer, aiPlayer);
         model.addRiskView(this); // Adds the view to the model
 
@@ -672,6 +680,30 @@ public class RiskFrame extends JFrame implements RiskView{
         return players;
     }
 
+    private File chooseMapFile() {
+        //Create a file chooser
+        final JFileChooser fc = new JFileChooser();
+        fc.setFileFilter(new FileNameExtensionFilter("JSON files", "json"));
+        int selectedFile = fc.showOpenDialog(this);
+        while (selectedFile != JFileChooser.APPROVE_OPTION) {
+            selectedFile = fc.showOpenDialog(this);
+        }
+        return fc.getSelectedFile();
+    }
+
+    private JSONObject parseFile() {
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject = null;
+        try {
+            Object obj = parser.parse(new FileReader(chooseMapFile()));
+
+            // A JSON object. Key value pairs are unordered. JSONObject supports java.util.Map interface.
+            jsonObject = (JSONObject) obj;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
     /**
      * Takes in countries and returns a list of their corresponding country button instances from RiskView
      * @author Harjap

@@ -1,3 +1,6 @@
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import java.util.*;
 
 public class RiskModel {
@@ -14,18 +17,9 @@ public class RiskModel {
     private Country bonusCountry;
     private int movedTroops;
     private List<Player> playersList;
-
-    private enum StartGameTroops {
-        TWO_PLAYER_GAME(50),THREE_PLAYER_GAME(35),FOUR_PLAYER_GAME(30),FIVE_PLAYER_GAME(25),SIX_PLAYER_GAME(20);
-
-        int values;
-        StartGameTroops(int i) {
-            values = i;
-        }
-        public int returnValues(){
-            return values;
-        }
-    }
+    private JSONObject jsonObject;
+    private static final String JSONCountriesKey = "Countries";
+    private static final String JSONContinentKey = "Continents";
     private static final int ONE_ARMY = 1;
     private static final int TWO_ARMIES = 2;
     private static final int THREE_ATTACKERS = 3;
@@ -49,6 +43,7 @@ public class RiskModel {
         bonusCountry = null;
         movedTroops = 0;
         playersList = new ArrayList<>();
+        jsonObject = null;
     }
 
     /**
@@ -63,7 +58,9 @@ public class RiskModel {
         for (int i = numHumanPlayers; i < totalPlayers; i++) {
             this.playersList.add(new AI(this, board,returnArmySize(totalPlayers) ,i+1));
         }
-        board.setupBoard(numHumanPlayers, this.playersList);
+        JSONArray countries = (JSONArray) jsonObject.get(JSONCountriesKey);
+        JSONArray continents = (JSONArray) jsonObject.get(JSONContinentKey);
+        board.setupBoard(numHumanPlayers, this.playersList, countries, continents);
     }
 
     public int returnArmySize(int totalNumPlayers){
@@ -613,5 +610,9 @@ public class RiskModel {
 
     public void updateEndPhaseState() {
         endPhaseState = endPhaseState.next();
+    }
+
+    public void setJsonObject(JSONObject jsonObject) {
+        this.jsonObject = jsonObject;
     }
 }

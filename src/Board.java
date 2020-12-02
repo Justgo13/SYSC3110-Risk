@@ -1,18 +1,20 @@
-import java.io.*;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import java.util.*;
 
 public class Board {
+    private static final int COUNTRY_COUNT = 42;
+    private static final String JSONCOUNTRYKEY = "countryName";
+    private static final String JSONCONTINENTKEY = "continentName";
+    private static final String JSONADJACENTKEY = "adjacentCountries";
     private int numOfPlayers;
-    private static final int[] armySize = {50,35,30,25,20};
     private ArrayList<Player> players;
     private HashMap<String, Country> countries;
     private HashMap<String, Continent> continents;
-    private static final int COUNTRY_COUNT = 42;
     private ArrayList<String> countryNames;
     private ArrayList<String> continentNames;
-
-
-    private  ArrayList<ArrayList<String>> continentCountries;
+    private  HashMap<String, ArrayList<String>> continentCountries;
     private  HashMap<String,Integer> continentBonusArmies;
 
     /**
@@ -24,7 +26,7 @@ public class Board {
         players = new ArrayList<>();
         countries = new HashMap<>();
         continents = new HashMap<>();
-        continentCountries = new ArrayList<>();
+        continentCountries = new HashMap<>();
         countryNames = new ArrayList<>();
 
         continentBonusArmies = new HashMap<>();
@@ -84,8 +86,10 @@ public class Board {
      * @author Harjap Gill
      * @param numPlayers number of players in the game
      * @param players
+     * @param countries
+     * @param continents
      */
-    public void setupBoard(int numPlayers, List<Player> players){
+    public void setupBoard(int numPlayers, List<Player> players, JSONArray countries, JSONArray continents){
         setNumOfPlayers(players.size());
         int totalPlayers = players.size();
         for (int i = 0; i < numPlayers; i++) {
@@ -95,12 +99,12 @@ public class Board {
         for (int i = numPlayers; i < totalPlayers; i++) {
             addPlayer(players.get(i));
         }
-        buildContinentNames();
-        buildCountryNames();
-        buildContinent();
+        buildContinentNames(continents);
+        buildCountryNames(countries);
+        buildContinent(countries);
         buildMap(); // adds all countries to map
         placePlayers(totalPlayers); // place players randomly on the map
-        setAdjacentCountries();
+        setAdjacentCountries(countries);
     }
 
     /**
@@ -113,15 +117,15 @@ public class Board {
         for (String countryName : countryNames) {
             countries.put(countryName, new Country(countryName));
         }
-        for (int i = 0; i<continentNames.size(); i++) {
-            continents.put(continentNames.get(i), new Continent(continentNames.get(i), continentBonusArmies.get(continentNames.get(i)))); // creates continents objects
+        for (String continentName : continentNames) {
+            continents.put(continentName, new Continent(continentName, continentBonusArmies.get(continentName))); // creates continents objects
 
             //gets all continents and populates them with their specific countries
             //also gives every country the continent it belongs in
-            for(int j = 0; j<continentCountries.get(i).size(); j++){
-                Continent continent = continents.get(continentNames.get(i));
-                continent.addCountry((String) continentCountries.get(i).get(j),countries.get(continentCountries.get(i).get(j)) ); // populates continents with their specific countries
-                countries.get(continentCountries.get(i).get(j)).setContinent(continent.getName()); // sets the continent name of each country
+            for(int j = 0; j<continentCountries.get(continentName).size(); j++){
+                Continent continent = continents.get(continentName);
+                continent.addCountry((String) continentCountries.get(continentName).get(j),countries.get(continentCountries.get(continentName).get(j)) ); // populates continents with their specific countries
+                countries.get(continentCountries.get(continentName).get(j)).setContinent(continent.getName()); // sets the continent name of each country
             }
         }
     }
@@ -181,54 +185,34 @@ public class Board {
         }
     }
 
-    private void buildContinent() {
-        try {
-            InputStream inputStream = this.getClass().getResourceAsStream("continentCountries.txt");
-            // buffered reader to read the file
-            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
-
-            String line;
-            while ((line = br.readLine()) != null) {
-
-                ArrayList<String> continentCountry = new ArrayList<>();
-                String[] countries = line.split(", ");
-                for (int i = 0; i < countries.length; i++) {
-                    continentCountry.add(countries[i]);
-                }
-                continentCountries.add(continentCountry);
+    private void buildContinent(JSONArray countries) {
+        Iterator iterator = countries.iterator();
+        JSONObject country;
+        while (iterator.hasNext()) {
+            country = (JSONObject) iterator.next();
+            String continentName = (String) country.get(JSONCONTINENTKEY);
+            if (!continentCountries.containsKey(continentName)) {
+                continentCountries.put(continentName, new ArrayList<>());
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            continentCountries.get(continentName).add((String) country.get(JSONCOUNTRYKEY));
         }
     }
 
-    private void buildCountryNames() {
-        try {
-            InputStream inputStream = this.getClass().getResourceAsStream("countryNames.txt");
-            // buffered reader to read the file
-            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
-
-            String line;
-            while ((line = br.readLine()) != null) {
-                countryNames.add(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void buildCountryNames(JSONArray countries) {
+        Iterator iterator = countries.iterator();
+        JSONObject country;
+        while (iterator.hasNext()) {
+            country = (JSONObject) iterator.next();
+            countryNames.add((String) country.get(JSONCOUNTRYKEY));
         }
     }
 
-    private void buildContinentNames() {
-        try {
-            InputStream inputStream = this.getClass().getResourceAsStream("continentNames.txt");
-            // buffered reader to read the file
-            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
-
-            String line;
-            while ((line = br.readLine()) != null) {
-                continentNames.add(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void buildContinentNames(JSONArray continents) {
+        Iterator iterator = continents.iterator();
+        JSONObject continent;
+        while (iterator.hasNext()) {
+            continent = (JSONObject) iterator.next();
+            continentNames.add((String) continent.get(JSONCONTINENTKEY));
         }
     }
 
@@ -238,40 +222,20 @@ public class Board {
      *
      * @author Harjap Gill
      */
-    private void setAdjacentCountries(){
-
-        try {
-            InputStream inputStream = this.getClass().getResourceAsStream("adjacentCountries.txt");
-            // buffered reader to read the file
-            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
-
-            String line;
-            // iterate through every line of the file
-            while ((line = br.readLine()) != null) {
-                ArrayList<String>  countryLine = new ArrayList<>();// for each line, creat an empty arraylist
-
-                for (String country: line.split(", ")){ // add every country in line to arraylist
-                    countryLine.add(country);
-
-                }
-                //get country on which we will be setting the adjacents, the first one in line
-                Country intialCountry = countries.get(countryLine.get(0));
-
-                for (int i =1; i<countryLine.size(); i++){ // iterate through every country in line other than first
-
-                    Country adjacentCountry = countries.get(countryLine.get(i)); // initialize the adjacent country
-                    intialCountry.addAdjacentCountry(adjacentCountry);  // add that adjacent country to initial country's adjacent
-                }
-
+    private void setAdjacentCountries(JSONArray countries){
+        Iterator iterator = countries.iterator();
+        JSONObject country;
+        JSONArray adjacentCountries;
+        while (iterator.hasNext()) {
+            country = (JSONObject) iterator.next();
+            adjacentCountries = (JSONArray) country.get(JSONADJACENTKEY);
+            Iterator adjacentIterator = adjacentCountries.iterator();
+            while (adjacentIterator.hasNext()) {
+                Country parentCountry = this.countries.get(country.get(JSONCOUNTRYKEY));
+                Country adjacentCountry = this.countries.get(adjacentIterator.next());
+                parentCountry.addAdjacentCountry(adjacentCountry);
             }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-
-
     }
 
     public void initializeContinentBonusArmies(){
