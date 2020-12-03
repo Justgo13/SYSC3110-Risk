@@ -43,12 +43,23 @@ public class RiskFrame extends JFrame implements RiskView{
         setLayout(new GridBagLayout());
         // ask for player number
         int[] getPlayerList = invokePlayerPopup();
-        JSONObject mapJSON = parseFile();
         int numPlayer = getPlayerList[0];
         int aiPlayer = getPlayerList[1];
 
         //Instantiating the model
         model = new RiskModel();
+
+        JSONObject mapJSON;
+
+        // loops you until a valid map is given
+        while(true){
+            mapJSON = parseFile();
+            if (model.validateJSONMap(mapJSON)){
+                break;
+            }else{
+                JOptionPane.showMessageDialog(this,"This map is invalid. Please upload a valid map");
+            }
+        }
         model.setJsonObject(mapJSON);
         model.playGame(numPlayer, aiPlayer);
         model.addRiskView(this); // Adds the view to the model
