@@ -1,3 +1,6 @@
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import java.util.*;
 
 public class RiskModel {
@@ -14,23 +17,16 @@ public class RiskModel {
     private Country bonusCountry;
     private int movedTroops;
     private List<Player> playersList;
-
-    private enum StartGameTroops {
-        TWO_PLAYER_GAME(50),THREE_PLAYER_GAME(35),FOUR_PLAYER_GAME(30),FIVE_PLAYER_GAME(25),SIX_PLAYER_GAME(20);
-
-        int values;
-        StartGameTroops(int i) {
-            values = i;
-        }
-        public int returnValues(){
-            return values;
-        }
-    }
+    private JSONObject jsonObject;
+    private static final String JSON_COUNTRIES_KEY = "Countries";
+    private static final String JSON_CONTINENT_KEY = "Continents";
     private static final int ONE_ARMY = 1;
     private static final int TWO_ARMIES = 2;
     private static final int THREE_ATTACKERS = 3;
     private static final int INVALID_PLAYERID = 0;
     private static final int INITIAL_TROOP_BONUS = 3;
+    private static final String COUNTRYNAME =  "countryName";
+    private static final String ADJACENT_COUNTRY = "adjacentCountries";
     /**
      * Creates an instance of the Risk game
      */
@@ -49,6 +45,7 @@ public class RiskModel {
         bonusCountry = null;
         movedTroops = 0;
         playersList = new ArrayList<>();
+        jsonObject = null;
     }
 
     /**
@@ -63,7 +60,79 @@ public class RiskModel {
         for (int i = numHumanPlayers; i < totalPlayers; i++) {
             this.playersList.add(new AI(this, board,returnArmySize(totalPlayers) ,i+1));
         }
-        board.setupBoard(numHumanPlayers, this.playersList);
+        JSONArray countries = (JSONArray) jsonObject.get(JSON_COUNTRIES_KEY);
+        JSONArray continents = (JSONArray) jsonObject.get(JSON_CONTINENT_KEY);
+        board.setupBoard(numHumanPlayers, this.playersList, countries, continents);
+    }
+
+    /**
+     * Takes in a JSONObject representing the map we are loading into the game. This method ensure that this is a
+     * valid map to play on and that there are no countries that are disconnected from other
+     *
+     * @param jsonMap JSONObject representing the map to be loaded
+     * @return boolean true if map is valid, and false otherwise
+     */
+
+    public boolean validateJSONMap(JSONObject jsonMap){
+
+        HashMap<String,Country> countries = countriesFromJSON(jsonMap);
+
+        // get number of countries in the JSON map
+        Collection<Country> allCountries = countries.values();
+        int numOfCountries = allCountries.size();
+
+        // Get number of countries connected to an arbitrary country
+        ArrayList<Country> randomCountries = new ArrayList<>(countries.values());
+        Country randomCountry = randomCountries.get(0);
+        ArrayList<Country> connectedCountries = getConnectedCountries(randomCountry);
+
+        // compare number of countries to number of connected countries
+        if (numOfCountries == connectedCountries.size()){
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Method that takes a JSONObject of the country map. It will then construct all of the countries within the map
+     * and return it in a hashmap
+     *
+     * @param jsonMap JSONObject representing the country map
+     * @return Hashmap<String, Country> that holds all of the countries in the game
+     */
+
+    public HashMap<String,Country> countriesFromJSON(JSONObject jsonMap){
+
+        JSONArray countriesJSON = (JSONArray) jsonMap.get(JSON_COUNTRIES_KEY);
+        Iterator iterator = countriesJSON.iterator();
+
+        JSONObject jsonCountry;
+        HashMap<String,Country> countries = new HashMap<>();
+
+        // adding all the countries
+        while(iterator.hasNext()){
+            jsonCountry = (JSONObject) iterator.next();
+            String countryName = (String) jsonCountry.get(COUNTRYNAME);
+            countries.put(countryName, new Country(countryName));
+        }
+
+        iterator = countriesJSON.iterator();
+        JSONArray adjacentCountries;
+
+        // add adjacent countries
+        while(iterator.hasNext()){
+            jsonCountry = (JSONObject) iterator.next();
+            String countryName = (String) jsonCountry.get(COUNTRYNAME);
+            adjacentCountries = (JSONArray) jsonCountry.get(ADJACENT_COUNTRY);
+
+            for (Object adjCountryName: adjacentCountries){
+                String name = adjCountryName.toString();
+                Country adjacentCountry = countries.get(name);
+                Country country = countries.get(countryName);
+                country.addAdjacentCountry(adjacentCountry);
+            }
+        }
+        return countries;
     }
 
     public int returnArmySize(int totalNumPlayers){
@@ -270,7 +339,7 @@ public class RiskModel {
      * @param playerCountries A list of the player's countries
      * @param country The country that we reinforce from
      */
-    private void countryRecurse(ArrayList playerCountries, Country country){
+    public void countryRecurse(ArrayList playerCountries, Country country){
         playerCountries.add(country);
         for (Country adjacent: country.getAdjacentCountries()){
             //if owned by same player and not in list already add it(get 0 is the first country that was passed into the function)
@@ -279,6 +348,8 @@ public class RiskModel {
             }
         }
     }
+
+
 
     /**
      * Reinforces the designated country with specific troops and updates the view
@@ -613,5 +684,9 @@ public class RiskModel {
 
     public void updateEndPhaseState() {
         endPhaseState = endPhaseState.next();
+    }
+
+    public void setJsonObject(JSONObject jsonObject) {
+        this.jsonObject = jsonObject;
     }
 }
