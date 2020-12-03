@@ -9,6 +9,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,18 +50,39 @@ public class RiskFrame extends JFrame implements RiskView{
         //Instantiating the model
         model = new RiskModel();
 
-        JSONObject mapJSON;
+        boolean customMapChoice = customMapPopup();
 
-        // loops you until a valid map is given
-        while(true){
-            mapJSON = parseFile();
-            if (model.validateJSONMap(mapJSON)){
-                break;
-            }else{
-                JOptionPane.showMessageDialog(this,"This map is invalid. Please upload a valid map");
+        JSONObject mapJSON = null;
+
+
+        if (customMapChoice) { // choose a custom map
+            // loops you until a valid map is given
+            while (true) {
+                mapJSON = parseFile();
+                if (model.validateJSONMap(mapJSON)) {
+                    break;
+                } else {
+                    JOptionPane.showMessageDialog(this, "This map is invalid. Please upload a valid map");
+                }
             }
+            model.setJsonObject(mapJSON);
+
+        }else{ // use the basic world map
+
+            JSONParser parser = new JSONParser();
+
+            try{
+                InputStream inputStream = this.getClass().getResourceAsStream("template.json");
+                Object obj = parser.parse(new InputStreamReader(inputStream,"UTF-8"));
+                JSONObject jsonMap = (JSONObject) obj;
+                model.setJsonObject(jsonMap);
+                mapJSON = jsonMap;
+            }catch(Exception e){
+                System.out.println(e);
+            }
+
         }
-        model.setJsonObject(mapJSON);
+
         model.playGame(numPlayer, aiPlayer);
         model.addRiskView(this); // Adds the view to the model
 
@@ -271,6 +293,7 @@ public class RiskFrame extends JFrame implements RiskView{
         JLabel aiLabel = new JLabel(PlayGame.AILABEL.toString());
         JComboBox playerComboBox = new JComboBox(PlayGame.PLAYERS.getArray());
         JComboBox aiComboBox = new JComboBox(PlayGame.AIPLAYERS.getArray());
+        JCheckBox customMapBox = new JCheckBox();
         playerComboBox.setSelectedIndex(0);
         aiComboBox.setSelectedIndex(0);
         panel.add(playerLabel);
@@ -301,6 +324,20 @@ public class RiskFrame extends JFrame implements RiskView{
         int players[] = {Integer.parseInt(result), Integer.parseInt(aiResult)};
         return players;
     }
+
+    public boolean customMapPopup(){
+        int result = JOptionPane.showOptionDialog(this,"Would you like to use a custom map?","Custom Map",
+                0, 0, null, null,JOptionPane.YES_NO_OPTION);
+
+        // No -> 1
+        // Yes -> 0
+        if (result == 1){
+            return false;
+        }
+        return true;
+
+    }
+
 
     private File chooseMapFile() {
         //Create a file chooser
