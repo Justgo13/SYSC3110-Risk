@@ -27,10 +27,6 @@ public class CountryButton extends JButton {
         this.update();
     }
 
-    public int getTroopCount() {
-        return troopCount;
-    }
-
     public Country getCountry() {
         return country;
     }

@@ -27,7 +27,7 @@ public abstract class Player {
         return countriesOwned;
     }
 
-    public ArrayList<Country> copyofCountriesOwned() {
+    public ArrayList<Country> copyOfCountriesOwned() {
         ArrayList<Country> countriesValue = new ArrayList<>();
         // pass countries by value by recreating country objects
         Iterator iterator = countriesOwned.iterator();
@@ -49,13 +49,5 @@ public abstract class Player {
 
     public void setCountriesOwned(ArrayList<Country> countriesOwned) {
         this.countriesOwned = countriesOwned;
-    }
-
-    public void setInitArmySize(int initArmySize) {
-        this.initArmySize = initArmySize;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 }

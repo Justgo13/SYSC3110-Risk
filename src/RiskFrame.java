@@ -23,11 +23,7 @@ public class RiskFrame extends JFrame implements RiskView{
     private static final int MIN_PLAYERS = 1;
     private static final int MAX_PLAYERS = 6;
     private static final int THICKNESS = 3;
-    private static final String JSONCOUNTRIES =  "Countries";
-    private static final String GRIDBAG = "gridBag";
-    private static final String COUNTRYNAME =  "countryName";
-    private static final String GRID_X = "x";
-    private static final String GRID_Y = "y";
+    private static final int MIN_ARMY_SIZE = 2;
     private RiskModel model;
     private HashMap<String, CountryButton> countryButtons;
     private HashMap<String, Country> countries;
@@ -72,7 +68,7 @@ public class RiskFrame extends JFrame implements RiskView{
             JSONParser parser = new JSONParser();
 
             try{
-                InputStream inputStream = this.getClass().getResourceAsStream("template.json");
+                InputStream inputStream = this.getClass().getResourceAsStream(JSONConstants.DEFAULT_FILE.toString());
                 Object obj = parser.parse(new InputStreamReader(inputStream,"UTF-8"));
                 JSONObject jsonMap = (JSONObject) obj;
                 model.setJsonObject(jsonMap);
@@ -116,17 +112,17 @@ public class RiskFrame extends JFrame implements RiskView{
         mapConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
         mapConstraints.fill = GridBagConstraints.BOTH;
 
-        JSONArray countriesJSON = (JSONArray) mapJSON.get(JSONCOUNTRIES);
+        JSONArray countriesJSON = (JSONArray) mapJSON.get(JSONConstants.JSON_COUNTRIES.toString());
         Iterator iterator = countriesJSON.iterator();
 
         JSONObject jsonObject;
 
         while(iterator.hasNext()){
             jsonObject = (JSONObject) iterator.next();
-            JSONObject jsonGridBag = (JSONObject) jsonObject.get(GRIDBAG);
-            String countryName = (String) jsonObject.get(COUNTRYNAME);
-            String gridx = (String) jsonGridBag.get(GRID_X);
-            String gridy = (String) jsonGridBag.get(GRID_Y);
+            JSONObject jsonGridBag = (JSONObject) jsonObject.get(JSONConstants.GRID_BAG.toString());
+            String countryName = (String) jsonObject.get(JSONConstants.COUNTRY_NAME.toString());
+            String gridx = (String) jsonGridBag.get(JSONConstants.GRID_X.toString());
+            String gridy = (String) jsonGridBag.get(JSONConstants.GRID_Y.toString());
             countryPanel.add(createCountry(countryName, gridx, gridy), mapConstraints);
 
         }
@@ -273,6 +269,14 @@ public class RiskFrame extends JFrame implements RiskView{
 
     }
 
+    /**
+     * General method for creating a country on the map from the JSON file
+     * @author Albara'a
+     * @param countryName The country name
+     * @param x gridx constraint
+     * @param y gridy constraint
+     * @return A CountryButton that can be added to the country panel
+     */
     public CountryButton createCountry(String countryName, String x, String y ){
         mapConstraints.gridx = Integer.parseInt(x);
         mapConstraints.gridy = Integer.parseInt(y);
@@ -285,46 +289,55 @@ public class RiskFrame extends JFrame implements RiskView{
 
     /**
      * A popup box that asks the user for the number of human and AI players in the game
+     * @author Jason
      * @return A list containing the number of human and ai players
      */
     private int[] invokePlayerPopup() {
+        JComboBox playerComboBox = new JComboBox(PlayGame.PLAYERS.getArray());
+        JComboBox aiComboBox = new JComboBox(PlayGame.AIPLAYERS.getArray());
+        JPanel panel = createPopupPanel(playerComboBox, aiComboBox);
+
+        int numPlayers = JOptionPane.showOptionDialog(this, panel, PlayGame.TITLE.toString(), JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+                null, PlayGame.OK_CANCEL_OPTION.getArray(), PlayGame.OK_CANCEL_OPTION.getArray()[0]);
+
+        String aiResult = aiComboBox.getSelectedItem().toString();
+        String humanPlayerResult = playerComboBox.getSelectedItem().toString();
+        int totalPlayer = Integer.parseInt(humanPlayerResult) + Integer.parseInt(aiResult);
+        while (numPlayers != 0 || totalPlayer > MAX_PLAYERS || totalPlayer == MIN_PLAYERS) {
+            numPlayers = JOptionPane.showOptionDialog(null, panel, PlayGame.TITLE.toString(), JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+                    null, PlayGame.OK_CANCEL_OPTION.getArray(), PlayGame.OK_CANCEL_OPTION.getArray()[0]);
+            totalPlayer = Integer.parseInt(playerComboBox.getSelectedItem().toString()) + Integer.parseInt(aiComboBox.getSelectedItem().toString());
+        }
+        humanPlayerResult = playerComboBox.getSelectedItem().toString();
+        aiResult = aiComboBox.getSelectedItem().toString();
+        int players[] = {Integer.parseInt(humanPlayerResult), Integer.parseInt(aiResult)};
+        return players;
+    }
+
+    /**
+     * Creates a JPanel for the player popup
+     * @param playerComboBox The human player dropdown
+     * @param aiComboBox The AI player dropdown
+     * @return JPanel with human player and AI player dropdown
+     */
+    private JPanel createPopupPanel(JComboBox playerComboBox, JComboBox aiComboBox) {
         JPanel panel = new JPanel();
         JLabel playerLabel = new JLabel(PlayGame.LABEL.toString());
         JLabel aiLabel = new JLabel(PlayGame.AILABEL.toString());
-        JComboBox playerComboBox = new JComboBox(PlayGame.PLAYERS.getArray());
-        JComboBox aiComboBox = new JComboBox(PlayGame.AIPLAYERS.getArray());
-        JCheckBox customMapBox = new JCheckBox();
         playerComboBox.setSelectedIndex(0);
         aiComboBox.setSelectedIndex(0);
         panel.add(playerLabel);
         panel.add(playerComboBox);
         panel.add(aiLabel);
         panel.add(aiComboBox);
-
-        int numPlayers = JOptionPane.showOptionDialog(null, panel, PlayGame.TITLE.toString(), JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-                null, PlayGame.OK_CANCEL_OPTION.getArray(), PlayGame.OK_CANCEL_OPTION.getArray()[0]);
-
-        String aiResult;
-        String result;
-
-        while (numPlayers != 0) {
-            numPlayers = JOptionPane.showOptionDialog(null, panel, PlayGame.TITLE.toString(), JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-                    null, PlayGame.OK_CANCEL_OPTION.getArray(), PlayGame.OK_CANCEL_OPTION.getArray()[0]);
-        }
-        result = playerComboBox.getSelectedItem().toString();
-        aiResult = aiComboBox.getSelectedItem().toString();
-        int totalPlayer = Integer.parseInt(result) + Integer.parseInt(aiResult);
-        while (totalPlayer > MAX_PLAYERS || totalPlayer == MIN_PLAYERS) {
-            JOptionPane.showOptionDialog(null, panel, PlayGame.TITLE.toString(), JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-                    null, PlayGame.OK_CANCEL_OPTION.getArray(), PlayGame.OK_CANCEL_OPTION.getArray()[0]);
-            totalPlayer = Integer.parseInt(playerComboBox.getSelectedItem().toString()) + Integer.parseInt(aiComboBox.getSelectedItem().toString());
-        }
-        result = playerComboBox.getSelectedItem().toString();
-        aiResult = aiComboBox.getSelectedItem().toString();
-        int players[] = {Integer.parseInt(result), Integer.parseInt(aiResult)};
-        return players;
+        return panel;
     }
 
+    /**
+     * A pop up asking players if they want to use custom maps
+     * @author Harjap
+     * @return True if custom maps enabled, false otherwise
+     */
     public boolean customMapPopup(){
         int result = JOptionPane.showOptionDialog(this,"Would you like to use a custom map?","Custom Map",
                 0, 0, null, null,JOptionPane.YES_NO_OPTION);
@@ -338,11 +351,15 @@ public class RiskFrame extends JFrame implements RiskView{
 
     }
 
-
+    /**
+     * Opens a fileChooser and allows user to select custom maps
+     * @author Jason
+     * @return A File object which is the JSON file
+     */
     private File chooseMapFile() {
         //Create a file chooser
         final JFileChooser fc = new JFileChooser();
-        fc.setFileFilter(new FileNameExtensionFilter("JSON files", "json"));
+        fc.setFileFilter(new FileNameExtensionFilter(JSONConstants.FILE_CHOOSER_DESC.toString(), JSONConstants.FILE_CHOOSER_TYPE.toString()));
         int selectedFile = fc.showOpenDialog(this);
         while (selectedFile != JFileChooser.APPROVE_OPTION) {
             selectedFile = fc.showOpenDialog(this);
@@ -350,6 +367,11 @@ public class RiskFrame extends JFrame implements RiskView{
         return fc.getSelectedFile();
     }
 
+    /**
+     * Parses a JSON file into a JSON object
+     * @author Jason
+     * @return A JSON object of the custom map
+     */
     private JSONObject parseFile() {
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = null;
@@ -363,6 +385,7 @@ public class RiskFrame extends JFrame implements RiskView{
         }
         return jsonObject;
     }
+
     /**
      * Takes in countries and returns a list of their corresponding country button instances from RiskView
      * @author Harjap
@@ -479,6 +502,7 @@ public class RiskFrame extends JFrame implements RiskView{
 
     /**
      * updates the text area with the number of bonus troops places and updates the country button text
+     * @author Shashaank
      * @param bte BonusTroopsEvent contains information about the bonus troop phase
      */
     @Override
@@ -504,6 +528,7 @@ public class RiskFrame extends JFrame implements RiskView{
 
     /**
      * Updates text area to show that all bonus troops have been allocated
+     * @author Shashaank
      */
     @Override
     public void troopBonusComplete() {
@@ -517,6 +542,7 @@ public class RiskFrame extends JFrame implements RiskView{
 
     /**
      * Updates the view in case the attack is cancelled by user
+     * @author Jason
      * @param attackingCountry The attacking country of the user
      */
     public void handleAttackCancelled(Country attackingCountry) {
@@ -536,9 +562,9 @@ public class RiskFrame extends JFrame implements RiskView{
         ArrayList<CountryButton> countryButtons = convertCountryToCountryButtons(model.getAttackingPlayer().getCountriesOwned());
 
         for (CountryButton cb : countryButtons){
-            if (cb.getCountry().getPossibleAttacks().size() != 0 && cb.getCountry().getArmySize() >= 2) {
+            if (cb.getCountry().getPossibleAttacks().size() != 0 && cb.getCountry().getArmySize() >= MIN_ARMY_SIZE) {
                 cb.setEnabled(true);
-                cb.setBorder(BorderFactory.createLineBorder(Color.YELLOW, 3));
+                cb.setBorder(BorderFactory.createLineBorder(Color.YELLOW, THICKNESS));
             }
         }
         attack.setEnabled(false);
@@ -642,6 +668,7 @@ public class RiskFrame extends JFrame implements RiskView{
 
     /**
      * Handles the player eliminated event and creates a OptionPane to let user know who got eliminated
+     * @author Albara'a
      * @param playerID The player ID of the player who was eliminated
      */
     public void handlePlayerEliminated(int playerID) {
@@ -650,6 +677,7 @@ public class RiskFrame extends JFrame implements RiskView{
 
     /**
      * Updates the view when a reinforce event is cancelled
+     * @author Jason
      * @param reinforceCountry The country to reinforce from
      */
     public void handleReinforceCancelled(Country reinforceCountry) {
@@ -666,14 +694,15 @@ public class RiskFrame extends JFrame implements RiskView{
 
     /**
      * Update view to show all the countries that the player can reinforce from
+     * @author Jason
      */
     @Override
     public void handleShowReinforceCountry() {
         ArrayList<CountryButton> reinforceCountries = convertCountryToCountryButtons(model.getReinforceCountries());
         for (CountryButton cb : reinforceCountries){
-            if (cb.getCountry().getArmySize() >= 2) {
+            if (cb.getCountry().getArmySize() >= MIN_ARMY_SIZE) {
                 cb.setEnabled(true);
-                cb.setBorder(BorderFactory.createLineBorder(Color.yellow, 3));
+                cb.setBorder(BorderFactory.createLineBorder(Color.yellow, THICKNESS));
             }
         }
         endPhase.setEnabled(false);
@@ -682,6 +711,7 @@ public class RiskFrame extends JFrame implements RiskView{
 
     /**
      * Update the view to show all countries the player can reinforce into
+     * @author Jason
      * @param reinforceCountry The country to reinforce from
      */
     @Override
@@ -699,7 +729,7 @@ public class RiskFrame extends JFrame implements RiskView{
                 countryButton.setBorder(BorderFactory.createLineBorder(null));
             } else {
                 countryButton.setEnabled(true);
-                countryButton.setBorder(BorderFactory.createLineBorder(Color.yellow, 3));
+                countryButton.setBorder(BorderFactory.createLineBorder(Color.yellow, THICKNESS));
             }
         });
 

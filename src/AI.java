@@ -6,7 +6,7 @@ import java.util.*;
 /**
  *This AI class extends the Player class. Rather than a human player making the attacks, an AI will try to make the
  * best attacks, best reinforces and best troop placements.
- *
+ * @author Harjap
  */
 public class AI extends Player{
     private RiskModel model;
@@ -116,7 +116,7 @@ public class AI extends Player{
     public ArrayList<PossibleAIAttack> getAllPossibleAIAttacks(){
 
         // finds the utility score of the AI's current position
-        int currentScore = evaluateGameState(this.copyofCountriesOwned());
+        int currentScore = evaluateGameState(this.copyOfCountriesOwned());
 
         // gets all possible attacks
         ArrayList<PossibleAIAttack> allPossibleAttacks = getAllPossibleAttacks();
@@ -140,7 +140,7 @@ public class AI extends Player{
                 double probabilityOfWinningAttack = probabilities[attackArmy - 2][defendingArmy - 1] / 100;
                 attack.setProbability(probabilityOfWinningAttack);
 
-                ArrayList<Country> countriesOwned = this.copyofCountriesOwned();
+                ArrayList<Country> countriesOwned = this.copyOfCountriesOwned();
                 countriesOwned.add(defendingCountry);
 
                 int score = evaluateGameState(countriesOwned);
@@ -230,7 +230,7 @@ public class AI extends Player{
     public ArrayList<PossibleAIAttack> getAllPossibleAttacks(){
         ArrayList<PossibleAIAttack> countryAttacks = new ArrayList<>();
 
-        for (Country countryOwned: this.copyofCountriesOwned()){
+        for (Country countryOwned: this.copyOfCountriesOwned()){
             for(Country countryToAttack: countryOwned.getPossibleAttacks()){
                 countryAttacks.add(new PossibleAIAttack(countryOwned,countryToAttack));
             }

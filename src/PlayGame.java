@@ -1,5 +1,5 @@
 public enum PlayGame {
-    OK_CANCEL_OPTION("OK","CANCEL"), PLAYERS("1","2","3","4","5","6"), LABEL("Select the number of players:"),
+    OK_CANCEL_OPTION("OK","CANCEL"), PLAYERS("1","2","3","4","5","6"), LABEL("Select the number of human players:"),
     TITLE("Choose Players"), GAMETITLE("RISK!"),
     AILABEL("Select the number of AI: "), AIPLAYERS("0","1","2","3","4","5");
     private String text;

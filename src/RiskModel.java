@@ -4,6 +4,18 @@ import org.json.simple.JSONObject;
 import java.util.*;
 
 public class RiskModel {
+    private static final String JSON_COUNTRIES_KEY = "Countries";
+    private static final String JSON_CONTINENT_KEY = "Continents";
+    private static final int ONE_ARMY = 1;
+    private static final int TWO_ARMIES = 2;
+    private static final int THREE_ATTACKERS = 3;
+    private static final int INVALID_PLAYER_ID = 0;
+    private static final int INITIAL_TROOP_BONUS = 3;
+    private static final int DICE_VALUES = 6;
+    private static final int DEFAULT_MULTIPLE_ATTACKER = 3;
+    private static final int BONUS_TROOP_DIVIDEND = 3;
+    private static final String JSON_COUNTRY_NAME =  "countryName";
+    private static final String ADJACENT_COUNTRY = "adjacentCountries";
     private Board board;
     private int turnIndex;
     private Boolean gameOver;
@@ -18,20 +30,10 @@ public class RiskModel {
     private int movedTroops;
     private List<Player> playersList;
     private JSONObject jsonObject;
-    private static final String JSON_COUNTRIES_KEY = "Countries";
-    private static final String JSON_CONTINENT_KEY = "Continents";
-    private static final int ONE_ARMY = 1;
-    private static final int TWO_ARMIES = 2;
-    private static final int THREE_ATTACKERS = 3;
-    private static final int INVALID_PLAYERID = 0;
-    private static final int INITIAL_TROOP_BONUS = 3;
-    private static final String COUNTRYNAME =  "countryName";
-    private static final String ADJACENT_COUNTRY = "adjacentCountries";
     /**
      * Creates an instance of the Risk game
      */
-    public RiskModel()
-    {
+    public RiskModel() {
         board = new Board();
         turnIndex = 0;
         views = new ArrayList<>();
@@ -68,11 +70,10 @@ public class RiskModel {
     /**
      * Takes in a JSONObject representing the map we are loading into the game. This method ensure that this is a
      * valid map to play on and that there are no countries that are disconnected from other
-     *
+     * @author Harjap
      * @param jsonMap JSONObject representing the map to be loaded
      * @return boolean true if map is valid, and false otherwise
      */
-
     public boolean validateJSONMap(JSONObject jsonMap){
 
         HashMap<String,Country> countries = countriesFromJSON(jsonMap);
@@ -96,11 +97,10 @@ public class RiskModel {
     /**
      * Method that takes a JSONObject of the country map. It will then construct all of the countries within the map
      * and return it in a hashmap
-     *
+     * @author Harjap
      * @param jsonMap JSONObject representing the country map
      * @return Hashmap<String, Country> that holds all of the countries in the game
      */
-
     public HashMap<String,Country> countriesFromJSON(JSONObject jsonMap){
 
         JSONArray countriesJSON = (JSONArray) jsonMap.get(JSON_COUNTRIES_KEY);
@@ -112,7 +112,7 @@ public class RiskModel {
         // adding all the countries
         while(iterator.hasNext()){
             jsonCountry = (JSONObject) iterator.next();
-            String countryName = (String) jsonCountry.get(COUNTRYNAME);
+            String countryName = (String) jsonCountry.get(JSON_COUNTRY_NAME);
             countries.put(countryName, new Country(countryName));
         }
 
@@ -122,7 +122,7 @@ public class RiskModel {
         // add adjacent countries
         while(iterator.hasNext()){
             jsonCountry = (JSONObject) iterator.next();
-            String countryName = (String) jsonCountry.get(COUNTRYNAME);
+            String countryName = (String) jsonCountry.get(JSON_COUNTRY_NAME);
             adjacentCountries = (JSONArray) jsonCountry.get(ADJACENT_COUNTRY);
 
             for (Object adjCountryName: adjacentCountries){
@@ -133,22 +133,6 @@ public class RiskModel {
             }
         }
         return countries;
-    }
-
-    public int returnArmySize(int totalNumPlayers){
-        switch(totalNumPlayers){
-            case 2:
-                return StartGameTroops.TWO_PLAYER_GAME.returnValues();
-            case 3:
-                return StartGameTroops.THREE_PLAYER_GAME.returnValues();
-            case 4:
-                return StartGameTroops.FOUR_PLAYER_GAME.returnValues();
-            case 5:
-                return StartGameTroops.FIVE_PLAYER_GAME.returnValues();
-            case 6:
-                return StartGameTroops.SIX_PLAYER_GAME.returnValues();
-        }
-        return -1;
     }
 
     /**
@@ -171,7 +155,6 @@ public class RiskModel {
      * @param defendingCountry Country that is defending against an attack
      * @param numOfAttackers The number of attackers the attacking country is attacking with
      */
-
     public void attack(Country attackingCountry, Country defendingCountry, int numOfAttackers) {
         /*
         defending 2+ = 2 die
@@ -214,10 +197,10 @@ public class RiskModel {
         Random random = new Random();
         ArrayList<Integer> defenderDice = new ArrayList<>();
         if (defendingArmySize >= TWO_ARMIES) {
-            defenderDice.add(random.nextInt(6)+1);
-            defenderDice.add(random.nextInt(6)+1);
+            defenderDice.add(random.nextInt(DICE_VALUES)+1);
+            defenderDice.add(random.nextInt(DICE_VALUES)+1);
         } else if (defendingArmySize == ONE_ARMY) {
-            defenderDice.add(random.nextInt(6)+1);
+            defenderDice.add(random.nextInt(DICE_VALUES)+1);
         }
 
         return defenderDice;
@@ -234,12 +217,12 @@ public class RiskModel {
         ArrayList<Integer> attackerDice = new ArrayList<>();
         // If number of attackers exceeds 3, set it to 3
         if (numOfAttackers > THREE_ATTACKERS){
-            numOfAttackers = 3;
+            numOfAttackers = DEFAULT_MULTIPLE_ATTACKER;
         }
 
         // initialize attacker dice values
         for (int i = 0; i < numOfAttackers; i++) {
-            attackerDice.add(random.nextInt(6)+1);
+            attackerDice.add(random.nextInt(DICE_VALUES)+1);
         }
 
         return attackerDice;
@@ -295,7 +278,7 @@ public class RiskModel {
             defendingCountry.setArmySize(numOfAttackers); // moves remaining attackers to conquered country
             attackingCountry.setArmySize(attackersStayed); // removes attackers from original country
             int playerID = board.checkEliminated();
-            if (playerID > INVALID_PLAYERID) {
+            if (playerID > INVALID_PLAYER_ID) {
                 updatePlayerEliminated(playerID);
             }
         }
@@ -349,8 +332,6 @@ public class RiskModel {
         }
     }
 
-
-
     /**
      * Reinforces the designated country with specific troops and updates the view
      * @author Jason
@@ -380,6 +361,7 @@ public class RiskModel {
         } else if (state.equals(GameState.COMMENCE_ATTACK)) {
             defendingCountry = country;
             attack(attackingCountry, defendingCountry, movedTroops);
+            movedTroops = 0;
             for (RiskView v : views) {
                 v.handleCountryAttack(attackingCountry);
             }
@@ -392,20 +374,21 @@ public class RiskModel {
         } else if (state.equals(GameState.COMMENCE_REINFORCE)) {
             countryToReinforce = country;
             reinforce(reinforceCountry, countryToReinforce, movedTroops);
+            movedTroops = 0;
             for (RiskView v : views) {
                 v.handleReinforce(reinforceCountry);
             }
         } else if (state.equals(GameState.CHOOSE_BONUS)){
             bonusCountry = country;
-            int previousArmy =bonusCountry.getArmySize();
             bonusTroopEvent(bonusCountry, bonusTroopCalculation(bonusCountry.getPlayer()) - movedTroops);
-            //adds the difference of the troops placed
-            //movedTroops += bonusCountry.getArmySize() - previousArmy;
             troopsFinishedHandler();
-
         }
     }
 
+    /**
+     * Handler for when bonus troops have been placed
+     * @author Shashaank
+     */
     public void troopsFinishedHandler(){
         if(movedTroops == bonusTroopCalculation(bonusCountry.getPlayer())) {
             updateNextState();
@@ -418,6 +401,12 @@ public class RiskModel {
         }
     }
 
+    /**
+     * Handler for phase cancels in attack and reinforce
+     * @author Jason
+     * @param state The state of the game represented by a GameState enum
+     * @param country The country that was clicked
+     */
     public void phaseCancelHandler(GameState state,Country country){
         if (movedTroops == 0 && state.equals(GameState.CHOOSE_REINFORCE)) {
             for (RiskView v : views) {
@@ -434,6 +423,7 @@ public class RiskModel {
             updateNextState();
         }
     }
+
     /**
      * Handles the bonus troop placement event
      * @author Shashaank
@@ -448,6 +438,7 @@ public class RiskModel {
 
     /**
      * Handles the place troops button being clicked and updates the view accordingly
+     * @author Shashaank
      */
     public void placeTroopsClicked() {
         state = GameState.BONUS_PHASE;
@@ -460,6 +451,7 @@ public class RiskModel {
 
     /**
      * Handles the attack button being clicked and updates the view accordingly
+     * @author Jason
      */
     public void attackClicked() {
         state = GameState.SHOW_PLAYER_COUNTRIES;
@@ -472,6 +464,7 @@ public class RiskModel {
 
     /**
      * Handles the reinforce button being clicked and updates the view accordingly
+     * @author Jason
      */
     public void reinforceClicked() {
         state = GameState.SHOW_REINFORCE_COUNTRIES;
@@ -508,6 +501,7 @@ public class RiskModel {
 
     /**
      * Handles the end turn event and updates the view accordingly
+     * @author Jason
      */
     public void endTurn(int playerID) {
         for (RiskView v : views) {
@@ -525,7 +519,7 @@ public class RiskModel {
      */
     public int bonusTroopCalculation(Player player){
         int troops = INITIAL_TROOP_BONUS;
-        troops += player.getCountriesOwned().size() / 3;
+        troops += player.getCountriesOwned().size() / BONUS_TROOP_DIVIDEND;
 
         for(Continent c: board.getContinents().values()){
             if(player.equals(c.getContinentOwner())){
@@ -550,7 +544,7 @@ public class RiskModel {
     /**
      * Notifies the view that a battle result event needs to be printed
      * @author Albara'a
-     * @param player
+     * @param player The current player
      * @param defendingArmySize The defending country army size
      * @param attackingArmySize The attacking coutnry army size
      */
@@ -590,7 +584,7 @@ public class RiskModel {
     /**
      * Notifies the view that the game is over and who won
      * @author Jason
-     * @param
+     * @param playerID The id of the winning player
      */
     public void updateGameOver(int playerID) {
         for (RiskView v : views) {
@@ -600,6 +594,7 @@ public class RiskModel {
 
     /**
      * Handles the event when a player is eliminated
+     * @author Harjap
      * @param playerID The player ID of the player who was eliminated
      */
     public void updatePlayerEliminated(int playerID) {
@@ -610,6 +605,7 @@ public class RiskModel {
 
     /**
      * Handles the reinforce result by updating the text area accordingly
+     * @author Jason
      * @param reinforceCountry The country to reinforce from
      * @param countryToReinforce The country being reinforced
      * @param countryToReinforceArmy The reinforcing troops
@@ -622,6 +618,7 @@ public class RiskModel {
 
     /**
      * Handles the reinforce event by updating the view accordingly
+     * @author Jason
      * @param reinforceCountry The country to reinforce from
      * @param countryToReinforce The country being reinforced
      */
@@ -629,6 +626,28 @@ public class RiskModel {
         for (RiskView v : views){
             v.handleReinforceEvent(new ReinforceEvent(this,reinforceCountry,countryToReinforce));
         }
+    }
+
+    /**
+     * Gets the army size based on player count
+     * @author Albara'a
+     * @param totalNumPlayers The number of players
+     * @return StartGameTroops constant indicating how many initial troops to use
+     */
+    public int returnArmySize(int totalNumPlayers){
+        switch(totalNumPlayers){
+            case 2:
+                return StartGameTroops.TWO_PLAYER_GAME.returnValues();
+            case 3:
+                return StartGameTroops.THREE_PLAYER_GAME.returnValues();
+            case 4:
+                return StartGameTroops.FOUR_PLAYER_GAME.returnValues();
+            case 5:
+                return StartGameTroops.FIVE_PLAYER_GAME.returnValues();
+            case 6:
+                return StartGameTroops.SIX_PLAYER_GAME.returnValues();
+        }
+        return -1;
     }
 
     public Board getBoard() {
