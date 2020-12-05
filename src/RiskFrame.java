@@ -26,7 +26,7 @@ public class RiskFrame extends JFrame implements RiskView, Serializable{
     private HashMap<String, Country> countries;
     private JTextArea textArea;
     private ArrayList<JButton> diceJButtons;
-    private ArrayList<Image> diceIcons;
+    transient ArrayList<Image> diceIcons;
     private JButton attack;
     private JButton endPhase;
     private JButton reinforce;
