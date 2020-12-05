@@ -1,0 +1,69 @@
+{
+  "Countries": [
+    { "countryName":  "Ottoman",
+      "gridBag": {"x": "2", "y": "3"},
+      "continentName":  "Islamic Caliphate",
+      "adjacentCountries": ["Rashidoon", "Umayyad","Abbasid"]
+    },
+    { "countryName":  "Rashidoon",
+      "continentName":  "Islamic Caliphate",
+      "gridBag": {"x": "1", "y": "0"},
+      "adjacentCountries": ["Ottoman", "Umayyad", "Abbasid"]
+    },
+    { "countryName":  "Abbasid",
+      "continentName":  "Islamic Caliphate",
+      "gridBag": {"x": "3", "y": "3"},
+      "adjacentCountries": ["Rashidoon", "Umayyad", "Ottoman" ]
+    },
+    { "countryName":  "Umayyad",
+      "continentName":  "Islamic Caliphate",
+      "gridBag": {"x": "2", "y": "1"},
+      "adjacentCountries": ["Rashidoon", "Ottoman", "Abbasid"]
+    },
+    { "countryName":  "Andalus",
+      "continentName":  "Europe",
+      "gridBag": {"x": "3", "y": "1"},
+      "adjacentCountries": ["France", "Germany", "Portugal"]
+    },
+    { "countryName":  "France",
+      "continentName":  "Europe",
+      "gridBag": {"x": "1", "y": "3"},
+      "adjacentCountries": ["Andalus", "Germany", "Portugal"]
+    },
+    { "countryName":  "Portugal",
+      "continentName":  "Europe",
+      "gridBag": {"x": "4", "y": "2"},
+      "adjacentCountries": ["Germany", "Andalus", "France"]
+    },
+    { "countryName":  "Germany",
+      "continentName":  "Europe",
+      "gridBag": {"x": "3", "y": "4"},
+      "adjacentCountries": ["Portugal","Andalus", "France"]
+    },
+    { "countryName":  "HarjapCountry",
+      "continentName":  "Epic",
+      "gridBag": {"x": "4", "y": "0"},
+      "adjacentCountries": ["AlbaraaCountry", "JasonCountry", "ShashaankCountry"]
+    },
+    { "countryName":  "AlbaraaCountry",
+      "continentName":  "Epic",
+      "gridBag": {"x": "2", "y": "5"},
+      "adjacentCountries": ["ShashaankCountry", "JasonCountry", "HarjapCountry"]
+    },
+    { "countryName":  "ShashaankCountry",
+      "continentName":  "Epic",
+      "gridBag": {"x": "2", "y": "6"},
+      "adjacentCountries": ["AlbaraaCountry", "JasonCountry", "HarjapCountry"]
+    },
+    { "countryName":  "JasonCountry",
+      "continentName":  "Epic",
+      "gridBag": {"x": "2", "y": "7"},
+      "adjacentCountries": ["HarjapCountry", "ShashaankCountry", "AlbaraaCountry"]
+    }
+    ],
+  "Continents":[
+    {"continentName": "Islamic Caliphate", "bonusValue": "8" },
+    {"continentName": "Europe", "bonusValue": "5" },
+    {"continentName": "Epic", "bonusValue": "7" }
+  ]
+}
