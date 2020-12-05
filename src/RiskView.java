@@ -1,3 +1,5 @@
+import java.io.File;
+
 public interface RiskView {
     void handleAttackEvent(AttackEvent ae);
     void handleResultEvent(BattleResultEvent bre);

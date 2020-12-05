@@ -31,6 +31,7 @@ public class RiskModel implements Serializable {
     private int movedTroops;
     private List<Player> playersList;
     private JSONObject jsonObject;
+    private File file;
     /**
      * Creates an instance of the Risk game
      */
@@ -49,6 +50,7 @@ public class RiskModel implements Serializable {
         movedTroops = 0;
         playersList = new ArrayList<>();
         jsonObject = null;
+        file = null;
     }
 
     /**
@@ -146,11 +148,10 @@ public class RiskModel implements Serializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
 
-    private void writeObject( ObjectOutputStream out ) throws IOException {
+    private void writeObject(ObjectOutputStream out ) throws IOException {
         //out.write( this );
         out.flush();
     }
@@ -727,5 +728,8 @@ public class RiskModel implements Serializable {
 
     public void setJsonObject(JSONObject jsonObject) {
         this.jsonObject = jsonObject;
+    }
+    public void setFile(File file) {
+        this.file = file;
     }
 }
