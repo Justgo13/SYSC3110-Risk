@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -7,7 +8,7 @@ import java.util.Iterator;
  * Creates a continent object for holding countries and assigning bonus army to players
  * @author Shashaank
  */
-public class Continent {
+public class Continent implements Serializable {
     private String name;
     private int bonusArmy;
     private HashMap<String,Country> countries;

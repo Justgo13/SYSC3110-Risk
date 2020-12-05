@@ -25,6 +25,8 @@ public class RiskController implements ActionListener{
             riskModel.reinforceClicked();
         } else if (e.getActionCommand().equals(ButtonCommand.PLACETROOPS.toString())){
             riskModel.placeTroopsClicked();
+        } else if (e.getActionCommand().equals(ButtonCommand.SAVE.toString())){
+            riskModel.saveGame();
         }
     }
 }
