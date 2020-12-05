@@ -213,10 +213,10 @@
   ],
 
   "Continents": [
-    {"continentName": "North America", "troopValue": "5"},
+    {"continentName": "North America", "bonusValue": "5"},
     {"continentName": "South America", "bonusValue": "2"},
-    {"continentName": "Europe", "troopValue": "5"},
-    {"continentName": "Africa", "troopValue": "3"},
+    {"continentName": "Europe", "bonusValue": "5"},
+    {"continentName": "Africa", "bonusValue": "3"},
     {"continentName": "Asia", "bonusValue": "7"},
     {"continentName": "Australia", "bonusValue": "2"}
   ]
