@@ -40,41 +40,48 @@ public class RiskFrame extends JFrame implements RiskView, Serializable{
         int numPlayer = getPlayerList[0];
         int aiPlayer = getPlayerList[1];
 
-        //Instantiating the model
-        model = new RiskModel();
-
-        boolean customMapChoice = customMapPopup();
-
         JSONObject mapJSON = null;
-
-
-        if (customMapChoice) { // choose a custom map
-            // loops you until a valid map is given
-            while (true) {
-                mapJSON = parseFile();
-                if (model.validateJSONMap(mapJSON)) {
-                    break;
-                } else {
-                    JOptionPane.showMessageDialog(this, "This map is invalid. Please upload a valid map");
-                }
-            }
-            model.setJsonObject(mapJSON);
-
-        }else{ // use the basic world map
-
-            JSONParser parser = new JSONParser();
-
-            try{
-                InputStream inputStream = this.getClass().getResourceAsStream(JSONConstants.DEFAULT_FILE.toString());
-                Object obj = parser.parse(new InputStreamReader(inputStream,"UTF-8"));
-                JSONObject jsonMap = (JSONObject) obj;
-                model.setJsonObject(jsonMap);
-                mapJSON = jsonMap;
-            }catch(Exception e){
-                System.out.println(e);
-            }
-
+        boolean loadingChoice = loadGamePopup();
+        if(loadingChoice){
+            File file = chooseFile();
+            model = loadFromFile(file);
         }
+        else{
+            model = new RiskModel();
+            boolean customMapChoice = customMapPopup();
+
+
+
+            if (customMapChoice) { // choose a custom map
+                // loops you until a valid map is given
+                while (true) {
+                    mapJSON = parseFile();
+                    if (model.validateJSONMap(mapJSON)) {
+                        break;
+                    } else {
+                        JOptionPane.showMessageDialog(this, "This map is invalid. Please upload a valid map");
+                    }
+                }
+                model.setJsonObject(mapJSON);
+
+            }else{ // use the basic world map
+
+                JSONParser parser = new JSONParser();
+
+                try{
+                    InputStream inputStream = this.getClass().getResourceAsStream(JSONConstants.DEFAULT_FILE.toString());
+                    Object obj = parser.parse(new InputStreamReader(inputStream,"UTF-8"));
+                    JSONObject jsonMap = (JSONObject) obj;
+                    model.setJsonObject(jsonMap);
+                    mapJSON = jsonMap;
+                }catch(Exception e){
+                    System.out.println(e);
+                }
+
+            }
+        }
+
+
 
         model.playGame(numPlayer, aiPlayer);
         model.addRiskView(this); // Adds the view to the model
@@ -248,6 +255,7 @@ public class RiskFrame extends JFrame implements RiskView, Serializable{
         save.addActionListener(riskController);
         save.setActionCommand(ButtonCommand.SAVE.toString());
 
+
         // Add bottom Game Buttons to the controller
         attack.addActionListener(riskController);
         attack.setActionCommand(ButtonCommand.ATTACK.toString());
@@ -356,7 +364,18 @@ public class RiskFrame extends JFrame implements RiskView, Serializable{
             return false;
         }
         return true;
+    }
 
+    public boolean loadGamePopup(){
+        int result = JOptionPane.showOptionDialog(this,"Would you like to load a previous game?","Load Game?",
+                0, 0, null, null,JOptionPane.YES_NO_OPTION);
+
+        // No -> 1
+        // Yes -> 0
+        if (result == 1){
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -364,16 +383,33 @@ public class RiskFrame extends JFrame implements RiskView, Serializable{
      * @author Jason
      * @return A File object which is the JSON file
      */
-    private File chooseMapFile() {
+    public File chooseFile() {
         //Create a file chooser
         final JFileChooser fc = new JFileChooser();
-        fc.setFileFilter(new FileNameExtensionFilter(JSONConstants.FILE_CHOOSER_DESC.toString(), JSONConstants.FILE_CHOOSER_TYPE.toString()));
+        fc.setFileFilter(new FileNameExtensionFilter(FileChooser.JSON_DESCRIPTION.toString(), FileChooser.JSON_DESCRIPTION.toString()));
+        fc.setFileFilter(new FileNameExtensionFilter(FileChooser.TXT_DESCRIPTION.toString(), FileChooser.TXT_TYPE.toString()));
         int selectedFile = fc.showOpenDialog(this);
         while (selectedFile != JFileChooser.APPROVE_OPTION) {
             selectedFile = fc.showOpenDialog(this);
         }
         return fc.getSelectedFile();
     }
+
+
+
+    public RiskModel loadFromFile(File file){
+        RiskModel newModel = null;
+        try(FileInputStream fis = new FileInputStream(file)){
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            newModel = (RiskModel) ois.readObject();
+
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return newModel;
+    }
+
+
 
     /**
      * Parses a JSON file into a JSON object
@@ -384,7 +420,7 @@ public class RiskFrame extends JFrame implements RiskView, Serializable{
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = null;
         try {
-            Object obj = parser.parse(new FileReader(chooseMapFile()));
+            Object obj = parser.parse(new FileReader(chooseFile()));
 
             // A JSON object. Key value pairs are unordered. JSONObject supports java.util.Map interface.
             jsonObject = (JSONObject) obj;
@@ -576,6 +612,7 @@ public class RiskFrame extends JFrame implements RiskView, Serializable{
         attack.setEnabled(false);
         endPhase.setEnabled(false);
     }
+
 
     /**
      * Highlights all the countries the attacking player can attack from by creating a border around it
