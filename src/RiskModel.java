@@ -151,7 +151,7 @@ public class RiskModel implements Serializable {
 
 
     private void writeObject( ObjectOutputStream out ) throws IOException {
-        out.write( this );
+        //out.write( this );
         out.flush();
     }
 
