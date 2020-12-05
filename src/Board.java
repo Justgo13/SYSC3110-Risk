@@ -8,6 +8,7 @@ public class Board {
     private static final String JSON_COUNTRY_KEY = "countryName";
     private static final String JSON_CONTINENT_KEY = "continentName";
     private static final String JSON_ADJACENT_KEY = "adjacentCountries";
+    private static final String JSON_BONUS_ARMY = "bonusValue";
     private int numOfPlayers;
     private ArrayList<Player> players;
     private HashMap<String, Country> countries;
@@ -29,7 +30,6 @@ public class Board {
         continentCountries = new HashMap<>();
         countryNames = new ArrayList<>();
         continentBonusArmies = new HashMap<>();
-        initializeContinentBonusArmies();
         continentNames = new ArrayList<>();
     }
 
@@ -55,7 +55,7 @@ public class Board {
         buildContinentNames(continents);
         buildCountryNames(countries);
         buildContinent(countries);
-        buildMap(); // adds all countries to map
+        buildMap(continents); // adds all countries to map
         placePlayers(totalPlayers); // place players randomly on the map
         setAdjacentCountries(countries);
     }
@@ -63,20 +63,24 @@ public class Board {
     /**
      * Builds the maps by populating the Countries and continents
      * @author Shashaank
+     * @param continents
      */
-    private void buildMap() {
+    private void buildMap(JSONArray continents) {
+        Iterator iterator = continents.iterator();
         for (String countryName : countryNames) {
             countries.put(countryName, new Country(countryName));
         }
-        for (String continentName : continentNames) {
-            continents.put(continentName, new Continent(continentName, continentBonusArmies.get(continentName))); // creates continents objects
+        JSONObject JSONcontinent;
+        while(iterator.hasNext()) {
+            JSONcontinent = (JSONObject) iterator.next();
+            this.continents.put((String) JSONcontinent.get(JSON_CONTINENT_KEY), new Continent((String) JSONcontinent.get(JSON_CONTINENT_KEY), ((Number) JSONcontinent.get(JSON_BONUS_ARMY)).intValue())); // creates continents objects
 
             //gets all continents and populates them with their specific countries
             //also gives every country the continent it belongs in
-            for(int j = 0; j<continentCountries.get(continentName).size(); j++){
-                Continent continent = continents.get(continentName);
-                continent.addCountry(continentCountries.get(continentName).get(j),countries.get(continentCountries.get(continentName).get(j))); // populates continents with their specific countries
-                countries.get(continentCountries.get(continentName).get(j)).setContinent(continent.getName()); // sets the continent name of each country
+            for(int j = 0; j<continentCountries.get(JSONcontinent.get(JSON_CONTINENT_KEY)).size(); j++){
+                Continent continent = this.continents.get(JSONcontinent.get(JSON_CONTINENT_KEY));
+                continent.addCountry(continentCountries.get(JSONcontinent.get(JSON_CONTINENT_KEY)).get(j),countries.get(continentCountries.get(JSONcontinent.get(JSON_CONTINENT_KEY)).get(j))); // populates continents with their specific countries
+                countries.get(continentCountries.get(JSONcontinent.get(JSON_CONTINENT_KEY)).get(j)).setContinent(continent.getName()); // sets the continent name of each country
             }
         }
     }
@@ -222,19 +226,6 @@ public class Board {
                 parentCountry.addAdjacentCountry(adjacentCountry);
             }
         }
-    }
-
-    /**
-     * Initializes the bonus army for each continent
-     * @author Albara'a
-     */
-    public void initializeContinentBonusArmies(){
-        continentBonusArmies.put(BoardCountries.ASIA.toString(), BoardCountries.ASIA_TROOP.bonusTroopCount());
-        continentBonusArmies.put(BoardCountries.AUS.toString(), BoardCountries.AUS_TROOP.bonusTroopCount());
-        continentBonusArmies.put(BoardCountries.NA.toString(), BoardCountries.NA_TROOP.bonusTroopCount());
-        continentBonusArmies.put(BoardCountries.AFR.toString(), BoardCountries.AFR_TROOP.bonusTroopCount());
-        continentBonusArmies.put(BoardCountries.SA.toString(), BoardCountries.SA_TROOP.bonusTroopCount());
-        continentBonusArmies.put(BoardCountries.EU.toString(), BoardCountries.EU_TROOP.bonusTroopCount());
     }
 
     /**
