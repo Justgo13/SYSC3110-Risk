@@ -213,12 +213,12 @@
   ],
 
   "Continents": [
-    {"continentName": "North America", "bonusValue": "5"},
-    {"continentName": "South America", "bonusValue": "2"},
-    {"continentName": "Europe", "bonusValue": "5"},
-    {"continentName": "Africa", "bonusValue": "3"},
-    {"continentName": "Asia", "bonusValue": "7"},
-    {"continentName": "Australia", "bonusValue": "2"}
+    {"continentName": "North America", "bonusValue": 5.0},
+    {"continentName": "South America", "bonusValue": 2.0},
+    {"continentName": "Europe", "bonusValue": 5.0},
+    {"continentName": "Africa", "bonusValue": 3.0},
+    {"continentName": "Asia", "bonusValue": 7.0},
+    {"continentName": "Australia", "bonusValue": 2.0}
   ]
 
 
