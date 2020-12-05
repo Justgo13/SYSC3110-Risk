@@ -1,9 +1,10 @@
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Board {
+public class Board implements Serializable {
     private static final int COUNTRY_COUNT = 42;
     private static final String JSON_COUNTRY_KEY = "countryName";
     private static final String JSON_CONTINENT_KEY = "continentName";

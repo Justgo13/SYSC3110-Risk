@@ -6,10 +6,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.io.File;
-import java.io.FileReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,7 +16,7 @@ import java.util.Iterator;
  * Creates a JFrame for the Risk game containing a button panel and view class
  * @author Jason
  */
-public class RiskFrame extends JFrame implements RiskView{
+public class RiskFrame extends JFrame implements RiskView, Serializable{
     private static final int MIN_PLAYERS = 1;
     private static final int MAX_PLAYERS = 6;
     private static final int THICKNESS = 3;
@@ -240,6 +237,16 @@ public class RiskFrame extends JFrame implements RiskView{
 
         add(panel, frameConstraint);
 
+        //creating menu bar for the saving stuff
+        JMenu menu = new JMenu(ButtonText.OPTIONS.toString());
+        JMenuBar bar = new JMenuBar();
+        JMenuItem save = new JMenuItem(ButtonCommand.SAVE.toString());
+
+        menu.add(save);
+        bar.add(menu);
+
+        save.addActionListener(riskController);
+        save.setActionCommand(ButtonCommand.SAVE.toString());
 
         // Add bottom Game Buttons to the controller
         attack.addActionListener(riskController);
@@ -266,6 +273,7 @@ public class RiskFrame extends JFrame implements RiskView{
         setVisible(true);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setResizable(false);
+        setJMenuBar(bar);
 
     }
 
@@ -479,9 +487,7 @@ public class RiskFrame extends JFrame implements RiskView{
      */
     public void setDiceIcon(JButton diceJButton, int diceNum){
         ImageIcon icon = new ImageIcon(diceIcons.get(diceNum-1));
-
         diceJButton.setIcon(icon);
-
     }
 
     /**

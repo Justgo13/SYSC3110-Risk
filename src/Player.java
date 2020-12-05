@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
-public abstract class Player {
+public abstract class Player implements Serializable {
     private int initArmySize;
     private ArrayList<Country> countriesOwned;
     private int id;

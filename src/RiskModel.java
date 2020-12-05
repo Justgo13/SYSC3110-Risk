@@ -1,9 +1,10 @@
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.io.*;
 import java.util.*;
 
-public class RiskModel {
+public class RiskModel implements Serializable {
     private static final String JSON_COUNTRIES_KEY = "Countries";
     private static final String JSON_CONTINENT_KEY = "Continents";
     private static final int ONE_ARMY = 1;
@@ -133,6 +134,25 @@ public class RiskModel {
             }
         }
         return countries;
+    }
+
+    public void saveGame(){
+        File file = new File("Serialize.txt");
+        try(FileOutputStream fos = new FileOutputStream(file)){
+            if(!file.exists()) file.createNewFile();
+            ObjectOutputStream out = new ObjectOutputStream(fos);
+            out.writeObject(this);
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    private void writeObject( ObjectOutputStream out ) throws IOException {
+        out.write( this );
+        out.flush();
     }
 
     /**
