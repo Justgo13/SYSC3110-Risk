@@ -17,6 +17,7 @@ public class RiskModel implements Serializable {
     private static final int BONUS_TROOP_DIVIDEND = 3;
     private static final String JSON_COUNTRY_NAME =  "countryName";
     private static final String ADJACENT_COUNTRY = "adjacentCountries";
+    //private static final long serialVersionUID = 123123123123123L;
     private Board board;
     private int turnIndex;
     private Boolean gameOver;
@@ -732,4 +733,6 @@ public class RiskModel implements Serializable {
     public void setFile(File file) {
         this.file = file;
     }
+
+
 }

@@ -395,21 +395,31 @@ public class RiskFrame extends JFrame implements RiskView, Serializable{
         return fc.getSelectedFile();
     }
 
-
-
     public RiskModel loadFromFile(File file){
-        RiskModel newModel = null;
         try(FileInputStream fis = new FileInputStream(file)){
             ObjectInputStream ois = new ObjectInputStream(fis);
-            newModel = (RiskModel) ois.readObject();
+            /*Object obj;
+            while(!((obj =  ois.readObject()) instanceof EofIndicatorClass)){
+                System.out.println(obj);
+            }
 
-        } catch (IOException | ClassNotFoundException e) {
+
+            RiskModel newModel = (RiskModel) obj;
+
+             */
+
+            RiskModel newModel = (RiskModel) ois.readObject();
+            ois.close();
+            return newModel;
+
+        }catch (EOFException e){
+            e.printStackTrace();
+
+        }catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-        return newModel;
+        return null;
     }
-
-
 
     /**
      * Parses a JSON file into a JSON object
