@@ -182,32 +182,32 @@
     },
     { "countryName":  "Congo",
       "continentName":  "Africa",
-      "gridBag": {"x": "6", "y": "5"},
+      "gridBag": {"x": "6", "y": "6"},
       "adjacentCountries": ["South Africa", "East Africa", "North Africa"]
     },
     { "countryName":  "North Africa",
       "continentName":  "Africa",
-      "gridBag": {"x": "5", "y": "3"},
+      "gridBag": {"x": "6", "y": "4"},
       "adjacentCountries": ["Brazil", "Western Europe", "Southern Europe", "Egypt", "East Africa", "Congo"]
     },
     { "countryName":  "South Africa",
       "continentName":  "Africa",
-      "gridBag": {"x": "6", "y": "6"},
+      "gridBag": {"x": "6", "y": "7"},
       "adjacentCountries": ["Congo", "East Africa", "Madagascar"]
     },
     { "countryName":  "Egypt",
       "continentName":  "Africa",
-      "gridBag": {"x": "7", "y": "3"},
+      "gridBag": {"x": "7", "y": "4"},
       "adjacentCountries": ["North Africa", "East Africa", "Middle East", "Southern Europe"]
     },
     { "countryName":  "East Africa",
       "continentName":  "Africa",
-      "gridBag": {"x": "7", "y": "4"},
+      "gridBag": {"x": "7", "y": "5"},
       "adjacentCountries": ["Congo", "South Africa", "Madagascar", "North Africa", "Egypt", "Middle East"]
     },
     { "countryName":  "Madagascar",
       "continentName":  "Africa",
-      "gridBag": {"x": "7", "y": "4"},
+      "gridBag": {"x": "8", "y": "6"},
       "adjacentCountries": ["East Africa", "South Africa"]
     }
   ],

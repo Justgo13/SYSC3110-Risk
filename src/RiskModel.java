@@ -532,8 +532,11 @@ public class RiskModel implements Serializable {
      * @return int number of bonus troops
      */
     public int bonusTroopCalculation(Player player){
-        int troops = INITIAL_TROOP_BONUS;
+        int troops = 0;
         troops += player.getCountriesOwned().size() / BONUS_TROOP_DIVIDEND;
+        if (troops < INITIAL_TROOP_BONUS){
+            troops = INITIAL_TROOP_BONUS;
+        }
 
         for(Continent c: board.getContinents().values()){
             if(player.equals(c.getContinentOwner())){
