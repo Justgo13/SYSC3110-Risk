@@ -1,11 +1,11 @@
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.io.*;
 import java.util.*;
 
-public class RiskModel {
-    private static final String JSON_COUNTRIES_KEY = "Countries";
-    private static final String JSON_CONTINENT_KEY = "Continents";
+public class RiskModel implements Serializable {
+    private static final long serialVersionUID = 1L;
     private static final int ONE_ARMY = 1;
     private static final int TWO_ARMIES = 2;
     private static final int THREE_ATTACKERS = 3;
@@ -14,8 +14,6 @@ public class RiskModel {
     private static final int DICE_VALUES = 6;
     private static final int DEFAULT_MULTIPLE_ATTACKER = 3;
     private static final int BONUS_TROOP_DIVIDEND = 3;
-    private static final String JSON_COUNTRY_NAME =  "countryName";
-    private static final String ADJACENT_COUNTRY = "adjacentCountries";
     private Board board;
     private int turnIndex;
     private Boolean gameOver;
@@ -62,8 +60,8 @@ public class RiskModel {
         for (int i = numHumanPlayers; i < totalPlayers; i++) {
             this.playersList.add(new AI(this, board,returnArmySize(totalPlayers) ,i+1));
         }
-        JSONArray countries = (JSONArray) jsonObject.get(JSON_COUNTRIES_KEY);
-        JSONArray continents = (JSONArray) jsonObject.get(JSON_CONTINENT_KEY);
+        JSONArray countries = (JSONArray) jsonObject.get(JSONConstants.COUNTRIES.toString());
+        JSONArray continents = (JSONArray) jsonObject.get(JSONConstants.CONTINENTS.toString());
         board.setupBoard(numHumanPlayers, this.playersList, countries, continents);
     }
 
@@ -103,7 +101,7 @@ public class RiskModel {
      */
     public HashMap<String,Country> countriesFromJSON(JSONObject jsonMap){
 
-        JSONArray countriesJSON = (JSONArray) jsonMap.get(JSON_COUNTRIES_KEY);
+        JSONArray countriesJSON = (JSONArray) jsonMap.get(JSONConstants.COUNTRIES.toString());
         Iterator iterator = countriesJSON.iterator();
 
         JSONObject jsonCountry;
@@ -112,7 +110,7 @@ public class RiskModel {
         // adding all the countries
         while(iterator.hasNext()){
             jsonCountry = (JSONObject) iterator.next();
-            String countryName = (String) jsonCountry.get(JSON_COUNTRY_NAME);
+            String countryName = (String) jsonCountry.get(JSONConstants.COUNTRY_NAME.toString());
             countries.put(countryName, new Country(countryName));
         }
 
@@ -122,8 +120,8 @@ public class RiskModel {
         // add adjacent countries
         while(iterator.hasNext()){
             jsonCountry = (JSONObject) iterator.next();
-            String countryName = (String) jsonCountry.get(JSON_COUNTRY_NAME);
-            adjacentCountries = (JSONArray) jsonCountry.get(ADJACENT_COUNTRY);
+            String countryName = (String) jsonCountry.get(JSONConstants.COUNTRY_NAME.toString());
+            adjacentCountries = (JSONArray) jsonCountry.get(JSONConstants.ADJACENT_COUNTRY.toString());
 
             for (Object adjCountryName: adjacentCountries){
                 String name = adjCountryName.toString();
@@ -135,6 +133,18 @@ public class RiskModel {
         return countries;
     }
 
+    public void saveGame(){
+        File file = new File("Serialize.txt");
+        try(FileOutputStream fos = new FileOutputStream(file)){
+            if(!file.exists()) file.createNewFile();
+            ObjectOutputStream out = new ObjectOutputStream(fos);
+            out.writeObject(this);
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Adds a view to listen to changes in the model
      * @author Harjap
@@ -142,6 +152,10 @@ public class RiskModel {
      */
     public void addRiskView(RiskView view){
         views.add(view);
+    }
+
+    public void removeAllRiskView(){
+        views.clear();
     }
 
     /**
@@ -707,5 +721,9 @@ public class RiskModel {
 
     public void setJsonObject(JSONObject jsonObject) {
         this.jsonObject = jsonObject;
+    }
+
+    public JSONObject getJsonObject() {
+        return jsonObject;
     }
 }

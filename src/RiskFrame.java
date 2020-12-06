@@ -6,10 +6,8 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.io.File;
-import java.io.FileReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,58 +27,61 @@ public class RiskFrame extends JFrame implements RiskView{
     private HashMap<String, Country> countries;
     private JTextArea textArea;
     private ArrayList<JButton> diceJButtons;
-    private ArrayList<Image> diceIcons;
+    private transient ArrayList<Image> diceIcons;
     private JButton attack;
     private JButton endPhase;
     private JButton reinforce;
     private JButton placeTroops;
     private GridBagConstraints mapConstraints;
+    private JSONObject mapJSON;
     public RiskFrame() {
-        super(PlayGame.GAMETITLE.toString());
+        super(PlayGame.GAME_TITLE.toString());
         setLayout(new GridBagLayout());
-        // ask for player number
-        int[] getPlayerList = invokePlayerPopup();
-        int numPlayer = getPlayerList[0];
-        int aiPlayer = getPlayerList[1];
 
-        //Instantiating the model
-        model = new RiskModel();
+        mapJSON = null;
+        boolean loadingChoice = generalGameInitPopup(PlayGame.LOAD_GAME_POPUP.toString());
+        if(loadingChoice){
+            File file = chooseFile();
+            model = loadFromFile(file);
+            mapJSON = model.getJsonObject();
 
-        boolean customMapChoice = customMapPopup();
-
-        JSONObject mapJSON = null;
-
-
-        if (customMapChoice) { // choose a custom map
-            // loops you until a valid map is given
-            while (true) {
-                mapJSON = parseFile();
-                if (model.validateJSONMap(mapJSON)) {
-                    break;
-                } else {
-                    JOptionPane.showMessageDialog(this, "This map is invalid. Please upload a valid map");
+            model.removeAllRiskView();
+            model.addRiskView(this); // Adds the view to the model
+        } else{
+            model = new RiskModel();
+            boolean customMapChoice = generalGameInitPopup(PlayGame.LOAD_MAP_POPUP.toString());
+            if (customMapChoice) { // choose a custom map
+                // loops you until a valid map is given
+                while (true) {
+                    mapJSON = parseFile();
+                    if (model.validateJSONMap(mapJSON)) {
+                        break;
+                    } else {
+                        JOptionPane.showMessageDialog(this, PlayGame.INVALID_MAP_MESSAGE.toString());
+                    }
                 }
+                model.setJsonObject(mapJSON);
+
+            }else{ // use the basic world map
+                // ask for player number
+                int[] getPlayerList = invokePlayerPopup();
+                int numPlayer = getPlayerList[0];
+                int aiPlayer = getPlayerList[1];
+                JSONParser parser = new JSONParser();
+
+                try{
+                    InputStream inputStream = this.getClass().getResourceAsStream(JSONConstants.DEFAULT_FILE.toString());
+                    Object obj = parser.parse(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+                    JSONObject jsonMap = (JSONObject) obj;
+                    model.setJsonObject(jsonMap);
+                    mapJSON = jsonMap;
+                }catch(Exception e){
+                    System.out.println(e);
+                }
+                model.playGame(numPlayer, aiPlayer);
+                model.addRiskView(this); // Adds the view to the model
             }
-            model.setJsonObject(mapJSON);
-
-        }else{ // use the basic world map
-
-            JSONParser parser = new JSONParser();
-
-            try{
-                InputStream inputStream = this.getClass().getResourceAsStream(JSONConstants.DEFAULT_FILE.toString());
-                Object obj = parser.parse(new InputStreamReader(inputStream,"UTF-8"));
-                JSONObject jsonMap = (JSONObject) obj;
-                model.setJsonObject(jsonMap);
-                mapJSON = jsonMap;
-            }catch(Exception e){
-                System.out.println(e);
-            }
-
         }
-
-        model.playGame(numPlayer, aiPlayer);
-        model.addRiskView(this); // Adds the view to the model
 
         // Creates the Controller
         RiskController riskController = new RiskController(model);
@@ -112,7 +113,7 @@ public class RiskFrame extends JFrame implements RiskView{
         mapConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
         mapConstraints.fill = GridBagConstraints.BOTH;
 
-        JSONArray countriesJSON = (JSONArray) mapJSON.get(JSONConstants.JSON_COUNTRIES.toString());
+        JSONArray countriesJSON = (JSONArray) mapJSON.get(JSONConstants.COUNTRIES.toString());
         Iterator iterator = countriesJSON.iterator();
 
         JSONObject jsonObject;
@@ -240,6 +241,17 @@ public class RiskFrame extends JFrame implements RiskView{
 
         add(panel, frameConstraint);
 
+        //creating menu bar for the saving stuff
+        JMenu menu = new JMenu(ButtonText.OPTIONS.toString());
+        JMenuBar bar = new JMenuBar();
+        JMenuItem save = new JMenuItem(ButtonCommand.SAVE.toString());
+
+        menu.add(save);
+        bar.add(menu);
+
+        save.addActionListener(riskController);
+        save.setActionCommand(ButtonCommand.SAVE.toString());
+
 
         // Add bottom Game Buttons to the controller
         attack.addActionListener(riskController);
@@ -266,6 +278,7 @@ public class RiskFrame extends JFrame implements RiskView{
         setVisible(true);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setResizable(false);
+        setJMenuBar(bar);
 
     }
 
@@ -294,7 +307,7 @@ public class RiskFrame extends JFrame implements RiskView{
      */
     private int[] invokePlayerPopup() {
         JComboBox playerComboBox = new JComboBox(PlayGame.PLAYERS.getArray());
-        JComboBox aiComboBox = new JComboBox(PlayGame.AIPLAYERS.getArray());
+        JComboBox aiComboBox = new JComboBox(PlayGame.AI_PLAYERS.getArray());
         JPanel panel = createPopupPanel(playerComboBox, aiComboBox);
 
         int numPlayers = JOptionPane.showOptionDialog(this, panel, PlayGame.TITLE.toString(), JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE,
@@ -323,7 +336,7 @@ public class RiskFrame extends JFrame implements RiskView{
     private JPanel createPopupPanel(JComboBox playerComboBox, JComboBox aiComboBox) {
         JPanel panel = new JPanel();
         JLabel playerLabel = new JLabel(PlayGame.LABEL.toString());
-        JLabel aiLabel = new JLabel(PlayGame.AILABEL.toString());
+        JLabel aiLabel = new JLabel(PlayGame.AI_LABEL.toString());
         playerComboBox.setSelectedIndex(0);
         aiComboBox.setSelectedIndex(0);
         panel.add(playerLabel);
@@ -334,13 +347,14 @@ public class RiskFrame extends JFrame implements RiskView{
     }
 
     /**
-     * A pop up asking players if they want to use custom maps
+     * A general game popup
      * @author Harjap
-     * @return True if custom maps enabled, false otherwise
+     * @param popupMessage A message shown on the popup
+     * @return True if yes option clicked and false otherwise
      */
-    public boolean customMapPopup(){
-        int result = JOptionPane.showOptionDialog(this,"Would you like to use a custom map?","Custom Map",
-                0, 0, null, null,JOptionPane.YES_NO_OPTION);
+    public boolean generalGameInitPopup(String popupMessage){
+        int result = JOptionPane.showOptionDialog(this,popupMessage,"Game Initialization",
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 
         // No -> 1
         // Yes -> 0
@@ -348,7 +362,6 @@ public class RiskFrame extends JFrame implements RiskView{
             return false;
         }
         return true;
-
     }
 
     /**
@@ -356,15 +369,31 @@ public class RiskFrame extends JFrame implements RiskView{
      * @author Jason
      * @return A File object which is the JSON file
      */
-    private File chooseMapFile() {
+    public File chooseFile() {
         //Create a file chooser
         final JFileChooser fc = new JFileChooser();
-        fc.setFileFilter(new FileNameExtensionFilter(JSONConstants.FILE_CHOOSER_DESC.toString(), JSONConstants.FILE_CHOOSER_TYPE.toString()));
+        fc.setFileFilter(new FileNameExtensionFilter(FileChooser.JSON_DESCRIPTION.toString(), FileChooser.JSON_DESCRIPTION.toString()));
+        fc.setFileFilter(new FileNameExtensionFilter(FileChooser.TXT_DESCRIPTION.toString(), FileChooser.TXT_TYPE.toString()));
         int selectedFile = fc.showOpenDialog(this);
         while (selectedFile != JFileChooser.APPROVE_OPTION) {
             selectedFile = fc.showOpenDialog(this);
         }
         return fc.getSelectedFile();
+    }
+
+    public RiskModel loadFromFile(File file){
+        try(FileInputStream fis = new FileInputStream(file)){
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            RiskModel model = (RiskModel) ois.readObject();
+            ois.close();
+            return model;
+        }catch (EOFException e){
+            e.printStackTrace();
+
+        }catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
@@ -376,7 +405,7 @@ public class RiskFrame extends JFrame implements RiskView{
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = null;
         try {
-            Object obj = parser.parse(new FileReader(chooseMapFile()));
+            Object obj = parser.parse(new FileReader(chooseFile()));
 
             // A JSON object. Key value pairs are unordered. JSONObject supports java.util.Map interface.
             jsonObject = (JSONObject) obj;
@@ -479,9 +508,7 @@ public class RiskFrame extends JFrame implements RiskView{
      */
     public void setDiceIcon(JButton diceJButton, int diceNum){
         ImageIcon icon = new ImageIcon(diceIcons.get(diceNum-1));
-
         diceJButton.setIcon(icon);
-
     }
 
     /**
@@ -570,6 +597,7 @@ public class RiskFrame extends JFrame implements RiskView{
         attack.setEnabled(false);
         endPhase.setEnabled(false);
     }
+
 
     /**
      * Highlights all the countries the attacking player can attack from by creating a border around it

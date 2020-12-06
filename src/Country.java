@@ -1,10 +1,12 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Creates a country that holds information such as current player and troop count which is used as data for the model.
  * @author Jason
  */
-public class Country {
+public class Country implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String name;
     private Player player;
     private int armySize;
