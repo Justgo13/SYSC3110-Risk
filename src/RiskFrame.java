@@ -42,8 +42,11 @@ public class RiskFrame extends JFrame implements RiskView{
         boolean loadingChoice = generalGameInitPopup(PlayGame.LOAD_GAME_POPUP.toString());
         if(loadingChoice){
             File file = chooseFile();
-            loadFromFile(file);
+            model = loadFromFile(file);
             mapJSON = model.getJsonObject();
+
+            model.removeAllRiskView();
+            model.addRiskView(this); // Adds the view to the model
         } else{
             model = new RiskModel();
             boolean customMapChoice = generalGameInitPopup(PlayGame.LOAD_MAP_POPUP.toString());
@@ -378,17 +381,19 @@ public class RiskFrame extends JFrame implements RiskView{
         return fc.getSelectedFile();
     }
 
-    public void loadFromFile(File file){
+    public RiskModel loadFromFile(File file){
         try(FileInputStream fis = new FileInputStream(file)){
             ObjectInputStream ois = new ObjectInputStream(fis);
-            model = (RiskModel) ois.readObject();
+            RiskModel model = (RiskModel) ois.readObject();
             ois.close();
+            return model;
         }catch (EOFException e){
             e.printStackTrace();
 
         }catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     /**

@@ -154,6 +154,10 @@ public class RiskModel implements Serializable {
         views.add(view);
     }
 
+    public void removeAllRiskView(){
+        views.clear();
+    }
+
     /**
      * The attack method simulates the risk battle between one attacking country and one defending country
      * by randomly generating dice values corresponding to how many attacker and defender there are.
