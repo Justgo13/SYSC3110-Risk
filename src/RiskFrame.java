@@ -17,7 +17,7 @@ import java.util.Iterator;
  * Creates a JFrame for the Risk game containing a button panel and view class
  * @author Jason
  */
-public class RiskFrame extends JFrame implements RiskView, Serializable{
+public class RiskFrame extends JFrame implements RiskView{
     private static final int MIN_PLAYERS = 1;
     private static final int MAX_PLAYERS = 6;
     private static final int THICKNESS = 3;
@@ -33,15 +33,17 @@ public class RiskFrame extends JFrame implements RiskView, Serializable{
     private JButton reinforce;
     private JButton placeTroops;
     private GridBagConstraints mapConstraints;
+    private JSONObject mapJSON;
     public RiskFrame() {
         super(PlayGame.GAME_TITLE.toString());
         setLayout(new GridBagLayout());
 
-        JSONObject mapJSON = null;
+        mapJSON = null;
         boolean loadingChoice = generalGameInitPopup(PlayGame.LOAD_GAME_POPUP.toString());
         if(loadingChoice){
             File file = chooseFile();
             loadFromFile(file);
+            mapJSON = model.getJsonObject();
         } else{
             model = new RiskModel();
             boolean customMapChoice = generalGameInitPopup(PlayGame.LOAD_MAP_POPUP.toString());

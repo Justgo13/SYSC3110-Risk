@@ -5,6 +5,7 @@ import java.io.*;
 import java.util.*;
 
 public class RiskModel implements Serializable {
+    private static final long serialVersionUID = 1L;
     private static final int ONE_ARMY = 1;
     private static final int TWO_ARMIES = 2;
     private static final int THREE_ATTACKERS = 3;
@@ -26,7 +27,7 @@ public class RiskModel implements Serializable {
     private Country bonusCountry;
     private int movedTroops;
     private List<Player> playersList;
-    private transient JSONObject jsonObject;
+    private JSONObject jsonObject;
     /**
      * Creates an instance of the Risk game
      */
@@ -716,5 +717,9 @@ public class RiskModel implements Serializable {
 
     public void setJsonObject(JSONObject jsonObject) {
         this.jsonObject = jsonObject;
+    }
+
+    public JSONObject getJsonObject() {
+        return jsonObject;
     }
 }

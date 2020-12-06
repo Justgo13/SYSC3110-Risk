@@ -1,6 +1,7 @@
 import java.io.Serializable;
 
 public interface RiskView extends Serializable {
+    long serialVersionUID = 1L;
     void handleAttackEvent(AttackEvent ae);
     void handleResultEvent(BattleResultEvent bre);
     void handleEndTurn(int playerId);

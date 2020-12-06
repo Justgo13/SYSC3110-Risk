@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.*;
 
 public class Board implements Serializable {
+    private static final long serialVersionUID = 1L;
     private static final int COUNTRY_COUNT = 42;
     private static final String JSON_COUNTRY_KEY = "countryName";
     private static final String JSON_CONTINENT_KEY = "continentName";

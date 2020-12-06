@@ -6,6 +6,7 @@ import java.util.ArrayList;
  * @author Jason
  */
 public class Country implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String name;
     private Player player;
     private int armySize;

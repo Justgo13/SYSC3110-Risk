@@ -2,6 +2,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 public abstract class Player implements Serializable {
+    private static final long serialVersionUID = 1L;
     private int initArmySize;
     private ArrayList<Country> countriesOwned;
     private int id;
