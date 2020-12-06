@@ -5,8 +5,6 @@ import java.io.*;
 import java.util.*;
 
 public class RiskModel implements Serializable {
-    private static final String JSON_COUNTRIES_KEY = "Countries";
-    private static final String JSON_CONTINENT_KEY = "Continents";
     private static final int ONE_ARMY = 1;
     private static final int TWO_ARMIES = 2;
     private static final int THREE_ATTACKERS = 3;
@@ -15,9 +13,6 @@ public class RiskModel implements Serializable {
     private static final int DICE_VALUES = 6;
     private static final int DEFAULT_MULTIPLE_ATTACKER = 3;
     private static final int BONUS_TROOP_DIVIDEND = 3;
-    private static final String JSON_COUNTRY_NAME =  "countryName";
-    private static final String ADJACENT_COUNTRY = "adjacentCountries";
-    //private static final long serialVersionUID = 123123123123123L;
     private Board board;
     private int turnIndex;
     private Boolean gameOver;
@@ -31,8 +26,7 @@ public class RiskModel implements Serializable {
     private Country bonusCountry;
     private int movedTroops;
     private List<Player> playersList;
-    private JSONObject jsonObject;
-    private File file;
+    private transient JSONObject jsonObject;
     /**
      * Creates an instance of the Risk game
      */
@@ -51,7 +45,6 @@ public class RiskModel implements Serializable {
         movedTroops = 0;
         playersList = new ArrayList<>();
         jsonObject = null;
-        file = null;
     }
 
     /**
@@ -66,8 +59,8 @@ public class RiskModel implements Serializable {
         for (int i = numHumanPlayers; i < totalPlayers; i++) {
             this.playersList.add(new AI(this, board,returnArmySize(totalPlayers) ,i+1));
         }
-        JSONArray countries = (JSONArray) jsonObject.get(JSON_COUNTRIES_KEY);
-        JSONArray continents = (JSONArray) jsonObject.get(JSON_CONTINENT_KEY);
+        JSONArray countries = (JSONArray) jsonObject.get(JSONConstants.COUNTRIES.toString());
+        JSONArray continents = (JSONArray) jsonObject.get(JSONConstants.CONTINENTS.toString());
         board.setupBoard(numHumanPlayers, this.playersList, countries, continents);
     }
 
@@ -107,7 +100,7 @@ public class RiskModel implements Serializable {
      */
     public HashMap<String,Country> countriesFromJSON(JSONObject jsonMap){
 
-        JSONArray countriesJSON = (JSONArray) jsonMap.get(JSON_COUNTRIES_KEY);
+        JSONArray countriesJSON = (JSONArray) jsonMap.get(JSONConstants.COUNTRIES.toString());
         Iterator iterator = countriesJSON.iterator();
 
         JSONObject jsonCountry;
@@ -116,7 +109,7 @@ public class RiskModel implements Serializable {
         // adding all the countries
         while(iterator.hasNext()){
             jsonCountry = (JSONObject) iterator.next();
-            String countryName = (String) jsonCountry.get(JSON_COUNTRY_NAME);
+            String countryName = (String) jsonCountry.get(JSONConstants.COUNTRY_NAME.toString());
             countries.put(countryName, new Country(countryName));
         }
 
@@ -126,8 +119,8 @@ public class RiskModel implements Serializable {
         // add adjacent countries
         while(iterator.hasNext()){
             jsonCountry = (JSONObject) iterator.next();
-            String countryName = (String) jsonCountry.get(JSON_COUNTRY_NAME);
-            adjacentCountries = (JSONArray) jsonCountry.get(ADJACENT_COUNTRY);
+            String countryName = (String) jsonCountry.get(JSONConstants.COUNTRY_NAME.toString());
+            adjacentCountries = (JSONArray) jsonCountry.get(JSONConstants.ADJACENT_COUNTRY.toString());
 
             for (Object adjCountryName: adjacentCountries){
                 String name = adjCountryName.toString();
@@ -149,12 +142,6 @@ public class RiskModel implements Serializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-
-    private void writeObject(ObjectOutputStream out ) throws IOException {
-        //out.write( this );
-        out.flush();
     }
 
     /**
@@ -730,9 +717,4 @@ public class RiskModel implements Serializable {
     public void setJsonObject(JSONObject jsonObject) {
         this.jsonObject = jsonObject;
     }
-    public void setFile(File file) {
-        this.file = file;
-    }
-
-
 }

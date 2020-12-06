@@ -34,22 +34,17 @@ public class RiskFrame extends JFrame implements RiskView, Serializable{
     private JButton placeTroops;
     private GridBagConstraints mapConstraints;
     public RiskFrame() {
-        super(PlayGame.GAMETITLE.toString());
+        super(PlayGame.GAME_TITLE.toString());
         setLayout(new GridBagLayout());
 
         JSONObject mapJSON = null;
-        boolean loadingChoice = loadGamePopup();
+        boolean loadingChoice = generalGameInitPopup(PlayGame.LOAD_GAME_POPUP.toString());
         if(loadingChoice){
             File file = chooseFile();
-            model = loadFromFile(file);
-        }
-        else{
-
+            loadFromFile(file);
+        } else{
             model = new RiskModel();
-            boolean customMapChoice = customMapPopup();
-
-
-
+            boolean customMapChoice = generalGameInitPopup(PlayGame.LOAD_MAP_POPUP.toString());
             if (customMapChoice) { // choose a custom map
                 // loops you until a valid map is given
                 while (true) {
@@ -57,7 +52,7 @@ public class RiskFrame extends JFrame implements RiskView, Serializable{
                     if (model.validateJSONMap(mapJSON)) {
                         break;
                     } else {
-                        JOptionPane.showMessageDialog(this, "This map is invalid. Please upload a valid map");
+                        JOptionPane.showMessageDialog(this, PlayGame.INVALID_MAP_MESSAGE.toString());
                     }
                 }
                 model.setJsonObject(mapJSON);
@@ -113,7 +108,7 @@ public class RiskFrame extends JFrame implements RiskView, Serializable{
         mapConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
         mapConstraints.fill = GridBagConstraints.BOTH;
 
-        JSONArray countriesJSON = (JSONArray) mapJSON.get(JSONConstants.JSON_COUNTRIES.toString());
+        JSONArray countriesJSON = (JSONArray) mapJSON.get(JSONConstants.COUNTRIES.toString());
         Iterator iterator = countriesJSON.iterator();
 
         JSONObject jsonObject;
@@ -307,7 +302,7 @@ public class RiskFrame extends JFrame implements RiskView, Serializable{
      */
     private int[] invokePlayerPopup() {
         JComboBox playerComboBox = new JComboBox(PlayGame.PLAYERS.getArray());
-        JComboBox aiComboBox = new JComboBox(PlayGame.AIPLAYERS.getArray());
+        JComboBox aiComboBox = new JComboBox(PlayGame.AI_PLAYERS.getArray());
         JPanel panel = createPopupPanel(playerComboBox, aiComboBox);
 
         int numPlayers = JOptionPane.showOptionDialog(this, panel, PlayGame.TITLE.toString(), JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE,
@@ -336,7 +331,7 @@ public class RiskFrame extends JFrame implements RiskView, Serializable{
     private JPanel createPopupPanel(JComboBox playerComboBox, JComboBox aiComboBox) {
         JPanel panel = new JPanel();
         JLabel playerLabel = new JLabel(PlayGame.LABEL.toString());
-        JLabel aiLabel = new JLabel(PlayGame.AILABEL.toString());
+        JLabel aiLabel = new JLabel(PlayGame.AI_LABEL.toString());
         playerComboBox.setSelectedIndex(0);
         aiComboBox.setSelectedIndex(0);
         panel.add(playerLabel);
@@ -347,25 +342,14 @@ public class RiskFrame extends JFrame implements RiskView, Serializable{
     }
 
     /**
-     * A pop up asking players if they want to use custom maps
+     * A general game popup
      * @author Harjap
-     * @return True if custom maps enabled, false otherwise
+     * @param popupMessage A message shown on the popup
+     * @return True if yes option clicked and false otherwise
      */
-    public boolean customMapPopup(){
-        int result = JOptionPane.showOptionDialog(this,"Would you like to use a custom map?","Custom Map",
-                0, 0, null, null,JOptionPane.YES_NO_OPTION);
-
-        // No -> 1
-        // Yes -> 0
-        if (result == 1){
-            return false;
-        }
-        return true;
-    }
-
-    public boolean loadGamePopup(){
-        int result = JOptionPane.showOptionDialog(this,"Would you like to load a previous game?","Load Game?",
-                0, 0, null, null,JOptionPane.YES_NO_OPTION);
+    public boolean generalGameInitPopup(String popupMessage){
+        int result = JOptionPane.showOptionDialog(this,popupMessage,"Game Initialization",
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 
         // No -> 1
         // Yes -> 0
@@ -392,30 +376,17 @@ public class RiskFrame extends JFrame implements RiskView, Serializable{
         return fc.getSelectedFile();
     }
 
-    public RiskModel loadFromFile(File file){
+    public void loadFromFile(File file){
         try(FileInputStream fis = new FileInputStream(file)){
             ObjectInputStream ois = new ObjectInputStream(fis);
-            /*Object obj;
-            while(!((obj =  ois.readObject()) instanceof EofIndicatorClass)){
-                System.out.println(obj);
-            }
-
-
-            RiskModel newModel = (RiskModel) obj;
-
-             */
-
-            RiskModel newModel = (RiskModel) ois.readObject();
+            model = (RiskModel) ois.readObject();
             ois.close();
-            return newModel;
-
         }catch (EOFException e){
             e.printStackTrace();
 
         }catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-        return null;
     }
 
     /**
