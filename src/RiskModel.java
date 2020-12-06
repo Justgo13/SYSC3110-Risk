@@ -133,8 +133,8 @@ public class RiskModel implements Serializable {
         return countries;
     }
 
-    public void saveGame(){
-        File file = new File("Serialize.txt");
+    public void saveGame(String fileName){
+        File file = new File(fileName);
         try(FileOutputStream fos = new FileOutputStream(file)){
             if(!file.exists()) file.createNewFile();
             ObjectOutputStream out = new ObjectOutputStream(fos);
