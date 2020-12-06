@@ -7,6 +7,7 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,7 +27,7 @@ public class RiskFrame extends JFrame implements RiskView, Serializable{
     private HashMap<String, Country> countries;
     private JTextArea textArea;
     private ArrayList<JButton> diceJButtons;
-    transient ArrayList<Image> diceIcons;
+    private transient ArrayList<Image> diceIcons;
     private JButton attack;
     private JButton endPhase;
     private JButton reinforce;
@@ -35,10 +36,6 @@ public class RiskFrame extends JFrame implements RiskView, Serializable{
     public RiskFrame() {
         super(PlayGame.GAMETITLE.toString());
         setLayout(new GridBagLayout());
-        // ask for player number
-        int[] getPlayerList = invokePlayerPopup();
-        int numPlayer = getPlayerList[0];
-        int aiPlayer = getPlayerList[1];
 
         JSONObject mapJSON = null;
         boolean loadingChoice = loadGamePopup();
@@ -47,6 +44,7 @@ public class RiskFrame extends JFrame implements RiskView, Serializable{
             model = loadFromFile(file);
         }
         else{
+
             model = new RiskModel();
             boolean customMapChoice = customMapPopup();
 
@@ -65,26 +63,25 @@ public class RiskFrame extends JFrame implements RiskView, Serializable{
                 model.setJsonObject(mapJSON);
 
             }else{ // use the basic world map
-
+                // ask for player number
+                int[] getPlayerList = invokePlayerPopup();
+                int numPlayer = getPlayerList[0];
+                int aiPlayer = getPlayerList[1];
                 JSONParser parser = new JSONParser();
 
                 try{
                     InputStream inputStream = this.getClass().getResourceAsStream(JSONConstants.DEFAULT_FILE.toString());
-                    Object obj = parser.parse(new InputStreamReader(inputStream,"UTF-8"));
+                    Object obj = parser.parse(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
                     JSONObject jsonMap = (JSONObject) obj;
                     model.setJsonObject(jsonMap);
                     mapJSON = jsonMap;
                 }catch(Exception e){
                     System.out.println(e);
                 }
-
+                model.playGame(numPlayer, aiPlayer);
+                model.addRiskView(this); // Adds the view to the model
             }
         }
-
-
-
-        model.playGame(numPlayer, aiPlayer);
-        model.addRiskView(this); // Adds the view to the model
 
         // Creates the Controller
         RiskController riskController = new RiskController(model);

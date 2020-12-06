@@ -1,6 +1,6 @@
-import java.io.File;
+import java.io.Serializable;
 
-public interface RiskView {
+public interface RiskView extends Serializable {
     void handleAttackEvent(AttackEvent ae);
     void handleResultEvent(BattleResultEvent bre);
     void handleEndTurn(int playerId);
