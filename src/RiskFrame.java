@@ -8,10 +8,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * Creates a JFrame for the Risk game containing a button panel and view class
@@ -39,80 +36,26 @@ public class RiskFrame extends JFrame implements RiskView{
         setLayout(new GridBagLayout());
 
         mapJSON = null;
-        boolean loadingChoice = generalGameInitPopup(PlayGame.LOAD_GAME_POPUP.toString());
-        if(loadingChoice){
-            File file = chooseFile();
-            model = loadFromFile(file);
-            mapJSON = model.getJsonObject();
-
-            model.removeAllRiskView();
-            model.addRiskView(this); // Adds the view to the model
-        } else{
-            model = new RiskModel();
-            boolean customMapChoice = generalGameInitPopup(PlayGame.LOAD_MAP_POPUP.toString());
-            if (customMapChoice) { // choose a custom map
-                // loops you until a valid map is given
-                while (true) {
-                    mapJSON = parseFile();
-                    if (model.validateJSONMap(mapJSON)) {
-                        break;
-                    } else {
-                        JOptionPane.showMessageDialog(this, PlayGame.INVALID_MAP_MESSAGE.toString());
-                    }
-                }
-                model.setJsonObject(mapJSON);
-
-            }else{ // use the basic world map
-                // ask for player number
-                int[] getPlayerList = invokePlayerPopup();
-                int numPlayer = getPlayerList[0];
-                int aiPlayer = getPlayerList[1];
-                JSONParser parser = new JSONParser();
-
-                try{
-                    InputStream inputStream = this.getClass().getResourceAsStream(JSONConstants.DEFAULT_FILE.toString());
-                    Object obj = parser.parse(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-                    JSONObject jsonMap = (JSONObject) obj;
-                    model.setJsonObject(jsonMap);
-                    mapJSON = jsonMap;
-                }catch(Exception e){
-                    System.out.println(e);
-                }
-                model.playGame(numPlayer, aiPlayer);
-                model.addRiskView(this); // Adds the view to the model
-            }
-        }
+        initialGamePopups();
 
         // Creates the Controller
         RiskController riskController = new RiskController(model);
 
         // Creating a constraint for the entire frame
-        GridBagConstraints frameConstraint = new GridBagConstraints();
-        frameConstraint.weighty = 1.0;
-        frameConstraint .weightx = 1.0;
-        frameConstraint .anchor = GridBagConstraints.FIRST_LINE_START;
-        frameConstraint .fill = GridBagConstraints.BOTH;
+        GridBagConstraints frameConstraint = generalGridBagConstraint();
 
         // create map
         this.countries = model.getCountries();
         JPanel gamePanel = new JPanel(new GridBagLayout());
         JPanel countryPanel = new JPanel(new GridBagLayout());
 
-        //setting
-        GridBagConstraints gamePanelConstraints = new GridBagConstraints();
-        gamePanelConstraints.weighty = 1.0;
-        gamePanelConstraints.weightx = 1.0;
-        gamePanelConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
-        gamePanelConstraints.fill = GridBagConstraints.BOTH;
+        //setting game panel constraints
+        GridBagConstraints gamePanelConstraints = generalGridBagConstraint();
 
         countryButtons = new HashMap<>();
-        setLayout(new GridBagLayout());
-        mapConstraints = new GridBagConstraints();
-        mapConstraints.weighty = 1.0;
-        mapConstraints.weightx = 1.0;
-        mapConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
-        mapConstraints.fill = GridBagConstraints.BOTH;
+        mapConstraints = generalGridBagConstraint();
 
+        // creating the countries from JSON object
         JSONArray countriesJSON = (JSONArray) mapJSON.get(JSONConstants.COUNTRIES.toString());
         Iterator iterator = countriesJSON.iterator();
 
@@ -125,9 +68,7 @@ public class RiskFrame extends JFrame implements RiskView{
             String gridx = (String) jsonGridBag.get(JSONConstants.GRID_X.toString());
             String gridy = (String) jsonGridBag.get(JSONConstants.GRID_Y.toString());
             countryPanel.add(createCountry(countryName, gridx, gridy), mapConstraints);
-
         }
-
 
         // add map to game panel
         gamePanelConstraints.gridx = 0;
@@ -154,90 +95,17 @@ public class RiskFrame extends JFrame implements RiskView{
 
         gamePanelConstraints.gridx = 1;
         gamePanelConstraints.gridy = 1;
-        JPanel dicePanel = new JPanel();
+        JPanel dicePanel = createDicePanel();
+
         gamePanel.add(dicePanel,gamePanelConstraints);
 
-
-        JButton attackDice1 = new JButton();
-        attackDice1.setActionCommand(DiceConstant.A1.toString());
-        JButton attackDice2 = new JButton();
-        attackDice1.setActionCommand(DiceConstant.A2.toString());
-        JButton attackDice3 = new JButton();
-        attackDice1.setActionCommand(DiceConstant.A3.toString());
-        JButton defendDice1 = new JButton();
-        attackDice1.setActionCommand(DiceConstant.D1.toString());
-        JButton defendDice2 = new JButton();
-        attackDice1.setActionCommand(DiceConstant.D2.toString());
-
-        diceJButtons.add(attackDice1);
-        diceJButtons.add(attackDice2);
-        diceJButtons.add(attackDice3);
-        diceJButtons.add(defendDice1);
-        diceJButtons.add(defendDice2);
-
-        dicePanel.setLayout(new GridLayout(4,2));
-        dicePanel.add(new JLabel(DiceConstant.ALABEL.toString()));
-        dicePanel.add(new JLabel(DiceConstant.DLABEL.toString()));
-
-
-        dicePanel.add(attackDice1);
-        dicePanel.add(defendDice1);
-        dicePanel.add(attackDice2);
-        dicePanel.add(defendDice2);
-        dicePanel.add(attackDice3);
-
-        // Setting up Dice Icons
-        diceIcons = new ArrayList<>();
-
-        try{
-            for (int i = 1; i< 7;i++) {
-                InputStream inputStream = this.getClass().getResourceAsStream(i+ ".png");
-                diceIcons.add(ImageIO.read(inputStream));
-
-            }
-
-        }catch(Exception e){
-            System.out.println(e);
-        }
+        createDiceIcons();
 
         frameConstraint.gridx = 0;
         frameConstraint.gridy = 0;
         add(gamePanel, frameConstraint);
 
-        // Creates the control panel at the bottom of the GUI
-        JPanel panel = new JPanel(new GridBagLayout());
-        frameConstraint.gridx = 0;
-        frameConstraint.gridy = 1;
-        GridBagConstraints controlPanelConstraints = new GridBagConstraints();
-        controlPanelConstraints.weighty = 1.0;
-        controlPanelConstraints.weightx = 1.0;
-        controlPanelConstraints.anchor = GridBagConstraints.FIRST_LINE_START;
-        controlPanelConstraints.fill = GridBagConstraints.BOTH;
-
-        controlPanelConstraints.gridx = 2;
-        controlPanelConstraints.gridy = 1;
-        controlPanelConstraints.gridwidth = 1;
-        reinforce = new JButton(ButtonText.REINFORCE.toString());
-        reinforce.setEnabled(false);
-        panel.add(reinforce, controlPanelConstraints);
-
-        controlPanelConstraints.gridx = 1;
-        controlPanelConstraints.gridy = 1;
-        attack = new JButton(ButtonText.ATTACK.toString());
-        attack.setEnabled(false);
-        panel.add(attack, controlPanelConstraints);
-
-        controlPanelConstraints.gridx = 3;
-        controlPanelConstraints.gridy = 1;
-        endPhase = new JButton(ButtonText.ENDTURN.toString());
-        endPhase.setEnabled(false);
-        panel.add(endPhase, controlPanelConstraints);
-
-        controlPanelConstraints.gridx = 0;
-        controlPanelConstraints.gridy = 1;
-        placeTroops = new JButton(ButtonText.PLACETROOPS.toString());
-        placeTroops.setEnabled(true);
-        panel.add(placeTroops, controlPanelConstraints);
+        JPanel panel = createActionButtonPanel(frameConstraint);
 
         add(panel, frameConstraint);
 
@@ -254,19 +122,7 @@ public class RiskFrame extends JFrame implements RiskView{
 
 
         // Add bottom Game Buttons to the controller
-        attack.addActionListener(riskController);
-        attack.setActionCommand(ButtonCommand.ATTACK.toString());
-
-        endPhase.addActionListener(riskController);
-        endPhase.setActionCommand(ButtonCommand.ENDPHASE.toString());
-
-        reinforce.addActionListener(riskController);
-        reinforce.setActionCommand(ButtonCommand.REINFORCE.toString());
-
-        placeTroops.addActionListener(riskController);
-        placeTroops.setActionCommand(ButtonCommand.PLACETROOPS.toString());
-
-        //Starting the first turn of the game
+        setupActionButtons(riskController);
 
         // Add all country J Buttons to the controller
         for (CountryButton cb : getCountryButtons().values()){
@@ -283,6 +139,193 @@ public class RiskFrame extends JFrame implements RiskView{
     }
 
     /**
+     * Setups all the action button listeners and action commands
+     * @param riskController
+     */
+    private void setupActionButtons(RiskController riskController) {
+        attack.addActionListener(riskController);
+        attack.setActionCommand(ButtonCommand.ATTACK.toString());
+
+        endPhase.addActionListener(riskController);
+        endPhase.setActionCommand(ButtonCommand.ENDPHASE.toString());
+
+        reinforce.addActionListener(riskController);
+        reinforce.setActionCommand(ButtonCommand.REINFORCE.toString());
+
+        placeTroops.addActionListener(riskController);
+        placeTroops.setActionCommand(ButtonCommand.PLACETROOPS.toString());
+    }
+
+    /**
+     * Creates a JPanel for the action buttons
+     * @param frameConstraint The GridBagConstraint for the frame
+     * @return JPanel containing all the action buttons
+     */
+    private JPanel createActionButtonPanel(GridBagConstraints frameConstraint) {
+        // Creates the control panel at the bottom of the GUI
+        JPanel actionButtonPanel = new JPanel(new GridBagLayout());
+        frameConstraint.gridx = 0;
+        frameConstraint.gridy = 1;
+        GridBagConstraints controlPanelConstraints = generalGridBagConstraint();
+
+        controlPanelConstraints.gridx = 2;
+        controlPanelConstraints.gridy = 1;
+        controlPanelConstraints.gridwidth = 1;
+        reinforce = new JButton(ButtonText.REINFORCE.toString());
+        reinforce.setEnabled(false);
+        actionButtonPanel.add(reinforce, controlPanelConstraints);
+
+        controlPanelConstraints.gridx = 1;
+        controlPanelConstraints.gridy = 1;
+        attack = new JButton(ButtonText.ATTACK.toString());
+        attack.setEnabled(false);
+        actionButtonPanel.add(attack, controlPanelConstraints);
+
+        controlPanelConstraints.gridx = 3;
+        controlPanelConstraints.gridy = 1;
+        endPhase = new JButton(ButtonText.ENDTURN.toString());
+        endPhase.setEnabled(false);
+        actionButtonPanel.add(endPhase, controlPanelConstraints);
+
+        controlPanelConstraints.gridx = 0;
+        controlPanelConstraints.gridy = 1;
+        placeTroops = new JButton(ButtonText.PLACETROOPS.toString());
+        placeTroops.setEnabled(true);
+        actionButtonPanel.add(placeTroops, controlPanelConstraints);
+        return actionButtonPanel;
+    }
+
+    /**
+     * Creates the dice icons
+     */
+    private void createDiceIcons() {
+        diceIcons = new ArrayList<>();
+
+        try{
+            for (int i = 1; i< 7;i++) {
+                InputStream inputStream = this.getClass().getResourceAsStream(i+ ".png");
+                diceIcons.add(ImageIO.read(inputStream));
+
+            }
+
+        }catch(Exception e){
+            System.out.println(e);
+        }
+    }
+
+    /**
+     * Creates the dice panel
+     * @return JPanel containing the dice JButtons
+     */
+    private JPanel createDicePanel() {
+        JPanel dicePanel = new JPanel();
+
+        JButton attackDice1 = new JButton();
+        JButton attackDice2 = new JButton();
+        JButton attackDice3 = new JButton();
+        JButton defendDice1 = new JButton();
+        JButton defendDice2 = new JButton();
+
+        diceJButtons.add(attackDice1);
+        diceJButtons.add(attackDice2);
+        diceJButtons.add(attackDice3);
+        diceJButtons.add(defendDice1);
+        diceJButtons.add(defendDice2);
+
+        dicePanel.setLayout(new GridLayout(4,2));
+        dicePanel.add(new JLabel(DiceConstant.ATTACK_DICE_LABEL.toString()));
+        dicePanel.add(new JLabel(DiceConstant.DEFEND_DICE_LABEL.toString()));
+
+        dicePanel.add(attackDice1);
+        dicePanel.add(defendDice1);
+        dicePanel.add(attackDice2);
+        dicePanel.add(defendDice2);
+        dicePanel.add(attackDice3);
+        return dicePanel;
+    }
+
+    /**
+     * Create a general grid bag constraint
+     * @return GridBagConstraint constraint used in GridBagLayout
+     */
+    private GridBagConstraints generalGridBagConstraint() {
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.weighty = 1.0;
+        constraints.weightx = 1.0;
+        constraints.anchor = GridBagConstraints.FIRST_LINE_START;
+        constraints.fill = GridBagConstraints.BOTH;
+        return constraints;
+    }
+
+    /**
+     * Opens the initial game popups
+     */
+    private void initialGamePopups() {
+        boolean loadingChoice = generalGameInitPopup(PlayGame.LOAD_GAME_POPUP.toString());
+        if (loadingChoice) {
+            loadPreviousSave();
+        } else {
+            model = new RiskModel();
+            // ask for player number
+            int[] getPlayerList = invokePlayerPopup();
+            int numPlayer = getPlayerList[0];
+            int aiPlayer = getPlayerList[1];
+            boolean customMapChoice = generalGameInitPopup(PlayGame.LOAD_MAP_POPUP.toString());
+            if (customMapChoice) {
+                loadCustomMap();
+            } else {
+                defaultGameMode();
+            }
+            model.playGame(numPlayer, aiPlayer);
+            model.addRiskView(this); // Adds the view to the model
+        }
+    }
+
+    /**
+     * Starts the process for loading a previous save
+     */
+    private void loadPreviousSave() {
+        File file = chooseFile();
+        model = loadFromFile(file);
+        mapJSON = model.getJsonObject();
+
+        model.removeAllRiskView();
+        model.addRiskView(this); // Adds the view to the model
+    }
+
+    /**
+     * Starts the process for playing with a custom map
+     */
+    private void loadCustomMap() {
+        // loops you until a valid map is given
+        while (true) {
+            mapJSON = parseFile();
+            if (model.validateJSONMap(mapJSON)) {
+                break;
+            } else {
+                JOptionPane.showMessageDialog(this, PlayGame.INVALID_MAP_MESSAGE.toString());
+            }
+        }
+        model.setJsonObject(mapJSON);
+    }
+
+    /**
+     * Starts the game without any custom settings
+     */
+    private void defaultGameMode() {
+        JSONParser parser = new JSONParser();
+        try{
+            InputStream inputStream = this.getClass().getResourceAsStream(JSONConstants.DEFAULT_FILE.toString());
+            Object obj = parser.parse(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+            JSONObject jsonMap = (JSONObject) obj;
+            model.setJsonObject(jsonMap);
+            mapJSON = jsonMap;
+        }catch(Exception e){
+            System.out.println(e);
+        }
+    }
+
+    /**
      * General method for creating a country on the map from the JSON file
      * @author Albara'a
      * @param countryName The country name
@@ -290,7 +333,7 @@ public class RiskFrame extends JFrame implements RiskView{
      * @param y gridy constraint
      * @return A CountryButton that can be added to the country panel
      */
-    public CountryButton createCountry(String countryName, String x, String y ){
+    private CountryButton createCountry(String countryName, String x, String y ){
         mapConstraints.gridx = Integer.parseInt(x);
         mapConstraints.gridy = Integer.parseInt(y);
         CountryButton country = new CountryButton(countries.get(countryName));
@@ -352,7 +395,7 @@ public class RiskFrame extends JFrame implements RiskView{
      * @param popupMessage A message shown on the popup
      * @return True if yes option clicked and false otherwise
      */
-    public boolean generalGameInitPopup(String popupMessage){
+    private boolean generalGameInitPopup(String popupMessage){
         int result = JOptionPane.showOptionDialog(this,popupMessage,"Game Initialization",
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 
@@ -369,10 +412,10 @@ public class RiskFrame extends JFrame implements RiskView{
      * @author Jason
      * @return A File object which is the JSON file
      */
-    public File chooseFile() {
+    private File chooseFile() {
         //Create a file chooser
         final JFileChooser fc = new JFileChooser();
-        fc.setFileFilter(new FileNameExtensionFilter(FileChooser.JSON_DESCRIPTION.toString(), FileChooser.JSON_DESCRIPTION.toString()));
+        fc.setFileFilter(new FileNameExtensionFilter(FileChooser.JSON_DESCRIPTION.toString(), FileChooser.JSON_TYPE.toString()));
         fc.setFileFilter(new FileNameExtensionFilter(FileChooser.TXT_DESCRIPTION.toString(), FileChooser.TXT_TYPE.toString()));
         int selectedFile = fc.showOpenDialog(this);
         while (selectedFile != JFileChooser.APPROVE_OPTION) {
@@ -421,7 +464,7 @@ public class RiskFrame extends JFrame implements RiskView{
      * @param countries A list of all countries the player can use to attack
      * @return A list of all the CountryButton instances
      */
-    public ArrayList<CountryButton> convertCountryToCountryButtons(ArrayList<Country> countries){
+    private ArrayList<CountryButton> convertCountryToCountryButtons(ArrayList<Country> countries){
         // get hashmap from view that holds relationship between country name and country Button
         HashMap<String, CountryButton> countryButtonHashMap = this.getCountryButtons();
 
@@ -440,7 +483,7 @@ public class RiskFrame extends JFrame implements RiskView{
      * @author Jason
      * @param attackingCountry The country the player is attacking from
      */
-    public void getAttackingTroopCount(Country attackingCountry) {
+    private void getAttackingTroopCount(Country attackingCountry) {
         String[] options = {"OK", "CANCEL"};
         int troopCount = attackingCountry.getArmySize()-1;
         Integer[] troopList = buildTroopDropdownList(troopCount);
@@ -465,7 +508,7 @@ public class RiskFrame extends JFrame implements RiskView{
      * @author Jason
      * @param troopCount The number of bonus troops available to move
      */
-    public int getBonusTroopCount(int troopCount) {
+    private int getBonusTroopCount(int troopCount) {
         String[] options = {"OK"};
         Integer[] troopList = buildTroopDropdownList(troopCount);
         JPanel panel = new JPanel();
@@ -506,7 +549,7 @@ public class RiskFrame extends JFrame implements RiskView{
      * @param diceJButton The JButton the icon will be placed on
      * @param diceNum The dice value
      */
-    public void setDiceIcon(JButton diceJButton, int diceNum){
+    private void setDiceIcon(JButton diceJButton, int diceNum){
         ImageIcon icon = new ImageIcon(diceIcons.get(diceNum-1));
         diceJButton.setIcon(icon);
     }
