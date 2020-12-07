@@ -5,12 +5,12 @@ import java.io.Serializable;
 import java.util.*;
 
 public class Board implements Serializable {
-    private static final long serialVersionUID = 1L;
-    private static final int COUNTRY_COUNT = 42;
-    private static final String JSON_COUNTRY_KEY = "countryName";
-    private static final String JSON_CONTINENT_KEY = "continentName";
-    private static final String JSON_ADJACENT_KEY = "adjacentCountries";
-    private static final String JSON_BONUS_ARMY = "bonusValue";
+    public static final long serialVersionUID = 1L;
+    public static final int COUNTRY_COUNT = 42;
+    public static final String JSON_COUNTRY_KEY = "countryName";
+    public static final String JSON_CONTINENT_KEY = "continentName";
+    public static final String JSON_ADJACENT_KEY = "adjacentCountries";
+    public static final String JSON_BONUS_ARMY = "bonusValue";
     private int numOfPlayers;
     private ArrayList<Player> players;
     private HashMap<String, Country> countries;
@@ -117,7 +117,7 @@ public class Board implements Serializable {
             }
         }
         placePlayersExtraCountries(extraCountries, tempCountries, troopAssignedCount);
-        placePlaceExtraTroops(troopAssignedCount, TROOPS);
+        placePlayerExtraTroops(troopAssignedCount, TROOPS);
     }
 
     /**
@@ -147,14 +147,14 @@ public class Board implements Serializable {
      * troop placement is over.
      * @author Jason
      * @param troopAssignedCount The amount of troops to place
-     * @param TROOPS The total number of troops per player based on player count
+     * @param troops The total number of troops per player based on player count
      */
-    private void placePlaceExtraTroops(int troopAssignedCount, int TROOPS) {
+    private void placePlayerExtraTroops(int troopAssignedCount, int troops) {
         Random random = new Random();
         int countryIndex;
-        while (troopAssignedCount < TROOPS) {
+        while (troopAssignedCount < troops) {
             for (Player player : players) {
-                if (troopAssignedCount >= TROOPS)
+                if (troopAssignedCount >= troops)
                     break;
                 countryIndex = random.nextInt(player.getCountriesOwned().size()); // get random country owned by player
                 Country country = player.getCountriesOwned().get(countryIndex); // gets the Country object

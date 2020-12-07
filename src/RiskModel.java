@@ -5,15 +5,15 @@ import java.io.*;
 import java.util.*;
 
 public class RiskModel implements Serializable {
-    private static final long serialVersionUID = 1L;
-    private static final int ONE_ARMY = 1;
-    private static final int TWO_ARMIES = 2;
-    private static final int THREE_ATTACKERS = 3;
-    private static final int INVALID_PLAYER_ID = 0;
-    private static final int INITIAL_TROOP_BONUS = 3;
-    private static final int DICE_VALUES = 6;
-    private static final int DEFAULT_MULTIPLE_ATTACKER = 3;
-    private static final int BONUS_TROOP_DIVIDEND = 3;
+    public static final long serialVersionUID = 1L;
+    public static final int ONE_ARMY = 1;
+    public static final int TWO_ARMIES = 2;
+    public static final int THREE_ATTACKERS = 3;
+    public static final int INVALID_PLAYER_ID = 0;
+    public static final int INITIAL_TROOP_BONUS = 3;
+    public static final int DICE_VALUES = 6;
+    public static final int DEFAULT_MULTIPLE_ATTACKER = 3;
+    public static final int BONUS_TROOP_DIVIDEND = 3;
     private Board board;
     private int turnIndex;
     private Boolean gameOver;

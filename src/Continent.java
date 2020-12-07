@@ -9,7 +9,7 @@ import java.util.Iterator;
  * @author Shashaank
  */
 public class Continent implements Serializable {
-    private static final long serialVersionUID = 1L;
+    public static final long serialVersionUID = 1L;
     private String name;
     private int bonusArmy;
     private HashMap<String,Country> countries;

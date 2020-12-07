@@ -9,6 +9,11 @@ import java.util.*;
  * @author Harjap
  */
 public class AI extends Player{
+    public static final int PROBABILITY_SIZE = 10;
+    public static final int AI_TOTAL_ATTACKS = 3;
+    public static final double AI_ATTACK_PROBABILITY = 0.75;
+    public static final int MAX_ARMY_SIZE_PROBABILITY = 10;
+    public static final int MIN_ARMY_SIZE = 2;
     private RiskModel model;
     private Board board;
     private double [][] probabilities;
@@ -17,7 +22,7 @@ public class AI extends Player{
         super(initArmySize,id);
         this.model=model;
         this.board = board;
-        this.probabilities = new double[10][10];
+        this.probabilities = new double[PROBABILITY_SIZE][PROBABILITY_SIZE];
         setupProbabilities();
 
     }
@@ -69,7 +74,7 @@ public class AI extends Player{
     public void attack(){
         boolean willAttack;
         // attempts to attack 3 times every turn
-        for (int i =0; i < 3; i++){
+        for (int i =0; i < AI_TOTAL_ATTACKS; i++){
             willAttack = false;
             // all the possible attacks will be calculated
             ArrayList<PossibleAIAttack> allPossibleAttacks = getAllPossibleAIAttacks();
@@ -83,7 +88,7 @@ public class AI extends Player{
 
             // iterate over all possible attacks and find the attack that results in the highest utility function output
             for (PossibleAIAttack attack : allPossibleAttacks) {
-                if (attack.getProbability() > 0.75) {
+                if (attack.getProbability() > AI_ATTACK_PROBABILITY) {
                     willAttack = true;
                 }
 
@@ -127,14 +132,14 @@ public class AI extends Player{
             Country defendingCountry = attack.getDefendingCountry();
 
             // get probability of winning the attack
-            if (attackingCountry.getArmySize() > 2) {
+            if (attackingCountry.getArmySize() > MIN_ARMY_SIZE) {
                 int attackArmy = attackingCountry.getArmySize();
                 int defendingArmy = defendingCountry.getArmySize();
-                if (attackArmy >= 10) {
-                    attackArmy = 10;
+                if (attackArmy >= MAX_ARMY_SIZE_PROBABILITY) {
+                    attackArmy = MAX_ARMY_SIZE_PROBABILITY;
                 }
-                if (defendingArmy >= 10) {
-                    defendingArmy = 10;
+                if (defendingArmy >= MAX_ARMY_SIZE_PROBABILITY) {
+                    defendingArmy = MAX_ARMY_SIZE_PROBABILITY;
                 }
                 // for each attack possibility, determines the probability of winning
                 double probabilityOfWinningAttack = probabilities[attackArmy - 2][defendingArmy - 1] / 100;
@@ -269,7 +274,7 @@ public class AI extends Player{
                 ArrayList<Country> connectedCountries = model.getConnectedCountries(country); // find all allied connected countries
                 ArrayList<Country> connectedCountriesTouchingEnemies = getCountriesTouchingEnemies(connectedCountries);
 
-                if (country.getArmySize()>= 2){
+                if (country.getArmySize()>= MIN_ARMY_SIZE){
                     int index = rand.nextInt(connectedCountriesTouchingEnemies.size());
                     // adds troop to random country touching enemy
                     model.reinforce(country,connectedCountriesTouchingEnemies.get(index), country.getArmySize()-1);
