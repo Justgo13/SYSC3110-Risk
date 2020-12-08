@@ -75,7 +75,7 @@ public class Board implements Serializable {
         JSONObject JSONcontinent;
         while(iterator.hasNext()) {
             JSONcontinent = (JSONObject) iterator.next();
-            this.continents.put((String) JSONcontinent.get(JSON_CONTINENT_KEY), new Continent((String) JSONcontinent.get(JSON_CONTINENT_KEY),  Integer.parseInt((String) JSONcontinent.get(JSON_BONUS_ARMY)))); // creates continents objects
+            this.continents.put((String) JSONcontinent.get(JSON_CONTINENT_KEY), new Continent((String) JSONcontinent.get(JSON_CONTINENT_KEY), (int) (long) JSONcontinent.get(JSON_BONUS_ARMY))); // creates continents objects
 
             //gets all continents and populates them with their specific countries
             //also gives every country the continent it belongs in

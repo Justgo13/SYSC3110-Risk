@@ -11,23 +11,24 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 public class RiskModelTest {
-    JSONObject jsonObject;
+    JSONObject jsonObjectInvalid;
     RiskMockModel rm;
 
     @Before
     public void setUp() throws IOException, ParseException {
         JSONParser parser = new JSONParser();
-        InputStream inputStream = this.getClass().getResourceAsStream("SampleMap.json");
+        InputStream inputStream = this.getClass().getResourceAsStream("template.json");
         Object obj = parser.parse(new InputStreamReader(inputStream,"UTF-8"));
-        jsonObject = (JSONObject) obj;
+        jsonObjectInvalid = (JSONObject) obj;
+
         rm = new RiskMockModel();
-        rm.setJsonObject(jsonObject);
+        rm.setJsonObject(jsonObjectInvalid);
         rm.playGame(2,0);
     }
 
     @After
     public void tearDown() {
-        jsonObject = null;
+        jsonObjectInvalid = null;
         rm = null;
     }
 
@@ -342,7 +343,7 @@ public class RiskModelTest {
         p1.addCountry(bonusCountry1);
         p1.addCountry(bonusCountry2);
         p1.addCountry(bonusCountry3);
-        assertEquals(4,rm.bonusTroopCalculation(p1));
+        assertEquals(3,rm.bonusTroopCalculation(p1));
     }
 
     @Test
@@ -368,7 +369,7 @@ public class RiskModelTest {
         p1.addCountry(bonusCountry1);
         p1.addCountry(bonusCountry2);
         p1.addCountry(bonusCountry3);
-        assertEquals(6,rm.bonusTroopCalculation(p1));
+        assertEquals(5,rm.bonusTroopCalculation(p1));
     }
 
     @Test
@@ -404,13 +405,8 @@ public class RiskModelTest {
     }
 
     @Test
-    public void testValidateJSONMap(){
-        assertEquals(false, rm.validateJSONMap(jsonObject));
-
-    }
-    @Test
-    public void testLoadingSaving(){
-        //rm.saveGame();
+    public void testInvalidJSONMap(){
+        assertEquals(true, rm.validateJSONMap(jsonObjectInvalid));
 
     }
 }
