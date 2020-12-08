@@ -1,22 +1,33 @@
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.*;
 import java.util.*;
 
 import static org.junit.Assert.*;
 
 public class RiskModelTest {
+    JSONObject jsonObject;
     RiskMockModel rm;
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException, ParseException {
+        JSONParser parser = new JSONParser();
+        InputStream inputStream = this.getClass().getResourceAsStream("SampleMap.json");
+        Object obj = parser.parse(new InputStreamReader(inputStream,"UTF-8"));
+        jsonObject = (JSONObject) obj;
         rm = new RiskMockModel();
+        rm.setJsonObject(jsonObject);
         rm.playGame(2,0);
     }
 
     @After
     public void tearDown() {
+        jsonObject = null;
         rm = null;
     }
 
@@ -392,4 +403,14 @@ public class RiskModelTest {
         assertTrue(rm.getGameOver());
     }
 
+    @Test
+    public void testValidateJSONMap(){
+        assertEquals(false, rm.validateJSONMap(jsonObject));
+
+    }
+    @Test
+    public void testLoadingSaving(){
+        //rm.saveGame();
+
+    }
 }

@@ -58,7 +58,7 @@ public class Board implements Serializable {
         buildCountryNames(countries);
         buildContinent(countries);
         buildMap(continents); // adds all countries to map
-        placePlayers(totalPlayers); // place players randomly on the map
+        placePlayers(totalPlayers, countries.size()); // place players randomly on the map
         setAdjacentCountries(countries);
     }
 
@@ -75,7 +75,7 @@ public class Board implements Serializable {
         JSONObject JSONcontinent;
         while(iterator.hasNext()) {
             JSONcontinent = (JSONObject) iterator.next();
-            this.continents.put((String) JSONcontinent.get(JSON_CONTINENT_KEY), new Continent((String) JSONcontinent.get(JSON_CONTINENT_KEY), ((Number) JSONcontinent.get(JSON_BONUS_ARMY)).intValue())); // creates continents objects
+            this.continents.put((String) JSONcontinent.get(JSON_CONTINENT_KEY), new Continent((String) JSONcontinent.get(JSON_CONTINENT_KEY),  Integer.parseInt((String) JSONcontinent.get(JSON_BONUS_ARMY)))); // creates continents objects
 
             //gets all continents and populates them with their specific countries
             //also gives every country the continent it belongs in
@@ -94,12 +94,12 @@ public class Board implements Serializable {
      * @author Jason Gao
      * @param numPlayers number of players in the game
      */
-    private void placePlayers(int numPlayers) {
+    private void placePlayers(int numPlayers, int totalCountries) {
         int countryIndex;
         final int TROOPS = players.size() * players.get(0).getInitArmySize();
-        int playerCountriesHeld = Math.floorDiv(COUNTRY_COUNT, numPlayers); // evenly divides total regions based on player count
+        int playerCountriesHeld = Math.floorDiv(totalCountries, numPlayers); // evenly divides total regions based on player count
         int troopAssignedCount = 0;
-        int extraCountries = COUNTRY_COUNT % numPlayers; // accounts for extra countries
+        int extraCountries = totalCountries % numPlayers; // accounts for extra countries
         Random random = new Random();
         ArrayList<String> tempCountries = countryNames;
         // ------------------------------------------
