@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
  * @author Jason, Harjap
  */
 public class RiskController implements ActionListener{
+    private static final String FILE_NAME = "serializable.txt";
     private RiskModel riskModel;
 
     public RiskController(RiskModel riskModel){
@@ -26,7 +27,7 @@ public class RiskController implements ActionListener{
         } else if (e.getActionCommand().equals(ButtonCommand.PLACETROOPS.toString())){
             riskModel.placeTroopsClicked();
         } else if (e.getActionCommand().equals(ButtonCommand.SAVE.toString())){
-            riskModel.saveGame();
+            riskModel.saveGame(FILE_NAME);
         }
     }
 }
