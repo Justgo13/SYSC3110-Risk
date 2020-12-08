@@ -11,7 +11,7 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 public class RiskModelTest {
-    JSONObject jsonObjectInvalid;
+    JSONObject jsonObjectValid;
     RiskMockModel rm;
 
     @Before
@@ -19,16 +19,16 @@ public class RiskModelTest {
         JSONParser parser = new JSONParser();
         InputStream inputStream = this.getClass().getResourceAsStream("template.json");
         Object obj = parser.parse(new InputStreamReader(inputStream,"UTF-8"));
-        jsonObjectInvalid = (JSONObject) obj;
+        jsonObjectValid = (JSONObject) obj;
 
         rm = new RiskMockModel();
-        rm.setJsonObject(jsonObjectInvalid);
+        rm.setJsonObject(jsonObjectValid);
         rm.playGame(2,0);
     }
 
     @After
     public void tearDown() {
-        jsonObjectInvalid = null;
+        jsonObjectValid = null;
         rm = null;
     }
 
@@ -406,7 +406,7 @@ public class RiskModelTest {
 
     @Test
     public void testInvalidJSONMap(){
-        assertEquals(true, rm.validateJSONMap(jsonObjectInvalid));
+        assertEquals(true, rm.validateJSONMap(jsonObjectValid));
 
     }
 }
