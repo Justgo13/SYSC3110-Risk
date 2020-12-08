@@ -133,6 +133,18 @@ public class RiskModel implements Serializable {
         return countries;
     }
 
+    public static RiskModel loadGame(File file){
+        RiskModel model = null;
+        try(FileInputStream fis = new FileInputStream(file)){
+            ObjectInputStream out = new ObjectInputStream(fis);
+            model = (RiskModel) out.readObject();
+            out.close();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return model;
+    }
+
     public void saveGame(String fileName){
         File file = new File(fileName);
         try(FileOutputStream fos = new FileOutputStream(file)){
