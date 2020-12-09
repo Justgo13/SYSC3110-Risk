@@ -286,7 +286,7 @@ public class RiskFrame extends JFrame implements RiskView{
      */
     private void loadPreviousSave() {
         File file = chooseFile();
-        model = loadFromFile(file);
+        model = RiskModel.loadGame(file);
         mapJSON = model.getJsonObject();
 
         model.removeAllRiskView();
@@ -422,21 +422,6 @@ public class RiskFrame extends JFrame implements RiskView{
             selectedFile = fc.showOpenDialog(this);
         }
         return fc.getSelectedFile();
-    }
-
-    public RiskModel loadFromFile(File file){
-        try(FileInputStream fis = new FileInputStream(file)){
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            RiskModel model = (RiskModel) ois.readObject();
-            ois.close();
-            return model;
-        }catch (EOFException e){
-            e.printStackTrace();
-
-        }catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     /**

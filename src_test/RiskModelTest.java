@@ -11,24 +11,28 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 public class RiskModelTest {
-    JSONObject jsonObjectInvalid;
+    public static final String FILE_NAME = "template.json";
+    public static final String SAVE_NAME = "serializable.txt";
+    JSONObject jsonObjectValid;
+    File file;
     RiskMockModel rm;
 
     @Before
     public void setUp() throws IOException, ParseException {
         JSONParser parser = new JSONParser();
-        InputStream inputStream = this.getClass().getResourceAsStream("template.json");
+        file = new File(SAVE_NAME);
+        InputStream inputStream = this.getClass().getResourceAsStream(FILE_NAME);
         Object obj = parser.parse(new InputStreamReader(inputStream,"UTF-8"));
-        jsonObjectInvalid = (JSONObject) obj;
+        jsonObjectValid = (JSONObject) obj;
 
         rm = new RiskMockModel();
-        rm.setJsonObject(jsonObjectInvalid);
+        rm.setJsonObject(jsonObjectValid);
         rm.playGame(2,0);
     }
 
     @After
     public void tearDown() {
-        jsonObjectInvalid = null;
+        jsonObjectValid = null;
         rm = null;
     }
 
@@ -406,7 +410,14 @@ public class RiskModelTest {
 
     @Test
     public void testInvalidJSONMap(){
-        assertEquals(true, rm.validateJSONMap(jsonObjectInvalid));
+        assertEquals(true, rm.validateJSONMap(jsonObjectValid));
+    }
 
+    @Test
+    public void testLoadSave() {
+        rm.saveGame(SAVE_NAME);
+        RiskModel testModel = RiskModel.loadGame(file);
+        assertEquals(testModel.getAttackingPlayer().getId(), rm.getAttackingPlayer().getId());
+        assertEquals(testModel.getJsonObject(), rm.getJsonObject());
     }
 }
