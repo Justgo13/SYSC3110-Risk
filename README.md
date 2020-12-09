@@ -10,16 +10,13 @@ The objective of the game is to conquer as many countries and other player's occ
 - Code for the text-based Risk game 
 - UML diagrams, sequence diagrams
 - GUI based version of the game
-- JUnit test
-
-# Current Deliverables
 - Bonus troop placement and reinforce troop placement
 - AI player
 - JUnit test
 
-# Road map
-- Save / Load features
-- Custom maps
+# Current Deliverables
+- Save/load games
+- Load custom maps
 
 # How to run
 1. Download the .JAR file
@@ -29,6 +26,7 @@ The objective of the game is to conquer as many countries and other player's occ
 
 # Known issues
 - GUI will sometimes resize the text area and button panel when a country button is clicked
+- Valid custom map checker might have some edge cases that were missed
 
 # JUnit version
 JUnit4
@@ -36,18 +34,18 @@ JUnit4
 # How to play
 The text area on the right hand side will say whose turn it is and will report battle results
 
-To add bonus troops:
+# To add bonus troops:
 1. Click bonus troops button
 2. Click a country to add troops
 3. Choose from the dropdown the number of troop to add
 
-To attack:
+# To attack:
 1. Click attack button
 2. Click one of your owned countries
 3. Select from the dropdown how many troops to attack with
 4. Choose an adjacent country to attack
 
-To reinforce: 
+# To reinforce: 
 1. Click the reinforce button
 2. Choose a country to reinforce from
 3. Choose from the dropdown how many troops to reinforce with
