@@ -74,6 +74,16 @@ public class RiskModel implements Serializable {
      */
     public boolean validateJSONMap(JSONObject jsonMap){
 
+        try{
+            JSONArray countriesJSON = (JSONArray) jsonMap.get(JSONConstants.COUNTRIES.toString());
+            JSONArray continentsJSON = (JSONArray) jsonMap.get(JSONConstants.CONTINENTS.toString());
+
+        }catch(Exception e){
+            System.out.println(e);
+            return false;
+        }
+
+
         HashMap<String,Country> countries = countriesFromJSON(jsonMap);
 
         // get number of countries in the JSON map
