@@ -1,0 +1,36 @@
+{
+  "Countries": [
+    { "countryName":  "Westeros",
+      "gridBag": {"x": "0", "y": "0"},
+      "continentName":  "NA",
+      "adjacentCountries": ["Essos"]
+    },
+    { "countryName":  "Essos",
+      "continentName":  "NA",
+      "gridBag": {"x": "1", "y": "0"},
+      "adjacentCountries": ["Highgarden", "Westeros", "Eyrie"]
+    },
+    { "countryName":  "Highgarden",
+      "continentName":  "NB",
+      "gridBag": {"x": "1", "y": "1"},
+      "adjacentCountries": ["Essos", "Eyrie"]
+    },
+    { "countryName":  "Eyrie",
+      "continentName":  "NB",
+      "gridBag": {"x": "1", "y": "2"},
+      "adjacentCountries": ["Highgarden", "Essos", "Oldtown"]
+
+    },
+    { "countryName":  "Oldtown",
+      "continentName":  "NB",
+      "gridBag": {"x": "2", "y": "3"},
+      "adjacentCountries": ["Eyrie"]
+    }
+  ],
+
+  "Continents": [
+    {"continentName": "NA", "bonusValue": 5},
+    {"continentName": "NB", "bonusValue": 2}
+  ]
+
+}
