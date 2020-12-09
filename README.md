@@ -17,6 +17,10 @@ The objective of the game is to conquer as many countries and other player's occ
 # Current Deliverables
 - Save/load games
 - Load custom maps
+  -How to load map
+    1. When starting the game, choose the option to select a custom map.
+    2. Select a JSON file that represents the map (example maps can be found under example_maps directory).
+    3. Click ok and a map will be generated with the custom JSON.
 
 # How to run
 1. Download the .JAR file
