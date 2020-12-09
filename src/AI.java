@@ -56,7 +56,7 @@ public class AI extends Player{
             while ((line = br.readLine()) != null) {
                 String[] l = line.split(" ");
 
-                for (int i = 0; i < 10; i++){
+                for (int i = 0; i < PROBABILITY_SIZE; i++){
                     this.probabilities[count][i] = Integer.parseInt(l[i]);
                 }
                 count++;

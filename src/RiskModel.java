@@ -133,6 +133,11 @@ public class RiskModel implements Serializable {
         return countries;
     }
 
+    /**
+     * Loads a game from a File object by deserializing the data
+     * @param file The save game file to load from
+     * @return RiskModel that contains the information from the previous game
+     */
     public static RiskModel loadGame(File file){
         RiskModel model = null;
         try(FileInputStream fis = new FileInputStream(file)){
@@ -145,6 +150,10 @@ public class RiskModel implements Serializable {
         return model;
     }
 
+    /**
+     * Saves the current state of the game as serialized data into a file specified by fileName
+     * @param fileName The file name to store the serialized data into
+     */
     public void saveGame(String fileName){
         File file = new File(fileName);
         try(FileOutputStream fos = new FileOutputStream(file)){
