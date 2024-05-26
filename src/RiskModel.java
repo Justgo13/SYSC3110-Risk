@@ -741,6 +741,10 @@ public class RiskModel implements Serializable {
         this.movedTroops = movedTroops;
     }
 
+    public int getMovedTroops() {
+        return this.movedTroops;
+    }
+
     public void updateNextState() {
         state = state.next();
     }
