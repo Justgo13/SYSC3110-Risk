@@ -507,7 +507,7 @@ public class RiskFrame extends JFrame implements RiskView{
             selectionObject = JOptionPane.showOptionDialog(this, panel, "Choose Troops", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         }
         int result = Integer.parseInt(comboBox.getSelectedItem().toString());
-        model.setMovedTroops(result);
+        model.setMovedTroops(model.getMovedTroops() + result);
         return result;
     }
 
