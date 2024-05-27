@@ -490,7 +490,7 @@ public class RiskFrame extends JFrame implements RiskView{
 
     /**
      * Creates a dialog box with a dropdown list asking the user for the number of bonus troops that can be moved
-     * @author Jason
+     * @author Jason Harjap David
      * @param troopCount The number of bonus troops available to move
      */
     private int getBonusTroopCount(int troopCount) {
@@ -507,7 +507,7 @@ public class RiskFrame extends JFrame implements RiskView{
             selectionObject = JOptionPane.showOptionDialog(this, panel, "Choose Troops", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         }
         int result = Integer.parseInt(comboBox.getSelectedItem().toString());
-        model.setMovedTroops(result);
+        model.setMovedTroops(model.getMovedTroops() + result);
         return result;
     }
 
